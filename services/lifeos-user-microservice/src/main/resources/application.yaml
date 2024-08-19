@@ -1,0 +1,14 @@
+server:
+  port: 8080
+spring:
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  application:
+    name: user-service
+  datasource:
+    url: ${secrets.datasource.url}
+    username: ${secrets.datasource.username}
+    password: ${secrets.datasource.password}
+
+bcrypt:
+  strength: 12

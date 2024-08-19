@@ -1,0 +1,11 @@
+spring:
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  application:
+    name: lifeos-quiz-microservice
+  datasource:
+    url: ${secrets.datasource.url}
+    username: ${secrets.datasource.username}
+    password: ${secrets.datasource.password}
+    hikari:
+      connection-timeout: 20000
