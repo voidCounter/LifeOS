@@ -37,7 +37,6 @@ export default function NavItem(navItem: NavItemType) {
                         {
                             navItem.subItems && navItem.subItems.map((subNavItem, index) => {
                                     const isActive = pathName === subNavItem.path;
-                                    console.log(isActive);
                                     return (
                                         <div key={index}
                                              className="flex flex-col">
