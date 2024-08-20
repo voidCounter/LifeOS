@@ -1,0 +1,82 @@
+[
+  {
+    "quizId": "1f2d3a4b-5c6d-7e8f-9g0h-1i2j3k4l5m6n",
+    "user": {
+      "userId": "abcd1234-5678-efgh-ijkl-9876543210mn",
+      "username": "user1",
+      "knowledgeXp": 1200,
+      "password": "password1"
+    },
+    "createdAt": "2024-08-15T10:00:00Z",
+    "published": true,
+    "deleted": false,
+    "quizTitle": "Java Basics",
+    "lastModified_at": "2024-08-15T12:00:00Z",
+    "category": "Programming",
+    "quizDescription": "A quiz about the basics of Java programming."
+  },
+  {
+    "quizId": "2a3b4c5d-6e7f-8g9h-0i1j-2k3l4m5n6o7p",
+    "user": {
+      "userId": "bcde2345-6789-fghi-jklm-0987654321no",
+      "username": "user2",
+      "knowledgeXp": 850,
+      "password": "password2"
+    },
+    "createdAt": "2024-08-14T09:30:00Z",
+    "published": false,
+    "deleted": false,
+    "quizTitle": "React Fundamentals",
+    "lastModified_at": "2024-08-14T11:00:00Z",
+    "category": "Web Development",
+    "quizDescription": "Test your knowledge of React fundamentals."
+  },
+  {
+    "quizId": "3b4c5d6e-7f8g-9h0i-1j2k-3l4m5n6o7p8q",
+    "user": {
+      "userId": "cdef3456-789a-ghij-klmn-0987654321op",
+      "username": "user3",
+      "knowledgeXp": 1500,
+      "password": "password3"
+    },
+    "createdAt": "2024-08-13T08:45:00Z",
+    "published": true,
+    "deleted": false,
+    "quizTitle": "Data Structures",
+    "lastModified_at": "2024-08-13T10:15:00Z",
+    "category": "Computer Science",
+    "quizDescription": "A quiz covering key concepts in data structures."
+  },
+  {
+    "quizId": "4c5d6e7f-8g9h-0i1j-2k3l-4m5n6o7p8q9r",
+    "user": {
+      "userId": "defg4567-89ab-hijk-lmno-9876543210pq",
+      "username": "user4",
+      "knowledgeXp": 950,
+      "password": "password4"
+    },
+    "createdAt": "2024-08-12T07:15:00Z",
+    "published": true,
+    "deleted": false,
+    "quizTitle": "Algorithms",
+    "lastModified_at": "2024-08-12T08:45:00Z",
+    "category": "Computer Science",
+    "quizDescription": "Test your understanding of algorithms."
+  },
+  {
+    "quizId": "5d6e7f8g-9h0i-1j2k-3l4m-5n6o7p8q9r0s",
+    "user": {
+      "userId": "efgh5678-9abc-ijkl-mnop-9876543210qr",
+      "username": "user5",
+      "knowledgeXp": 1100,
+      "password": "password5"
+    },
+    "createdAt": "2024-08-11T06:30:00Z",
+    "published": false,
+    "deleted": false,
+    "quizTitle": "Machine Learning",
+    "lastModified_at": "2024-08-11T08:00:00Z",
+    "category": "Artificial Intelligence",
+    "quizDescription": "A quiz about the basics of machine learning."
+  }
+]

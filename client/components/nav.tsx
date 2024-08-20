@@ -12,10 +12,10 @@ import {
 } from "@/components/ui/accordion";
 import NavItem from "@/components/navItem";
 
-export function Nav() {
+export function Nav({className}:{className?:string}) {
     const pathname = usePathname();
     return (
-        <div className="">
+        <div className={`w-full ${cn(className)}`}>
             <nav className="grid gap-1 px-2 w-full">
                 <Accordion type="single" collapsible
                            className="hover:decoration-0">
