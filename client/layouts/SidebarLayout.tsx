@@ -23,12 +23,12 @@ export default function SidebarLayout({children}: {
         <div className="w-full h-full overflow-hidden">
             <div className="">
                 <div
-                    className={`absolute w-60 h-full transform border-r transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} pt-2`}
+                    className={`absolute w-60 h-full transform border-r transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} pt-2`}
                 >
                     <Nav/>
                 </div>
                 <div
-                    className={`transition-all duration-300 ${isSidebarOpen ? "pl-60" : "pl-0"}`}>
+                    className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-60" : "translate-x-0"}`}>
                     <div className="w-full border-b p-1">
                         <Button
                             variant="ghost"
