@@ -1,0 +1,98 @@
+{
+  "quizId": "1f2d3a4b-5c6d-7e8f-9g0h-1i2j3k4l5m6n",
+  "user": {
+    "userId": "user456",
+    "username": "john_doe",
+    "email": "john_doe@example.com",
+    "avatarURL": "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  "createdAt": "2024-08-21T10:00:00Z",
+  "published": true,
+  "deleted": false,
+  "quizTitle": "General knowledge quiz",
+  "lastModified_at": "2024-08-21T12:00:00Z",
+  "category": "General Knowledge",
+  "rating": "4.5",
+  "questionCount": 4,
+  "quizDescription": "This is a sample quiz with different types of general knowledge questions.",
+  "questions": [
+    {
+      "questionId": "q1",
+      "questionType": "MULTIPLE_CHOICE",
+      "questionStatement": "What is the capital of France?",
+      "options": [
+        {
+          "optionId": "o1",
+          "optionText": "Paris",
+          "optionExplanation": "Paris is the capital of France.",
+          "correct": true
+        },
+        {
+          "optionId": "o2",
+          "optionText": "London",
+          "optionExplanation": "London is the capital of the United Kingdom.",
+          "correct": false
+        },
+        {
+          "optionId": "o3",
+          "optionText": "Rome",
+          "optionExplanation": "Rome is the capital of Italy.",
+          "correct": false
+        },
+        {
+          "optionId": "o4",
+          "optionText": "Berlin",
+          "optionExplanation": "Berlin is the capital of Germany.",
+          "correct": false
+        }
+      ]
+    },
+    {
+      "questionId": "q2",
+      "questionType": "TRUE_FALSE",
+      "questionStatement": "The Earth is flat.",
+      "trueOptionExplanation": "Incorrect - The Earth is a sphere.",
+      "falseOptionExplanation": "Correct - The Earth is not flat.",
+      "answer": false,
+      "answerExplanation": "The Earth is an oblate spheroid, meaning it is mostly round but slightly flattened at the poles."
+    },
+    {
+      "questionId": "q3",
+      "questionType": "SHORT_ANSWER",
+      "questionStatement": "What is the chemical symbol for water?",
+      "answer": "H2O",
+      "answerExplanation": "Water's chemical formula is H2O, meaning it has two hydrogen atoms and one oxygen atom."
+    },
+    {
+      "questionId": "q4",
+      "questionType": "MULTIPLE_CHOICE",
+      "questionStatement": "Which planet is known as the Red Planet?",
+      "options": [
+        {
+          "optionId": "o1",
+          "optionText": "Mars",
+          "optionExplanation": "Mars is often referred to as the Red Planet due to its reddish appearance.",
+          "correct": true
+        },
+        {
+          "optionId": "o2",
+          "optionText": "Venus",
+          "optionExplanation": "Venus is known for its thick atmosphere and bright appearance.",
+          "correct": false
+        },
+        {
+          "optionId": "o3",
+          "optionText": "Jupiter",
+          "optionExplanation": "Jupiter is the largest planet in the solar system.",
+          "correct": false
+        },
+        {
+          "optionId": "o4",
+          "optionText": "Saturn",
+          "optionExplanation": "Saturn is famous for its prominent ring system.",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}

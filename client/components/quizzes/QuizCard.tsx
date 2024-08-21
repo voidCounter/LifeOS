@@ -4,38 +4,53 @@ import {Badge} from "@/components/ui/badge";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
-import {MoreHorizontalIcon, MoreVerticalIcon} from "lucide-react";
-import {ContextMenu} from "@radix-ui/react-context-menu";
 import {
-    ContextMenuContent, ContextMenuItem,
-    ContextMenuTrigger
-} from "@/components/ui/context-menu";
+    CalendarFold,
+    CalendarFoldIcon,
+    MoreHorizontalIcon,
+    MoreVerticalIcon
+} from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent, DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {QuizTest} from "@/types/QuizTypes/QuizTest";
+import {formatRelativeTime} from "@/lib/formatRelativetime";
+import {usePathname, useRouter} from "next/navigation";
+import {UserAvatar} from "@/components/UserAvatar";
+import QuizRating from "@/components/quizzes/QuizRating";
 
 interface QuizProps {
     quiz: Quiz,
-    variant?: "default" | "popularByStudy" | "createdByMe" | null,
-    showCategory?: boolean | null,
-    showRating?: boolean | null,
-    showAvatar?: boolean | null,
-    visibilityOption?: boolean | null,
+    quizTest?: QuizTest,
+    variant?: "default" | "popularByStudy" | "createdByMe" | "quizTest" | null,
+    showRating?: boolean,
+    showCategories?: boolean,
+    showQuestionCount?: boolean,
+    showCreator?: boolean,
 }
 
 export default function QuizCard({
                                      quiz,
+                                     quizTest,
                                      variant = "default",
-                                     showCategory = true,
                                      showRating = true,
-                                     showAvatar = true,
-                                     visibilityOption = false
+                                     showQuestionCount = true,
+                                     showCategories = true,
+                                     showCreator = true,
                                  }: QuizProps) {
+
+    const router = useRouter();
+
+    function cardClickHandler() {
+        router.push(`/quizzes/quiz/${quiz.quizId}/`)
+    }
+
     return (
         <div
-            className="w-full h-fit p-4 bg-background rounded-xl border border-border flex-col justify-start items-start gap-4 inline-flex">
+            className="w-full h-fit p-4 bg-background rounded-xl border border-border flex-col justify-start items-start gap-4 inline-flex cursor-pointer hover:bg-accent/50"
+            onClick={cardClickHandler}>
             <div
                 className="self-stretch h-14 flex-col justify-start items-start gap-3 flex">
                 {/* Quiz title */}
@@ -57,23 +72,35 @@ export default function QuizCard({
                                 >Schedule</DropdownMenuItem>
                                 <DropdownMenuItem
                                 >Edit</DropdownMenuItem>
-                                <DropdownMenuItem className={"text-destructive hover:text-destructive"}
+                                <DropdownMenuItem
+                                    className={"text-destructive hover:text-destructive"}
                                 >Delete</DropdownMenuItem>
 
                             </DropdownMenuContent>
 
                         </DropdownMenu>
                     }
+                        {
+                            variant == "quizTest" &&
+                            <div
+                                className={`${((quizTest?.quizTestScore ?? 0) < (quizTest?.quiz.questionCount ?? 0) / 2) ? "bg-destructive" : "bg-success-foreground"} text-sm text-background px-2 py-1 rounded-sm`}>
+                                {quizTest?.quizTestScore ?? 0}/{quizTest?.quiz.questionCount}
+                            </div>
+                        }
                     </div>
                 </div>
                 {/* info + rating */}
                 <div className="justify-start items-center gap-2 inline-flex">
-                    <Badge variant={"outline"}>{"56 questions"} </Badge>
-                    {showCategory && <Badge variant={"outline"}>{quiz.category}</Badge>}
-                    <div
-                        className="text-center text-foreground text-xs font-normal leading-none">⭐
-                        4.83
-                    </div>
+                    {showQuestionCount && <Badge
+                        variant={"outline"}>{quiz.questionCount} questions </Badge>}
+                    {
+                        showCategories &&
+                        <Badge variant={"outline"}>{quiz.category}</Badge>
+                    }
+                    {
+                        showRating &&
+                        <QuizRating rating={"4.5"}/>
+                    }
                 </div>
             </div>
             {
@@ -84,23 +111,19 @@ export default function QuizCard({
                 </div>
             }
             {
-                variant != "createdByMe" &&
+                (variant != "createdByMe" && (showCreator)) &&
+                <UserAvatar
+                    avatarURL={"https://images.unsplash.com/photo-1533636721434-0e2d61030955?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+                    name={quiz.user.username} userName={quiz.user.username}/>
+            }
+            {
+                variant == "quizTest" &&
                 <div
-                    className="self-stretch justify-start items-center gap-2 inline-flex">
-                    {/* User avatar */}
-                    <Image alt={"avatar"} className="w-7 h-7 rounded-full"
-                           width={7}
-                           height={8}
-                           src="https://images.unsplash.com/photo-1533636721434-0e2d61030955?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"/>
-
-                    {/* User name */}
+                    className="h-4 justify-start items-center gap-1 inline-flex">
+                    <CalendarFoldIcon
+                        className="w-4 h-4 text-muted-foreground"></CalendarFoldIcon>
                     <div
-                        className="grow shrink basis-0 flex-col justify-start items-start inline-flex">
-                        <div
-                            className="text-foreground text-sm font-light leading-none">Eva
-                            Mendes
-                        </div>
-                    </div>
+                        className="text-center text-muted-foreground text-xs font-normal mt-0.5 leading-none">{formatRelativeTime(quizTest?.testTakenAt ?? "")}</div>
                 </div>
             }
 

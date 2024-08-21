@@ -7,19 +7,15 @@ import QuizCard from "@/components/quizzes/QuizCard";
 import {Quiz} from "@/types/QuizTypes/Quiz";
 import {fetchLocalQuizzes} from "@/api-handlers/quizzes";
 import {useQuery} from "@tanstack/react-query";
+import {router} from "next/client";
+import {usePathname} from "next/navigation";
+import {useRouter} from "next/navigation";
+import CreatedQuizzes from "@/components/quizzes/CreatedQuizzes";
+import TakenQuizTests from "@/components/quizzes/TakenQuizTests";
+import SectionHeader from "@/components/SectionHeader";
 
 export default function Explore() {
-    const {
-        data: quizzes,
-        isLoading,
-        error
-    } = useQuery<Quiz[], Error>({
-        queryKey: ['quizzes'],
-        queryFn: fetchLocalQuizzes
-    });
 
-    if (isLoading) return <div>...Loading</div>
-    if (error) return <div>{error.message}</div>
     return (
         <main
             className="flex flex-col gap-8 w-full">
@@ -44,8 +40,9 @@ export default function Explore() {
 
             {/* Library */}
             <section className={"w-full"}>
-                <h1 className="font-semibold text-xl">Your Library</h1>
-                <Tabs defaultValue="quizzes" className="w-full mt-4">
+                <SectionHeader title={"Your Library"} description={""}/>
+                <Tabs defaultValue="quizzes" className="w-full mt-4"
+                >
                     <TabsList className={"w-full md:w-3/5 lg:w-2/5 grid" +
                         " sticky top-0 z-50" +
                         " grid-cols-3"}>
@@ -55,16 +52,13 @@ export default function Explore() {
                             Tests</TabsTrigger>
                         <TabsTrigger value="folders">Folders</TabsTrigger>
                     </TabsList>
-                    <TabsContent value="quizzes" className={"overflow-y-scroll"}>
-                        <div className={"flex flex-col gap-2"}>
-                            {
-                                quizzes?.map((quiz: Quiz) => <QuizCard
-                                    key={quiz.quizId} quiz={quiz} variant={"createdByMe"}/>)
-                            }
-                        </div>
+                    <TabsContent value="quizzes"
+                    >
+                        <CreatedQuizzes/>
                     </TabsContent>
-                    <TabsContent value="practice_tests">Your practice
-                        tests</TabsContent>
+                    <TabsContent value="practice_tests">{
+                        <TakenQuizTests/>
+                    }</TabsContent>
                     <TabsContent value="folders">Your folders</TabsContent>
                 </Tabs>
             </section>

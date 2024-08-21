@@ -1,4 +1,5 @@
 import {User} from "@/types/User";
+import {Question} from "@/types/QuizTypes/Question";
 
 export interface Quiz {
   quizId: string;
@@ -10,5 +11,7 @@ export interface Quiz {
   lastModified_at: string | null;
   category: string | null;
   rating: string | null;
+  questionCount: number | null;
+  questions?: Question[];
   quizDescription: string | null;
 }
