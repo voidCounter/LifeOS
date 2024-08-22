@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {Quiz} from "@/types/QuizTypes/Quiz";
 import {fetchLocalQuizzes, fetchQuizTests} from "@/api-handlers/quizzes";
-import QuizCard from "@/components/quizzes/QuizCard";
+import QuizCard from "./QuizCard";
 import {QuizTest} from "@/types/QuizTypes/QuizTest";
 
 export default function TakenQuizTests() {
