@@ -19,7 +19,7 @@ import {QuizTest} from "@/types/QuizTypes/QuizTest";
 import {formatRelativeTime} from "@/lib/formatRelativetime";
 import {usePathname, useRouter} from "next/navigation";
 import {UserAvatar} from "@/components/UserAvatar";
-import QuizRating from "@/components/quizzes/QuizRating";
+import QuizRating from "./QuizRating";
 
 interface QuizProps {
     quiz: Quiz,

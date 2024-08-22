@@ -23,3 +23,10 @@ export async function fetchQuizwithQuestions(): Promise<Quiz> {
     if (!response.ok) throw new Error('Failed to fetch the quiz with questions!')
     return response.json();
 }
+
+export async function fetchQuizTest(): Promise<QuizTest> {
+    const response = await fetch('/quiztest.json');
+
+    if (!response.ok) throw new Error('Failed to fetch the quiz with questions!')
+    return response.json();
+}

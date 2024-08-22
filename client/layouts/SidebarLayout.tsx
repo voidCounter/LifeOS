@@ -28,7 +28,7 @@ export default function SidebarLayout({children}: {
                     <Nav/>
                 </div>
                 <div
-                    className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-60" : "translate-x-0"}`}>
+                    className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "sm:pl-60 translate-x-60 sm:translate-x-0 sm:transform-none" : "sm:pl-0 translate-x-0"}`}>
                     <div className="w-full border-b p-1">
                         <Button
                             variant="ghost"
@@ -51,7 +51,8 @@ export default function SidebarLayout({children}: {
                         <div className={" w-full px-3 md:w-[700px] md:px-8" +
                             " lg:w-[1000px]" +
                             " flex " +
-                            " justify-center overflow-y-scroll h-screen"}>
+                            " justify-center overflow-y-scroll h-screen" +
+                            " no-scrollbar"}>
                             <QueryClientProvider client={queryClient}>
                                 {children}
                             </QueryClientProvider>

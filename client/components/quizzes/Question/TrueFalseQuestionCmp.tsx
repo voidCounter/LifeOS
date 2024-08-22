@@ -1,9 +1,7 @@
 import {TrueFalseQuestion} from "@/types/QuizTypes/TrueFalseQuestion";
-import {MultipleChoiceOption} from "@/types/QuizTypes/MultipleChoiceOption";
-import {Checkbox} from "@/components/ui/checkbox";
-import BaseQuestionCmp from "@/components/quizzes/BaseQuestionCmp";
-import {QuizMode} from "@/types/QuizTypes/QuizMode";
+import BaseQuestionCmp from "./BaseQuestionCmp";
 import {BaseQuestionProps} from "@/types/QuizTypes/BaseQuestionProps";
+import QuestionOption from "./QuestionOption";
 
 interface TrueFalseQuestionCmpProps extends BaseQuestionProps<TrueFalseQuestion> {
 }
@@ -20,27 +18,15 @@ export default function TrueFalseQuestionCmp({
         {
             optionText: "True",
             optionExplanation: question.trueOptionExplanation,
+            isCorrect: true == question.answer
         },
         {
             optionText: "False",
-            optionExplanation: question.falseOptionExplanation
+            optionExplanation: question.falseOptionExplanation,
+            isCorrect: false == question.answer
+
         }
     ];
-    const renderTrueFalseOption = (option: string, optionExplanation: string) => {
-        switch (mode) {
-            case 'View':
-                return (
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id={option} disabled={true}/>
-                        <label
-                            htmlFor={option}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                            {option}
-                        </label>
-                    </div>);
-        }
-    }
 
     return (
         <BaseQuestionCmp index={index} question={question} mode={mode}
@@ -49,7 +35,12 @@ export default function TrueFalseQuestionCmp({
                 trueFalseQuestionOptions.map((option) => {
                     return (
                         <div
-                            key={option.optionText}>{renderTrueFalseOption(option.optionText, option?.optionExplanation ?? "")}</div>)
+                            key={option.optionText}>
+                            <QuestionOption option={option.optionText}
+                                            optionExplanation={option.optionExplanation}
+                                            isCorrect={option.isCorrect}
+                                            mode={mode}/>
+                        </div>)
                 })
             }
         </BaseQuestionCmp>

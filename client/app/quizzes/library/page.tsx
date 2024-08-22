@@ -3,15 +3,8 @@ import {Input} from "@/components/ui/input";
 import {PlusSquare, Search} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import QuizCard from "@/components/quizzes/QuizCard";
-import {Quiz} from "@/types/QuizTypes/Quiz";
-import {fetchLocalQuizzes} from "@/api-handlers/quizzes";
-import {useQuery} from "@tanstack/react-query";
-import {router} from "next/client";
-import {usePathname} from "next/navigation";
-import {useRouter} from "next/navigation";
-import CreatedQuizzes from "@/components/quizzes/CreatedQuizzes";
-import TakenQuizTests from "@/components/quizzes/TakenQuizTests";
+import CreatedQuizzes from "@/components/quizzes/Quiz/CreatedQuizzes";
+import TakenQuizTests from "@/components/quizzes/Quiz/TakenQuizTests";
 import SectionHeader from "@/components/SectionHeader";
 
 export default function Explore() {
