@@ -1,0 +1,48 @@
+import {ShortAnswerQuestion} from "@/types/QuizTypes/ShortAnswerQuestion";
+import {Question} from "@/types/QuizTypes/Question";
+import BaseQuestionCmp from "./BaseQuestionCmp";
+import {QuizMode} from "@/types/QuizTypes/QuizMode";
+import {BaseQuestionProps} from "@/types/QuizTypes/BaseQuestionProps";
+import {useQuizLearningStore} from "@/store/QuizLearningStore";
+
+interface ShortAnswerQuestionCmpProp extends BaseQuestionProps<ShortAnswerQuestion> {
+}
+
+const renderShortAnswer = (question: ShortAnswerQuestion, mode: string) => {
+
+    const revealAnswer = useQuizLearningStore.getState().revealAnswer;
+    switch (mode) {
+        case 'View':
+            return null;
+        case 'Learning':
+            return (<div
+                className={`transition-all duration-500  ease-in-out overflow-hidden ${revealAnswer ? "max-h-40 opeacity-100" : "max-h-0 opacity-0"}`}>
+                {question.answer}
+                <div
+                    className={`flex flex-col gap-1 mt-1`}>
+                    <hr className={"w-full"}/>
+                    <div
+                        className={"text-muted-foreground text-sm overflow-y-scroll"}>
+                        {question.answerExplanation}
+                    </div>
+                </div>
+            </div>);
+        default:
+            return null;
+    }
+}
+
+export default function ShortAnswerQuestionCmp({
+                                                   question,
+                                                   mode,
+                                                   index,
+                                                   showEditingOption
+                                               }: ShortAnswerQuestionCmpProp) {
+
+    return (
+        <BaseQuestionCmp index={index} question={question} mode={mode}
+                         showEditingOption={showEditingOption}>
+            {renderShortAnswer(question, mode)}
+        </BaseQuestionCmp>
+    );
+}

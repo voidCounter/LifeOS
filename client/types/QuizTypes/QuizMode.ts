@@ -1,0 +1,1 @@
+export type QuizMode = "View" | "Edit" | "Test" | "Learning";
