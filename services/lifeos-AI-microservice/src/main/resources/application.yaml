@@ -1,3 +1,4 @@
+
 spring:
   config:
     import: 'optional:classpath:secrets.yaml'
@@ -14,3 +15,11 @@ spring:
             options:
               model: gemini-1.5-flash-001
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+server:
+  port: 8081
