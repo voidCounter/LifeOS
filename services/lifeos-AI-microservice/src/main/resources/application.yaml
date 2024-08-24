@@ -1,0 +1,16 @@
+spring:
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  application:
+    name: lifeos-AI-microservice
+
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${secrets.vertex-ai-project-id}
+          location: ${secrets.vertex-ai-location}
+          chat:
+            options:
+              model: gemini-1.5-flash-001
+

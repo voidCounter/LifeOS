@@ -1,0 +1,27 @@
+{
+  "quiz": {
+    "quizId": "1f2d3a4b-5c6d-7e8f-9g0h-1i2j3k4l5m6n",
+    "user": {
+      "userId": "987e6543-e21c-32d4-a654-426614174111",
+      "username": "john_doe",
+      "knowledgeXp": 1200,
+      "password": "hashed_password"
+    },
+    "createdAt": "2023-08-21T12:34:56Z",
+    "published": true,
+    "deleted": false,
+    "quizTitle": "Introduction to TypeScript",
+    "questionCount": "45",
+    "lastModified_at": "2023-08-21T15:00:00Z",
+    "category": "Programming",
+    "quizDescription": "A basic introduction to TypeScript concepts."
+  },
+  "user": {
+    "userId": "123e4567-e89b-12d3-a456-426614174001",
+    "username": "jane_doe",
+    "knowledgeXp": 900,
+    "password": "hashed_password"
+  },
+  "quizTestScore": 25,
+  "testTakenAt": "2023-08-21T16:00:00Z"
+}
