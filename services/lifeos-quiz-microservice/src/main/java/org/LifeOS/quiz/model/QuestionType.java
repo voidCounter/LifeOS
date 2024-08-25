@@ -4,7 +4,7 @@ package org.LifeOS.quiz.model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-public enum QuizType {
+public enum QuestionType{
     MULTIPLE_CHOICE,
     TRUE_FALSE,
     SHORT_ANSWER;

@@ -39,18 +39,19 @@ public class QuizService {
     }
 
 
-    public Flux<String> generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
+    public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         try {
             return this.chatClient.prompt()
                     .system(sp -> sp.param("questionCount", quizbyPromptDTO.getQuestionCount()))
                     .system(sp -> sp.param("language", quizbyPromptDTO.getLanguage()))
                     .system(sp -> sp.param("questionsType", quizbyPromptDTO.getQuestionsType()))
+                    .system(sp -> sp.param("questionsDifficulty", quizbyPromptDTO.getQuestionsDifficulty()))
                     .user(quizbyPromptDTO.getPrompt())
-                    .stream()
+                    .call()
                     .content();
         } catch (Exception e) {
             log.error("Error generating quiz: ", e);
-            return Flux.error(e);
+            return "Error generating quiz";
         }
     }
 

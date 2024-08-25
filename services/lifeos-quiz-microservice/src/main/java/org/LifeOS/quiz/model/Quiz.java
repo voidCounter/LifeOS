@@ -32,6 +32,7 @@ public class Quiz {
 
     private String category;
     private String quizDescription;
+    private String language;
     @CreationTimestamp
     private Timestamp createdAt;
     @LastModifiedDate

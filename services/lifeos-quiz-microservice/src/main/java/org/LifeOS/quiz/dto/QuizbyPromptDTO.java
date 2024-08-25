@@ -1,4 +1,4 @@
-package org.lifeos.lifeosaimicroservice.dto;
+package org.LifeOS.quiz.dto;
 
 import lombok.Data;
 
@@ -7,8 +7,8 @@ public class QuizbyPromptDTO {
     private String quizTitle;
     private String quizDescription;
     private String questionCount;
-    private String questionsDifficulty;
     private String prompt;
     private String questionsType;
     private String language;
 }
+

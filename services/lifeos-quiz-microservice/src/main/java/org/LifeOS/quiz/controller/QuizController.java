@@ -1,6 +1,7 @@
 package org.LifeOS.quiz.controller;
 
 import org.LifeOS.quiz.dto.QuizDTO;
+import org.LifeOS.quiz.dto.QuizbyPromptDTO;
 import org.LifeOS.quiz.model.Question;
 import org.LifeOS.quiz.model.Quiz;
 import org.LifeOS.quiz.service.QuizService;
@@ -23,6 +24,7 @@ public class QuizController {
         this.quizService = quizService;
     }
 
+
     @GetMapping("/{quizId}/questions")
     public ResponseEntity<Quiz> getQuiz(@PathVariable UUID quizId) {
         try {
@@ -33,11 +35,17 @@ public class QuizController {
         }
     }
 
+    @PostMapping("/create/byprompt")
+    public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizbyPromptDTO quizbyPromptDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByPrompt(quizbyPromptDTO));
+    }
+
     @PostMapping("/{quizId}/questions/new")
-    public ResponseEntity<?> addNewQuiz(@RequestBody QuizDTO quizDTO) {
+    public ResponseEntity<?> addNewQuiz(@RequestBody QuizDTO quizDTO,
+                                        @RequestHeader("UserID") UUID userId) {
         try {
             log.info("Adding quiz -> controller: {}", quizDTO);
-            quizService.addQuiz(quizDTO);
+            quizService.addQuiz(quizDTO, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body("Quiz added " +
                     "successfully");
         } catch (Exception e) {
