@@ -1,0 +1,44 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  datasource:
+    url: ${secrets.datasource.url}
+    username: ${secrets.datasource.username}
+    password: ${secrets.datasource.password}
+  application:
+    name: lifeos-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: lifeos-ai-microservice
+          uri: lb://lifeos-ai-microservice
+          predicates:
+            - Path=/api/ai/**
+          filters:
+            - StripPrefix=2
+        - id: lifeos-quiz-microservice
+          uri: lb://lifeos-quiz-microservice
+          predicates:
+            - Path=/api/quiz/**
+          filters:
+            - StripPrefix=2
+
+        - id: lifeos-user-service
+          uri: lb://lifeos-user-service
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=2
+server:
+  port: 8080

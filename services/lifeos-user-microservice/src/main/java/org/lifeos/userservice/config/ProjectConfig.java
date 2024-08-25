@@ -24,16 +24,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class ProjectConfig {
-    private final JWTAuthenticationFilter jwtAuthenticationFilter;
+
     private final CustomUserDetailsService userDetailsService;
 
     @Value("${bcrypt.strength}")
     private int bycryptStrength;
 
 
-    public ProjectConfig(JWTAuthenticationFilter jwtAuthenticationFilter,
-                         CustomUserDetailsService customUserDetailsService) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    public ProjectConfig(CustomUserDetailsService customUserDetailsService) {
         this.userDetailsService = customUserDetailsService;
     }
 
@@ -41,12 +39,7 @@ public class ProjectConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("register", "login")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).build();
+                        .anyRequest().permitAll()).build();
     }
 
     @Bean
