@@ -26,7 +26,7 @@ public class Question {
     private UUID questionId;
     private String questionStatement;
     @Enumerated(EnumType.STRING)
-    private QuizType questionType;
+    private QuestionType questionType;
     @Enumerated(EnumType.STRING)
     private QuizDifficulty questionDifficulty;
 
