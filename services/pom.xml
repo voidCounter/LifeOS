@@ -13,6 +13,7 @@
         <module>lifeos-quiz-microservice</module>
         <module>lifeos-AI-microservice</module>
         <module>lifeos-service-registry</module>
+        <module>lifeos-gateway</module>
     </modules>
 
     <properties>
