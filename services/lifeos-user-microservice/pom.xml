@@ -12,7 +12,7 @@
     <groupId>org.lifeos</groupId>
     <artifactId>lifeos-user-microservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>UserService</name>
+    <name>lifeos-user-service</name>
     <description>UserService</description>
     <url/>
     <licenses>

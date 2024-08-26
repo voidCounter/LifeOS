@@ -4,7 +4,7 @@ spring:
   config:
     import: 'optional:classpath:secrets.yaml'
   application:
-    name: lifeos-user-service
+    name: lifeos-user-microservice
   datasource:
     url: ${secrets.datasource.url}
     username: ${secrets.datasource.username}
