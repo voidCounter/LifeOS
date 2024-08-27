@@ -1,4 +1,7 @@
+
 spring:
+  data:
+    jdbc:
   config:
     import: 'optional:classpath:secrets.yaml'
   application:

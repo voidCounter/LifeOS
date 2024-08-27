@@ -13,12 +13,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID userId;
-    private String username;
+    private String name;
+    private String email;
     private String password;
     private BigInteger knowledgeXp;
 
-    public User(String username, String password) {
-        this.username = username;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 

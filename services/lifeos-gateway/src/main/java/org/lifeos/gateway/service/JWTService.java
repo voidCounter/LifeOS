@@ -27,24 +27,6 @@ public class JWTService {
     @Value("${secrets.jwt.secret}")
     private String secretKey;
 
-    public String generateToken(String username) {
-        CustomUserDetails userDetails =
-                userDetailsService.loadUserByUsername(username);
-        String userId = userDetails.getUserId();
-        Map<String, Object> claims = new HashMap<>();
-        log.info("Secret key during generation: {}", secretKey);
-
-        return Jwts.builder()
-                .claims()
-                .add(claims)
-                .subject(userId)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
-                .and()
-                .signWith(getKey())
-                .compact();
-    }
-
     private SecretKey getKey() {
         byte[] decodedKey = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(decodedKey);

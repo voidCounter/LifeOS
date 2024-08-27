@@ -19,3 +19,6 @@ eureka:
 
 bcrypt:
   strength: 12
+
+jwt:
+  expiration: 3600000

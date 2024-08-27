@@ -19,6 +19,9 @@ public class JWTService {
     private final CustomUserDetailsService userDetailsService;
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Value("${jwt.expiration}")
+    private long jwtExpirationInMs;
+
     public JWTService(CustomUserDetailsService userDetailsService, CustomUserDetailsService customUserDetailsService) {
         this.userDetailsService = userDetailsService;
         this.customUserDetailsService = customUserDetailsService;
@@ -28,19 +31,18 @@ public class JWTService {
     @Value("${secrets.jwt.secret}")
     private String secretKey;
 
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         CustomUserDetails userDetails =
-                userDetailsService.loadUserByUsername(username);
+                userDetailsService.loadUserByUsername(email);
         String userId = userDetails.getUserId();
         Map<String, Object> claims = new HashMap<>();
-        log.info("Secret key during generation: {}", secretKey);
 
         return Jwts.builder()
                 .claims()
                 .add(claims)
                 .subject(userId)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
                 .and()
                 .signWith(getKey())
                 .compact();
