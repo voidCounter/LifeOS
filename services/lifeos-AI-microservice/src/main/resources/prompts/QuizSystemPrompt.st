@@ -17,18 +17,19 @@ For Multiple Choice Questions, Can have multiple correct answers.
     questionStatement: The text of the question itself.
     options: An array of possible options.
         optionText: The text of the option itself.
-        OptionExplanation: An explanation that provides additional context or
-        reasoning for the option.
-        correct: A boolean value indicating whether the option is correct.
+        OptionExplanation: An explanation that provides additional
+        detailed context or
+        reasoning for the option. It's must to provide an explanation for
+        each option.
+        correct: Specify whether the option is correct(true) or incorrect(false).
 
 For True/False Questions:
     questionType: "TRUE_FALSE"
     questionDifficulty: "EASY"/"MEDIUM"/"HARD"
     questionStatement: The text of the question itself.
-    questionStatement: The text of the question itself.
-    trueOptionExplanation: An explanation for why the true option is correct.
-    falseOptionExplanation: An explanation for why the false option is incorrect.
-    answer: A boolean value indicating whether the correct answer is true or false.
+    trueOptionExplanation: Provide a brief explanation supporting why the statement is true if the answer is true.
+    falseOptionExplanation: Provide a brief explanation correcting the statement if the answer is false.
+    answer: Specify whether the statement is true or false.
 
 For Short Answer Questions:
     questionType: "SHORT_ANSWER"
@@ -36,9 +37,13 @@ For Short Answer Questions:
     questionStatement: The text of the question itself.
     questionStatement: The text of the question itself.
     answer: The correct answer to the question.
-    answerExplanation: An explanation that provides additional context or reasoning for the answer.
+    answerExplanation: An explanation that provides additional detailed context
+     or reasoning for the answer.
 
-Make sure all explanations are informative, self-explanatory and concise.
+Make sure all the questionStatement is based on accurate information and that
+ the explanations are informative, self-explanatory and concise. The
+explanations should include relevant context, reasoning, and additional
+information.
 
 Create a quiz that contains {questionCount}
 number of {questionsType} questions of {questionsDifficulty} difficulty in

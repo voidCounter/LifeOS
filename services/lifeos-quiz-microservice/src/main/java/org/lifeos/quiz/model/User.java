@@ -14,8 +14,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID userId;
-    private String username;
-    @Column(name="knowledge_xp")
+    private String email;
+    private String name;
+    @Column(name = "knowledge_xp")
     private BigInteger knowledgeXP;
 
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)

@@ -1,46 +1,55 @@
 package org.lifeos.gateway.config;
 
+import org.lifeos.gateway.model.CustomUserDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.function.RequestPredicate;
-import org.springframework.web.servlet.function.RequestPredicates;
-import org.springframework.web.servlet.function.RouterFunction;
-import org.springframework.web.servlet.function.ServerResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.servlet.function.*;
 
-import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.stripPrefix;
+import java.util.function.Function;
+
+import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.*;
+import static org.springframework.cloud.gateway.server.mvc.filter.LoadBalancerFilterFunctions.lb;
 
 @Configuration
-@EnableWebSecurity
 public class RoutingConfig {
-
-
-    @Bean
-    public RouterFunction<ServerResponse> aiServiceRoute() {
-        return GatewayRouterFunctions.route("ai-service")
-                .route(RequestPredicates.path("/api/ai/**"),
-                        HandlerFunctions.http("http://localhost:8081"))
-                .before(stripPrefix(2)).build();
-    }
+    private static final Logger log = LoggerFactory.getLogger(RoutingConfig.class);
+    private org.lifeos.gateway.service.JWTService jwtService;
 
     @Bean
     public RouterFunction<ServerResponse> quizServiceRoute() {
         return GatewayRouterFunctions.route("quiz-service")
                 .route(RequestPredicates.path("/api/quiz/**"),
-                        HandlerFunctions.http("http://localhost:8082"))
-                .before(stripPrefix(2)).build();
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-quiz-microservice"))
+                .before(stripPrefix(2))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> aiService() {
+        return GatewayRouterFunctions.route("ai-service")
+                .route(RequestPredicates.path("/api/ai/**"),
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-ai-microservice"))
+                .before(stripPrefix(2))
+                .build();
     }
 
     @Bean
     public RouterFunction<ServerResponse> userService() {
         return GatewayRouterFunctions.route("user-service")
-                .route(RequestPredicates.path("/api/user/**"),
-                        HandlerFunctions.http("http://localhost:8083"))
-                .before(stripPrefix(2)).build();
+                .route(RequestPredicates.path("/api/user/**")
+                                .or(RequestPredicates.path("/api/auth/**")),
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-user-microservice"))
+                .before(stripPrefix(1))
+                .build();
     }
+
 }

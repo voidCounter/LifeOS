@@ -1,5 +1,6 @@
 package org.lifeos.quiz.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.lifeos.quiz.dto.QuizDTO;
 import org.lifeos.quiz.dto.QuizbyPromptDTO;
 import org.lifeos.quiz.model.Quiz;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/quizzes")
 public class QuizController {
     private static final Logger log = LoggerFactory.getLogger(QuizController.class);
     // get all question under a quizset
@@ -23,6 +23,13 @@ public class QuizController {
         this.quizService = quizService;
     }
 
+    @GetMapping("/hello")
+    public ResponseEntity<String> hello(@RequestHeader(name = "user-id",
+            required = false) UUID userId
+    ) {
+        log.info("Hello from quiz controller" + userId);
+        return ResponseEntity.ok("Hello from quiz controller");
+    }
 
     @GetMapping("/{quizId}/questions")
     public ResponseEntity<Quiz> getQuiz(@PathVariable UUID quizId) {
