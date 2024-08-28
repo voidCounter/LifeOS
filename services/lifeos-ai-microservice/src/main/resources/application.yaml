@@ -1,0 +1,25 @@
+
+spring:
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  application:
+    name: lifeos-AI-microservice
+
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${secrets.vertex-ai-project-id}
+          location: ${secrets.vertex-ai-location}
+          chat:
+            options:
+              model: gemini-1.5-flash-001
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+server:
+  port: 8081

@@ -1,0 +1,16 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  datasource:
+    url: ${secrets.datasource.url}
+    username: ${secrets.datasource.username}
+    password: ${secrets.datasource.password}
+  application:
+    name: lifeos-gateway
+server:
+  port: 8080
