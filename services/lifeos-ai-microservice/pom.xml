@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.lifeos</groupId>
-    <artifactId>lifeos-AI-microservice</artifactId>
+    <artifactId>lifeos-ai-microservice</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>lifeos-AI-microservice</name>
     <description>lifeos-AI-microservice</description>
