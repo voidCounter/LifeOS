@@ -11,13 +11,19 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class ProjectConfig {
     private static final Logger log = LoggerFactory.getLogger(ProjectConfig.class);
-    @Value("classPath:/prompts/QuizSystemPrompt.st")
+    @Value("classPath:/prompts/PathwaySystemPrompt.st")
     private Resource systemPromptResource;
 
     @Bean
     ChatClient quizClient(ChatClient.Builder builder) {
         return builder.defaultSystem(systemPromptResource).build();
     }
+
+    @Bean
+    ChatClient pathwayClient(ChatClient.Builder builder) {
+        return builder.defaultSystem(systemPromptResource).build();
+    }
+
 
 
 }

@@ -11,8 +11,9 @@
     <modules>
         <module>lifeos-user-microservice</module>
         <module>lifeos-quiz-microservice</module>
-        <module>lifeos-AI-microservice</module>
+        <module>lifeos-ai-microservice</module>
         <module>lifeos-service-registry</module>
+        <module>lifeos-pathway-microservice</module>
         <module>lifeos-gateway</module>
     </modules>
 
