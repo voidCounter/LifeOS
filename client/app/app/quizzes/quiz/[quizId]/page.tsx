@@ -37,7 +37,7 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
                     <QuizRating rating={quiz?.rating ?? ""}/>
                 </div>
             </div>
-            <UserAvatar avatarURL={quiz?.user?.avatarURL ?? ""} name={""}
+            <UserAvatar avatarURL={quiz?.user?.avatarUrl ?? ""} name={""}
                         userName={quiz?.user?.username}/>
             <div className={"flex flex-row gap-3 mt-4"}><Button
                 variant={"default"}

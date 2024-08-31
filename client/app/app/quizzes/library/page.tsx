@@ -6,31 +6,15 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import CreatedQuizzes from "@/components/quizzes/Quiz/CreatedQuizzes";
 import TakenQuizTests from "@/components/quizzes/Quiz/TakenQuizTests";
 import SectionHeader from "@/components/SectionHeader";
+import {router} from "next/client";
+import SearchandCreate from "@/app/app/quizzes/components/SearchandCreate";
 
 export default function Explore() {
-
     return (
         <main
             className="flex flex-col gap-8 w-full">
             {/* Search and create */}
-            <section className="flex flex-row gap-3 w-full mt-4 justify-center">
-                <div className="flex items-center w-full -ml-5 md:w-2/4">
-                    <Search
-                        className="relative text-muted-foreground left-8"
-                        strokeWidth={1}/>
-                    <Input
-                        placeholder="Quizzes"
-                        onChange={(event) => {
-                        }}
-                        className="pl-10 w-full"
-                    />
-                </div>
-                <Button size={"icon"} variant={"default"}>
-                    <PlusSquare className={"w-8 h-8"}
-                                strokeWidth={1}></PlusSquare>
-                </Button>
-            </section>
-
+            <SearchandCreate/>
             {/* Library */}
             <section className={"w-full"}>
                 <SectionHeader title={"Your Library"} description={""}/>

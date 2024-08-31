@@ -7,66 +7,66 @@ import {
 import {NavConfigType} from "@/types/NavTypes";
 
 
-export const navConfig:NavConfigType= {
+export const navConfig: NavConfigType = {
     navItems: [
         {
             label: "Quizzes",
             icon: LightbulbIcon,
-            path: "/quizzes",
+            path: "/app/quizzes",
             subItems: [
                 {
                     label: "Explore",
-                    path: "/quizzes/explore",
+                    path: "/app/quizzes/explore",
                 },
                 {
                     label: "Library",
-                    path: "/quizzes/library",
+                    path: "/app/quizzes/library",
                 }
             ]
         },
         {
             label: "Pathways",
             icon: RouteIcon,
-            path: "/pathways",
+            path: "/app/pathways",
             subItems: [
                 {
                     label: "Explore",
-                    path: "/pathways/explore",
+                    path: "/app/pathways/explore",
                 },
                 {
                     label: "Library",
-                    path: "/pathways/library",
+                    path: "/app/pathways/library",
                 }
             ]
         },
         {
             label: "Task Manager",
-            path: "/taskmanager",
+            path: "/app/taskmanager",
             icon: ListTodoIcon,
         },
         {
             label: "Journal",
-            path: "/journal",
+            path: "/app/journal",
             icon: NotebookIcon
         },
         {
             label: "Feed",
             icon: NewspaperIcon,
-            path: "/feed",
+            path: "/app/feed",
             subItems: [
                 {
                     label: "Explore",
-                    path: "/feed/explore"
+                    path: "/app/feed/explore"
                 },
                 {
                     label: "Library",
-                    path: "/feed/library"
+                    path: "/app/feed/library"
                 }
             ]
         },
         {
             label: "Thinkpad",
-            path: "/thinkpad",
+            path: "/app/thinkpad",
             icon: SparkleIcon,
         }
     ]
