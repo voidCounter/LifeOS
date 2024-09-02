@@ -1,20 +1,18 @@
 import axios from "axios";
 import {useAuthStore} from "@/store/AuthStore";
-import {JWTTOkenDTO} from "@/types/QuizTypes/JWTTokenDTO";
+import {User} from "@/types/User";
 
 // Axios Interceptor Instance
 export const AxiosInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_API
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_API,
+    headers: {
+        "Content-Type": "application/json",
+    },
+    withCredentials: true,
 });
 
 AxiosInstance.interceptors.request.use(
     (config) => {
-        const token = useAuthStore.getState().jwtToken?.token;
-
-        // If token is present, add it to request's Authorization Header
-        if (token) {
-            if (config.headers) config.headers.Authorization = `Bearer ${token}`;
-        }
         return config;
     },
     (error) => {
@@ -30,30 +28,34 @@ AxiosInstance.interceptors.response.use(
         return response;
     },
     async (requestError) => {
+        console.log("Request rejected! Maybe a jwt token issue? ");
         const originalRequest = requestError.config;
 
         // if error status is 401, and request has not been retried
-        if (requestError.status === 401 && !originalRequest._retry) {
+        // TODO: We need to be more specific about the error status
+        if (requestError.response && (requestError.response.status === 401 || requestError.response.status === 403) && !originalRequest._retry) {
             originalRequest._retry = true;
 
             // try to refresh the jwt token
             try {
                 const {data}: {
-                    data: JWTTOkenDTO
-                } = await AxiosInstance.post('/auth/refresh',
-                    {},
+                    data: User
+                } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_API}/auth/refresh`,
                     {
-                        withCredentials: true
-                    });
+                        withCredentials: true,
+                    },
+                );
 
-                useAuthStore.getState().setJwtToken(data)
-                AxiosInstance.defaults.headers.Authorization = `Bearer ${data.token}`;
+                console.log("Tried to refresh token, got new token: ", data);
+
+                useAuthStore.getState().setAuthenticatedUser(data);
 
                 // retry the original request
-                return AxiosInstance(originalRequest);
+                return axios(originalRequest);
             } catch (refreshError) {
                 // if refresh token is invalid, redirect to login page
-                useAuthStore.getState().deleteJwtToken();
+                console.error("Failed to refresh token: ", refreshError);
+                useAuthStore.getState().deleteAuthenticatedUser();
                 window.location.href = '/login';
             }
         }

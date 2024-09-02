@@ -4,20 +4,20 @@ import {JWTTOkenDTO} from "@/types/QuizTypes/JWTTokenDTO";
 import {persist} from "zustand/middleware";
 
 interface AuthStore {
-    jwtToken: JWTTOkenDTO | null,
-    setJwtToken: (jwtToken: JWTTOkenDTO) => void,
-    deleteJwtToken: () => void
+    authenticatedUser: User | null,
+    setAuthenticatedUser: (user: User) => void,
+    deleteAuthenticatedUser: () => void
 }
 
 export const useAuthStore = create<AuthStore>()(
     persist(
         (set) => ({
-            jwtToken: null,
-            setJwtToken: (jwtToken: JWTTOkenDTO) => {
-                set({jwtToken: jwtToken});
+            authenticatedUser: null,
+            setAuthenticatedUser: (user: User) => {
+                set({authenticatedUser: user});
             },
-            deleteJwtToken: () => {
-                set({jwtToken: null});
+            deleteAuthenticatedUser: () => {
+                set({authenticatedUser: null});
             }
         }),
         // TODO: implement a encrypted storage option

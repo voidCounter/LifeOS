@@ -3,26 +3,28 @@ import {useAuthStore} from "@/store/AuthStore";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
+import LoggedInUserAvatar from "@/components/LoggedInUserAvatar";
 
 export default function Navbar() {
-    const {jwtToken} = useAuthStore();
+    const {authenticatedUser, setAuthenticatedUser} = useAuthStore();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     useEffect(() => {
-        setIsAuthenticated(!!jwtToken);
-    }, [jwtToken]);
+        setIsAuthenticated(!!authenticatedUser);
+    }, [authenticatedUser]);
     const router = useRouter();
     return (
-        <nav className={" flex flex-row justify-between w-full" +
+        <nav className={"flex fixed top-0 flex-row justify-between w-full" +
             " max-w-[800px]" +
-            " bg-white/30 backdrop-blur-xl p-2"}>
+            " bg-white/30 backdrop-blur-md p-2"}>
             <div
                 className={"flex flex-row justify-center items-center"}>Lifeos
             </div>
             {/* Login */}
             <div>
                 {
-                    isAuthenticated && jwtToken ? <Button variant={"outline"}
-                                                          onClick={() => router.push("/app")}>{jwtToken.user.email}</Button> :
+                    isAuthenticated && authenticatedUser ?
+                        <LoggedInUserAvatar showUsername={false} variant={"ghost"}
+                                            onClick={() => router.push("/app")}/> :
                         <Button variant={"outline"} size={"sm"}
                                 onClick={() => router.push("/login")}>Login</Button>
                 }
