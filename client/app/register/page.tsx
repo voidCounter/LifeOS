@@ -14,13 +14,21 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import React from "react";
 import {PasswordInput} from "@/components/ui/PasswordInput";
+import {AxiosInstance} from "@/utils/AxiosInstance";
+import {AuthErrorType} from "@/types/AuthErrorType";
+import {HttpStatus} from "@/types/HttpStatus";
+import {useRouter} from "next/navigation";
 
 const registerSchema = z.object({
     name: z.string(),
     email: z.string().email(),
-    password: z.string(),
+    password: z.string().min(8, {
+        message: "Password length must be greater" +
+            " than 7."
+    }).max(16, {message: "Password length must be less than 17."}),
 });
 export default function Register() {
+    const router = useRouter();
     const registerForm = useForm<z.infer<typeof registerSchema>>({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -30,8 +38,19 @@ export default function Register() {
         }
     })
 
-    const onRegisterFormSubmit = (data: z.infer<typeof registerSchema>) => {
-        console.log("data: ", data);
+    const onRegisterFormSubmit = async (data: z.infer<typeof registerSchema>) => {
+        try {
+            const response = await AxiosInstance.post("/auth/register", data);
+            if (response.status === HttpStatus.CREATED) {
+                router.push("/login");
+            }
+        } catch (error: any) {
+            const errorInfo: AuthErrorType = error.response.data;
+            registerForm.setError(errorInfo.field, {
+                type: "server",
+                message: errorInfo.message
+            });
+        }
     }
 
     return (
@@ -52,7 +71,8 @@ export default function Register() {
                     <form
                         onSubmit={registerForm.handleSubmit(onRegisterFormSubmit)}
                         className={"space-y-3  w-full"}>
-                        <FormField control={registerForm.control} name={"name"}
+                        <FormField control={registerForm.control}
+                                   name={"name"}
                                    render={({field}) => (
                                        <FormItem>
                                            <FormControl
@@ -60,12 +80,14 @@ export default function Register() {
                                                <Input
                                                    placeholder={"Name"} {...field}/>
                                            </FormControl>
-                                           <FormMessage className={"text-sm" +
-                                               " font-normal"}/>
+                                           <FormMessage
+                                               className={"bg-destructive text-sm text-background p-2 rounded-md" +
+                                                   " font-normal"}/>
                                        </FormItem>
                                    )}>
                         </FormField>
-                        <FormField control={registerForm.control} name={"email"}
+                        <FormField control={registerForm.control}
+                                   name={"email"}
                                    render={({field}) => (
                                        <FormItem>
                                            <FormControl
@@ -73,8 +95,9 @@ export default function Register() {
                                                <Input
                                                    placeholder={"Email"} {...field}/>
                                            </FormControl>
-                                           <FormMessage className={"text-sm" +
-                                               " font-normal"}/>
+                                           <FormMessage
+                                               className={"bg-destructive text-sm text-background p-2 rounded-md" +
+                                                   " font-normal"}/>
                                        </FormItem>
                                    )}>
                         </FormField>
@@ -89,7 +112,9 @@ export default function Register() {
                                                    autoComplete="current-password" {...field}
                                                />
                                            </FormControl>
-                                           <FormMessage/>
+                                           <FormMessage
+                                               className={"bg-destructive text-sm text-background p-2 rounded-md" +
+                                                   " font-normal"}/>
                                        </FormItem>
                                    )}>
                         </FormField>
@@ -109,7 +134,8 @@ export default function Register() {
                     " font-medium"}>Terms
                     of Service</Link> and acknowledge that you have read
                     our <Link
-                    href="/privacy-policy" className={"underline font-medium"}>Privacy
+                    href="/privacy-policy"
+                    className={"underline font-medium"}>Privacy
                     Policy</Link>.
                 </h3>
 

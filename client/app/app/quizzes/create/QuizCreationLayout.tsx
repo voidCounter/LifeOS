@@ -17,7 +17,7 @@ export default function QuizCreationLayout({children}: {
                 className="w-full mt-4 flex flex-col items-center"
             >
                 <TabsList
-                    className={`w-full md:w-4/5 grid sticky top-0 z-50 h-fit rounded-xl`}
+                    className={`w-full  grid sticky top-0 z-50 h-fit rounded-xl`}
                     style={{gridTemplateColumns: `repeat(${quizCreationOptions.length}, minmax(0, 1fr))`}}
                 >
                     {

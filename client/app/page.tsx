@@ -7,7 +7,7 @@ export default function Home() {
     const router = useRouter();
     return (
         <main
-            className="w-full h-screen flex flex-col justify-start items-center overflow-y-scroll">
+            className="w-full h-screen flex flex-col justify-start items-center">
             <main className={"w-full max-w-[1200px] flex flex-col" +
                 " justify-center items-center"}>
 
@@ -17,7 +17,7 @@ export default function Home() {
                         " mt-40" +
                         " backdrop-blur-1xl"}>
                     <div className={"w-full md:w-[560px]"}>
-                        <h1 className={"leading-snug text-3xl md:text-5xl" +
+                        <h1 className={"leading-snug text-3xl sm:text-5xl" +
                             " md:leading-[1.15]" +
                             " tracking-tight" +
                             " font-bold" +
