@@ -26,12 +26,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className={`${uncutsans.className}`}>
-        <body className="flex flex-row w-full">
+        <body className="flex flex-row w-full bg-background">
         <div className="overflow-hidden w-full">
-            <SidebarLayout>
-                    <ReactQueryDevtools initialIsOpen={false}/>
-                    {children}
-            </SidebarLayout>
+            {children}
         </div>
         </body>
         </html>

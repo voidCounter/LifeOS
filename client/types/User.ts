@@ -1,7 +1,8 @@
 export interface User {
     userId: string;          // UUID
-    username: string;         // Username of the user
+    name: string;         // Username of the user
+    username: string;
     knowledgeXp?: number;    // Knowledge XP, can be null
-    password: string;         // Password of the user
-    avatarURL: string | null;
+    email:string;
+    avatarUrl: string | null;
 }
