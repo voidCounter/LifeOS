@@ -13,6 +13,9 @@ export const AxiosInstance = axios.create({
 
 AxiosInstance.interceptors.request.use(
     (config) => {
+        if (useAuthStore.getState().authenticatedUser != null && useAuthStore.getState().authenticatedUser?.userId) {
+            config.headers["user-id"] = useAuthStore.getState()?.authenticatedUser?.userId;
+        }
         return config;
     },
     (error) => {
