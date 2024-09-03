@@ -1,7 +1,7 @@
-
 spring:
-  data:
-    jdbc:
+  devtools:
+    restart:
+      enabled: false
   config:
     import: 'optional:classpath:secrets.yaml'
   application:

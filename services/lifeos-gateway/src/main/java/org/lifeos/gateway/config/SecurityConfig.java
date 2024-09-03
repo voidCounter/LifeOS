@@ -24,9 +24,12 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
+    private final UserIdAddingFilter userIdAddingFilter;
 
-    public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JWTAuthenticationFilter jwtAuthenticationFilter,
+                          UserIdAddingFilter userIdAddingFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.userIdAddingFilter = userIdAddingFilter;
     }
 
     @Bean
@@ -47,6 +50,7 @@ public class SecurityConfig {
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(userIdAddingFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
