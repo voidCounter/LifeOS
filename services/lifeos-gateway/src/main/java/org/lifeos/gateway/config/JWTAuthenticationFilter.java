@@ -61,7 +61,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             try {
                 userId = jwtService.extractUserId(jwt);
             } catch (ExpiredJwtException e) {
-            //  if jwt token is expired
+                //  if jwt token is expired
                 log.error("Authentication error: {}", e.getMessage());
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
