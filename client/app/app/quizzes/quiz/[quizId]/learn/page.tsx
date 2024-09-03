@@ -105,7 +105,7 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
                     <Button
                         onClick={() => setRevealAnswer()}>{revealAnswer ? "Hide Answer" : "Reveal Answer"}</Button>
                     <Button variant={"ghost"}
-                            onClick={() => router.push(`/quizzes/quiz/${quiz.quizId}`)}>Finish
+                            onClick={() => router.push(`/app/quizzes/quiz/${quiz.quizId}`)}>Finish
                         Learning</Button>
                 </div>
             </div>

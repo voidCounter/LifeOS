@@ -44,7 +44,7 @@ export default function QuizCard({
     const router = useRouter();
 
     function cardClickHandler() {
-        router.push(`/quizzes/quiz/${quiz.quizId}/`)
+        router.push(`/app/quizzes/quiz/${quiz.quizId}/`)
     }
 
     return (

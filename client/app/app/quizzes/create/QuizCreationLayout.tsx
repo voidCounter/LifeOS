@@ -1,0 +1,58 @@
+"use client"
+import React from "react";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {quizCreationOptions} from "@/config/QuizCreationTabsConfig";
+import Link from "next/link";
+import {usePathname, useRouter} from "next/navigation";
+
+export default function QuizCreationLayout({children}: {
+    children: React.ReactNode
+}) {
+    const router = useRouter();
+    const pathname = usePathname();
+    return (
+        <div className={"w-full"}>
+            <Tabs
+                value={pathname.split("/").pop()}
+                className="w-full mt-4 flex flex-col items-center"
+            >
+                <TabsList
+                    className={`w-full  grid sticky top-0 z-50 h-fit rounded-xl`}
+                    style={{gridTemplateColumns: `repeat(${quizCreationOptions.length}, minmax(0, 1fr))`}}
+                >
+                    {
+                        quizCreationOptions.map((creationOption, index) =>
+                            <TabsTrigger key={index}
+                                         value={creationOption.tabName.toLowerCase()}
+                                         className={"rounded-lg"}
+                            >
+                                <Link
+                                    href={`/app/quizzes/create/${creationOption.tabName.toLowerCase()}`}
+                                    className={"w-full h-full"}>
+                                    <div className={"rounded-lg flex flex-col" +
+                                        " gap-2" +
+                                        " justify-center items-center"}>
+                                        <creationOption.tabIcon strokeWidth={1}
+                                                                className={"w-6" +
+                                                                    " h-6"}/>
+                                        {creationOption.tabName}
+                                    </div>
+                                </Link>
+                            </TabsTrigger>
+                        )
+                    }
+                </TabsList>
+                {
+                    quizCreationOptions.map((creationOption, index) =>
+                        <TabsContent
+                            value={creationOption.tabName.toLocaleLowerCase()}
+                            key={index}
+                            className={"w-full"}>
+                            {children}
+                        </TabsContent>
+                    )
+                }
+            </Tabs>
+        </div>
+    );
+}

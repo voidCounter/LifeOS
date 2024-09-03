@@ -78,12 +78,12 @@ export default function TestResult({params}: { params: TestResultParams }) {
                 </Card>
                 <div className={"w-full flex flex-row gap-2"}>
                     <Button className={"default"}
-                            onClick={() => router.push(`/quizzes/quiz/${quizTest.quiz.quizId}/test`)}>
+                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest.quiz.quizId}/test`)}>
                         <Repeat2 className={"w-4 h-4 mr-2"}/>
                         Try
                         again</Button>
                     <Button variant={"outline"}
-                            onClick={() => router.push(`/quizzes/quiz/${quizTest?.quiz?.quizId}/learn`)}>Learn</Button>
+                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest?.quiz?.quizId}/learn`)}>Learn</Button>
                 </div>
             </div>
         </div>

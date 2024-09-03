@@ -30,3 +30,4 @@ export async function fetchQuizTest(): Promise<QuizTest> {
     if (!response.ok) throw new Error('Failed to fetch the quiz with questions!')
     return response.json();
 }
+
