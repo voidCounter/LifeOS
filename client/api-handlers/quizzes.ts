@@ -1,5 +1,7 @@
 import {Quiz} from "@/types/QuizTypes/Quiz";
 import {QuizTest} from "@/types/QuizTypes/QuizTest";
+import {Languages} from "@/types/Language";
+import axios from "axios";
 
 export async function fetchLocalQuizzes(): Promise<Quiz[]> {
     const response = await fetch('/quizzes.json'); // Path to your local
@@ -31,3 +33,7 @@ export async function fetchQuizTest(): Promise<QuizTest> {
     return response.json();
 }
 
+export async function fetchLanguages(): Promise<Languages> {
+    const {data}: { data: Languages } = await axios.get('/isoLangs.json');
+    return data;
+}

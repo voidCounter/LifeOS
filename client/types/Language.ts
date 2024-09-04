@@ -3,6 +3,6 @@ export interface Language {
     nativeName: string
 }
 
-export type Languages = {
+export interface Languages  {
     [key: string]: Language
 }
