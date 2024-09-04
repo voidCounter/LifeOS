@@ -24,11 +24,12 @@ const LoggedInUserAvatar = React.forwardRef<HTMLDivElement, LoggedInUserAvatarPr
                                                                                       }, ref) => {
     const {authenticatedUser} = useAuthStore();
     return (
-        <div ref={ref} className={"bg-secondary rounded-md flex" +
+        <div ref={ref} className={"bg-secondary rounded-md cursor-pointer" +
+            " flex" +
             " h-fit" +
             " justify-start" +
             " items-center py-1" +
-            " gap-2 w-full" +
+            " gap-2 w-full px-2" +
             " items-center"} onClick={onClick}>
             {/* User avatar */}
             <div className={"flex gap-2 w-full items-center p-2"}>
