@@ -10,7 +10,7 @@ export default function createLayout({children}: {
             " "}>
             <QuizCreationLayout
                 className={"lg:col-span-2"}>{children}</QuizCreationLayout>
-            <CreatedQuizView className="lg:col-span-3 overflow-y-scroll"></CreatedQuizView>
+            <CreatedQuizView className="lg:col-span-3"></CreatedQuizView>
         </div>
     );
 }

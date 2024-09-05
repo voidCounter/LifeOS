@@ -1,7 +1,6 @@
 import {AxiosInstance} from "@/utils/AxiosInstance";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {QuizCreationOptionType} from "@/config/QuizCreationTabsConfig";
-import axios, {Axios} from "axios";
 import {Quiz} from "@/types/QuizTypes/Quiz";
 import {z} from "zod";
 import {
@@ -9,14 +8,15 @@ import {
 } from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
 
-const generateQuiz = (url: string, data: z.infer<typeof quizCreationSchema>) => {
-    // return AxiosInstance.post(url, data);
+const generateQuiz = async (url: string, data: z.infer<typeof quizCreationSchema>) => {
+    const response = await AxiosInstance.post(url, data);
+    return response.data;
     // wait 5 seconds before calling axios.get('/Quiz.json');
-    return new Promise<Quiz>((resolve) => {
-        setTimeout(() => {
-            resolve(axios.get<Quiz>('/GeneratedQuiz.json').then((response) => response.data));
-        }, 5000);
-    });
+    // return new Promise<Quiz>((resolve) => {
+    //     setTimeout(() => {
+    //         resolve(axios.get<Quiz>('/GeneratedQuiz.json').then((response) => response.data));
+    //     }, 5000);
+    // });
 }
 
 

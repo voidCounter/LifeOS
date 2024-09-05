@@ -7,5 +7,6 @@ export interface BaseQuestionProps<T extends Question> {
     question: T,
     mode: QuizMode,
     showEditingOption: boolean,
-    children?:React.ReactNode
+    setQuestionMode?: (mode: QuizMode) => void,
+    children?: React.ReactNode
 }

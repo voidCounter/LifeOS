@@ -41,10 +41,12 @@ public class QuizService {
     public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         try {
             return this.chatClient.prompt()
-                    .system(sp -> sp.param("questionCount", quizbyPromptDTO.getQuestionCount()))
+                    .system(sp -> sp.param("numberOfQuestions",
+                            quizbyPromptDTO.getNumberOfQuestions()))
                     .system(sp -> sp.param("language", quizbyPromptDTO.getLanguage()))
                     .system(sp -> sp.param("questionsType", quizbyPromptDTO.getQuestionsType()))
-                    .system(sp -> sp.param("questionsDifficulty", quizbyPromptDTO.getQuestionsDifficulty()))
+                    .system(sp -> sp.param("questionsDifficulty",
+                            quizbyPromptDTO.getQuestionsDifficulty()))
                     .user(quizbyPromptDTO.getPrompt())
                     .call()
                     .content();

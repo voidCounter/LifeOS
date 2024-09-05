@@ -5,6 +5,7 @@ import {PanelLeftClose, PanelRightClose} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "@/lib/react-query";
+import PageActions from "@/components/PageActions";
 
 export default function SidebarLayout({children}: {
     children: React.ReactNode
@@ -29,7 +30,8 @@ export default function SidebarLayout({children}: {
                 </div>
                 <div
                     className={`transition-all duration-300 ease-in-out ${isSidebarOpen ? "sm:pl-60 translate-x-60 sm:translate-x-0 sm:transform-none" : "sm:pl-0 translate-x-0"}`}>
-                    <div className="w-full border-b p-1">
+                    <div
+                        className="w-full border-b p-1 pr-2 flex items-center justify-between">
                         <Button
                             variant="ghost"
                             size="icon"
@@ -45,6 +47,7 @@ export default function SidebarLayout({children}: {
                                         strokeWidth={1}></PanelRightClose>
                             }
                         </Button>
+                        <PageActions/>
                     </div>
                     <div
                         className="overflow-hidden w-full flex justify-center min-h-screen">
