@@ -30,16 +30,16 @@ export default function TrueFalseQuestionEditCmp({
 
 
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
-    const multipleChoiceQuestionFormSchema = z.object({
+    const trueFalseQuestionFormSchema = z.object({
         questionStatement: z.string(),
         trueOptionExplanation: z.string(),
         falseOptionExplanation: z.string(),
         answer: z.boolean()
     });
 
-    const form = useForm<z.infer<typeof multipleChoiceQuestionFormSchema>>(
+    const form = useForm<z.infer<typeof trueFalseQuestionFormSchema>>(
         {
-            resolver: zodResolver(multipleChoiceQuestionFormSchema),
+            resolver: zodResolver(trueFalseQuestionFormSchema),
             defaultValues: {
                 questionStatement: question.questionStatement,
                 trueOptionExplanation: question.trueOptionExplanation,
@@ -48,7 +48,7 @@ export default function TrueFalseQuestionEditCmp({
             }
         });
 
-    const onSubmit = (data: z.infer<typeof multipleChoiceQuestionFormSchema>) => {
+    const onSubmit = (data: z.infer<typeof trueFalseQuestionFormSchema>) => {
         currEditingQuestion.questionStatement = data.questionStatement;
         currEditingQuestion.trueOptionExplanation = data.trueOptionExplanation;
         currEditingQuestion.falseOptionExplanation = data.falseOptionExplanation;
@@ -152,7 +152,7 @@ export default function TrueFalseQuestionEditCmp({
                                            the reasoning or logic that explains
                                            why the statement is false.
                                            Additionally, include an explanation
-                                           of why the statement cannot be true."
+                                           of why the statement cannot be true.
                                        </FormDescription>
                                    </FormItem>
                                )}
