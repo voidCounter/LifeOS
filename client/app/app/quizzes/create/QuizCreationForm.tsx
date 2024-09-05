@@ -86,6 +86,7 @@ export default function QuizCreationForm({quizCreationMethod}: {
     } = useQuizCreationMutation(quizCreationMethod);
 
     async function onSubmit(data: z.infer<typeof quizCreationSchema>) {
+        console.log(data);
         generateQuiz(data);
     }
 

@@ -11,6 +11,8 @@ import org.lifeos.quiz.model.User;
 import org.lifeos.quiz.repository.QuizRepository;
 import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service_clients.AIServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.UUID;
 
 @Service
 public class QuizService {
+    private static final Logger log = LoggerFactory.getLogger(QuizService.class);
     private final QuizRepository quizRepository;
     private final UserRepository userRepository;
     private final AIServiceClient aiServiceClient;
@@ -51,9 +54,10 @@ public class QuizService {
     }
 
     public GeneratedQuizDTO createQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
+        log.info("Creating quiz by prompt: {}", quizbyPromptDTO.getNumberOfQuestions());
         String generatedQuiz =
                 aiServiceClient.generateQuizByPrompt(quizbyPromptDTO);
-
+        log.info("Generated Quiz: {}", generatedQuiz);
         try {
             return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
         } catch (JsonProcessingException e) {

@@ -7,3 +7,7 @@ export interface Question {
     // SHORT_ANSWER, TRUE_FALSE)
     questionDifficulty?: string; // Difficulty level
 }
+
+export interface LocalQuestion extends Question {
+    index: number;
+}
