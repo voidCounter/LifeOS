@@ -1,10 +1,11 @@
 import {ShortAnswerQuestion} from "@/types/QuizTypes/ShortAnswerQuestion";
-import {Question} from "@/types/QuizTypes/Question";
 import BaseQuestionCmp from "./BaseQuestionCmp";
 import {QuizMode} from "@/types/QuizTypes/QuizMode";
 import {BaseQuestionProps} from "@/types/QuizTypes/BaseQuestionProps";
 import {useQuizLearningStore} from "@/store/QuizLearningStore";
 import {useState} from "react";
+import ShortAnswerQuestionEditCmp
+    from "@/components/quizzes/Question/ShortAnswerQuestionEditCmp";
 
 interface ShortAnswerQuestionCmpProp extends BaseQuestionProps<ShortAnswerQuestion> {
 }
@@ -40,6 +41,12 @@ export default function ShortAnswerQuestionCmp({
                                                    showEditingOption
                                                }: ShortAnswerQuestionCmpProp) {
     const [questionMode, setQuestionMode] = useState(mode);
+    if (questionMode === "Edit") {
+        return <ShortAnswerQuestionEditCmp index={index} question={question}
+                                           mode={mode}
+                                           showEditingOption={showEditingOption}
+                                           setQuestionMode={setQuestionMode}/>
+    }
 
     return (
         <BaseQuestionCmp index={index} question={question} mode={mode}

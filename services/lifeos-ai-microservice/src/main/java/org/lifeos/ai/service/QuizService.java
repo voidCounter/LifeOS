@@ -40,6 +40,7 @@ public class QuizService {
 
     public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         try {
+            log.info("Generating quiz by prompt: {}", quizbyPromptDTO.getNumberOfQuestions());
             return this.chatClient.prompt()
                     .system(sp -> sp.param("numberOfQuestions",
                             quizbyPromptDTO.getNumberOfQuestions()))

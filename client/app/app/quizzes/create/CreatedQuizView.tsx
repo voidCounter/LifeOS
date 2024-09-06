@@ -3,6 +3,15 @@ import {cn} from "@/lib/utils";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
 import QuestionRenderer from "@/components/quizzes/Question/QuestionRenderer";
 import {FileQuestion} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 
 export default function CreatedQuizView({className}: { className?: string }) {
     const {questions} = useQuizCreationStore();
@@ -25,7 +34,7 @@ export default function CreatedQuizView({className}: { className?: string }) {
                 </div>
             </div>
             }
-            <div className={"flex flex-col gap-4"}>
+            <div className={"flex flex-col gap-4 relative"}>
                 {
                     questions?.map((question, index) =>
                         <QuestionRenderer question={question} index={index}
@@ -34,7 +43,23 @@ export default function CreatedQuizView({className}: { className?: string }) {
                                           mode={"Learning"}/>
                     )
                 }
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild={true}>
+                        <Button variant={"outline"} className={"w-full"}>Add
+                            New
+                            Question</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className={"w-[250px]"}>
+                        <DropdownMenuItem>Multiple Choice
+                            Question</DropdownMenuItem>
+                        <DropdownMenuItem>Short Answer
+                            Question</DropdownMenuItem>
+                        <DropdownMenuItem>True/False
+                            Question</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
+
             <div className={"py-52"}></div>
         </div>);
 }
