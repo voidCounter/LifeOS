@@ -8,14 +8,14 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel
+    FormLabel, FormMessage
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {PlusIcon, XIcon} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
 
 interface MultipleChoiceQuestionEditCmpProps extends BaseQuestionProps<MultipleChoiceQuestion> {
@@ -32,12 +32,15 @@ export default function MultipleChoiceQuestionEditCmp({
 
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
     const multipleChoiceQuestionFormSchema = z.object({
-        questionStatement: z.string(),
+        questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
         options: z.array(z.object({
-            optionText: z.string(),
-            optionExplanation: z.string(),
+            optionText: z.string().min(2, {
+                message: "Option text must be at" +
+                    " least 2 characters long"
+            }),
+            optionExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
             correct: z.boolean()
-        }))
+        })).min(2, {message: "There must be at least 2 options"})
     });
 
     const form = useForm<z.infer<typeof multipleChoiceQuestionFormSchema>>(
@@ -79,11 +82,13 @@ export default function MultipleChoiceQuestionEditCmp({
                                                {...field}
                                            />
                                        </FormControl>
+                                       <FormMessage/>
                                    </FormItem>
                                )}
                     />
                     {
                         optionFields.map((option, index) => (
+                            // TODO: Show error message for option number < 2
                             <div key={option.id}
                                  className={"flex flex-col gap-4 p-4 pt-8" +
                                      " bg-secondary/50 rounded-lg border" +
@@ -109,6 +114,7 @@ export default function MultipleChoiceQuestionEditCmp({
                                                     {...field}
                                                 />
                                             </FormControl>
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -124,6 +130,7 @@ export default function MultipleChoiceQuestionEditCmp({
                                                     {...field}
                                                 />
                                             </FormControl>
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -140,6 +147,7 @@ export default function MultipleChoiceQuestionEditCmp({
                                                        />
                                                    </FormControl>
                                                    <FormLabel>Correct</FormLabel>
+                                                   <FormMessage/>
                                                </FormItem>
                                            )}
                                 />

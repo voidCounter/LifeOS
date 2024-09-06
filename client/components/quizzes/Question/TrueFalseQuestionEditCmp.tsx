@@ -17,6 +17,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {Checkbox} from "@/components/ui/checkbox";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Button} from "@/components/ui/button";
+import {useQuizCreationStore} from "@/store/QuizCreationStore";
 
 interface TrueFalseQuestionEditCmpProps extends BaseQuestionProps<TrueFalseQuestion> {
 }
@@ -27,13 +28,13 @@ export default function TrueFalseQuestionEditCmp({
                                                      setQuestionMode,
                                                      index
                                                  }: TrueFalseQuestionEditCmpProps) {
-
-
+    const {modifyQuestion} = useQuizCreationStore();
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
+    const [selectedCorrectOption, setSelectedCorrectOption] = useState(question.answer);
     const trueFalseQuestionFormSchema = z.object({
-        questionStatement: z.string(),
-        trueOptionExplanation: z.string(),
-        falseOptionExplanation: z.string(),
+        questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
+        trueOptionExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
+        falseOptionExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
         answer: z.boolean()
     });
 
@@ -54,7 +55,10 @@ export default function TrueFalseQuestionEditCmp({
         currEditingQuestion.falseOptionExplanation = data.falseOptionExplanation;
         currEditingQuestion.answer = data.answer;
         setCurrEditingQuestion(currEditingQuestion);
-        // setQuestionMode("View");
+        modifyQuestion(currEditingQuestion);
+        if (setQuestionMode) {
+            setQuestionMode(mode);
+        }
     }
     return (
         <div className={"p-4 rounded-lg border"}>
@@ -80,16 +84,22 @@ export default function TrueFalseQuestionEditCmp({
                         name="answer"
                         render={({field}) => (
                             <FormItem className="space-y-3">
-                                <FormLabel>Answer</FormLabel>
+                                <FormLabel>The statement is - </FormLabel>
                                 <FormControl>
                                     <RadioGroup
-                                        onValueChange={field.onChange}
+                                        defaultValue={field.value.toString()}
+                                        onValueChange={(value) => {
+                                            field.onChange(value === "true");
+                                            setSelectedCorrectOption(value === "true");
+                                            console.log(value);
+                                        }}
                                         className="flex flex-col space-y-1"
                                     >
                                         <FormItem
                                             className="flex items-center space-x-3 space-y-0">
                                             <FormControl>
-                                                <RadioGroupItem value="true"/>
+                                                <RadioGroupItem value="true"
+                                                />
                                             </FormControl>
                                             <FormLabel className="font-normal">
                                                 True
@@ -107,9 +117,6 @@ export default function TrueFalseQuestionEditCmp({
                                         </FormItem>
                                     </RadioGroup>
                                 </FormControl>
-                                <FormDescription>Choose True if the statement is
-                                    true, otherwise choose
-                                    False.</FormDescription>
                             </FormItem>
                         )}
                     />
@@ -117,21 +124,21 @@ export default function TrueFalseQuestionEditCmp({
                                control={form.control}
                                render={({field}) => (
                                    <FormItem>
-                                       <FormLabel>Explanation for True
-                                           Option</FormLabel>
+                                       <FormLabel>{
+                                           selectedCorrectOption ? "The statement is" +
+                                               " true because -" : "The" +
+                                               " statement is not true" +
+                                               " because -"
+                                       }</FormLabel>
                                        <FormControl>
                                            <Textarea
                                                className="resize-y"
                                                {...field}
                                            />
                                        </FormControl>
-                                       <FormDescription>
-                                           When the statement is true, provide
-                                           the reasoning or logic that supports
-                                           why the statement is true. Also,
-                                           explain why the statement cannot be
-                                           false.
-                                       </FormDescription>
+                                       <FormDescription>This is the explanation
+                                           a user see when they select the true
+                                           option.</FormDescription>
                                    </FormItem>
                                )}
                     />
@@ -139,21 +146,22 @@ export default function TrueFalseQuestionEditCmp({
                                control={form.control}
                                render={({field}) => (
                                    <FormItem>
-                                       <FormLabel>Explanation for False
-                                           Option</FormLabel>
+                                       <FormLabel>{
+                                           selectedCorrectOption ? "The" +
+                                               " statement is not" +
+                                               " false because" +
+                                               " -" : "The" +
+                                               " statement is false because -"
+                                       }</FormLabel>
                                        <FormControl>
                                            <Textarea
                                                className="resize-y"
                                                {...field}
                                            />
                                        </FormControl>
-                                       <FormDescription>
-                                           When the statement is false, provide
-                                           the reasoning or logic that explains
-                                           why the statement is false.
-                                           Additionally, include an explanation
-                                           of why the statement cannot be true.
-                                       </FormDescription>
+                                       <FormDescription>This is the explanation
+                                           a user see when they select the false
+                                           option.</FormDescription>
                                    </FormItem>
                                )}
                     />

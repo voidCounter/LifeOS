@@ -13,7 +13,7 @@ interface TrueFalseQuestionCmpProps extends BaseQuestionProps<TrueFalseQuestion>
 
 export default function TrueFalseQuestionCmp({
                                                  question,
-                                                 mode,
+                                                 mode = "View",
                                                  index,
                                                  showEditingOption,
                                              }: TrueFalseQuestionCmpProps) {
@@ -36,6 +36,7 @@ export default function TrueFalseQuestionCmp({
     if (questionMode === "Edit") {
         return <TrueFalseQuestionEditCmp index={index} question={question}
                                          mode={mode}
+                                         setQuestionMode={setQuestionMode}
                                          showEditingOption={showEditingOption}/>;
     }
 
