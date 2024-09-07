@@ -12,9 +12,36 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import {MultipleChoiceQuestion} from "@/types/QuizTypes/MultipleChoiceQuestion";
+import {Question} from "@/types/QuizTypes/Question";
+import {TrueFalseQuestion} from "@/types/QuizTypes/TrueFalseQuestion";
+import {ShortAnswerQuestion} from "@/types/QuizTypes/ShortAnswerQuestion";
 
 export default function CreatedQuizView({className}: { className?: string }) {
-    const {questions} = useQuizCreationStore();
+    const {questions, loadQuestion} = useQuizCreationStore();
+    const newMultipleChoiceQuestion: MultipleChoiceQuestion = {
+        questionType: "MULTIPLE_CHOICE",
+        questionStatement: "",
+        options: [
+            {optionText: "", optionExplanation: "", correct: true},
+            {optionText: "", optionExplanation: "", correct: true}
+        ]
+    };
+
+    const newTrueFalseQuestion: TrueFalseQuestion = {
+        questionType: "TRUE_FALSE",
+        questionStatement: "",
+        trueOptionExplanation: "",
+        falseOptionExplanation: "",
+        answer: true
+    }
+
+    const newShortAnswerQuestion: ShortAnswerQuestion = {
+        questionType: "SHORT_ANSWER",
+        questionStatement: "",
+        answer: "",
+        answerExplanation: ""
+    }
     return (
         <div className={`${cn(className)} w-full h-full`}>
             {questions.length === 0 && <div className={"overflow-hidden" +
@@ -40,7 +67,7 @@ export default function CreatedQuizView({className}: { className?: string }) {
                         <QuestionRenderer question={question} index={index}
                                           key={index}
                                           showEditingOption={true}
-                                          mode={"Learning"}/>
+                                          mode={question.questionStatement.length == 0 ? "Edit" : "Learning"}/>
                     )
                 }
                 <DropdownMenu>
@@ -50,11 +77,16 @@ export default function CreatedQuizView({className}: { className?: string }) {
                             Question</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className={"w-[250px]"}>
-                        <DropdownMenuItem>Multiple Choice
+                        <DropdownMenuItem
+                            onClick={() => loadQuestion(newMultipleChoiceQuestion)}>Multiple
+                            Choice
                             Question</DropdownMenuItem>
-                        <DropdownMenuItem>Short Answer
+                        <DropdownMenuItem
+                            onClick={() => loadQuestion(newShortAnswerQuestion)}>Short
+                            Answer
                             Question</DropdownMenuItem>
-                        <DropdownMenuItem>True/False
+                        <DropdownMenuItem
+                            onClick={() => loadQuestion(newTrueFalseQuestion)}>True/False
                             Question</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

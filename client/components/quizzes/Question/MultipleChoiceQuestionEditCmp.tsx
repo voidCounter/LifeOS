@@ -78,6 +78,8 @@ export default function MultipleChoiceQuestionEditCmp({
                                    <FormItem>
                                        <FormControl>
                                            <Textarea
+                                               placeholder={"Question" +
+                                                   " statement.."}
                                                className="resize-y"
                                                {...field}
                                            />

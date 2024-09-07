@@ -10,7 +10,7 @@ interface QuizCreationStore {
     quizGenerating: boolean,
     setQuizGenerating: (value: boolean) => void,
     questions: Question[],
-    addQuestion: (question: Question) => void
+    loadQuestion: (question: Question) => void
     modifyQuestion: (question: Question) => void,
     removeQuestion: (questionId: string) => void
     removeAllQuestions: () => void
@@ -33,7 +33,7 @@ export const useQuizCreationStore = create<QuizCreationStore>()(
                     })
                 }
             }),
-            addQuestion: (question) => set((state) => {
+            loadQuestion: (question) => set((state) => {
                 question.questionId = state.questionCount.toString();
                 if (question.questionType === "MULTIPLE_CHOICE") {
                     (question as MultipleChoiceQuestion).options = (question as MultipleChoiceQuestion).options.map((option, index) => {
