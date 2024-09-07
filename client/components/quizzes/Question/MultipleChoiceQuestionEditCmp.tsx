@@ -28,7 +28,7 @@ export default function MultipleChoiceQuestionEditCmp({
                                                           index
                                                       }: MultipleChoiceQuestionEditCmpProps) {
 
-    const {modifyQuestion} = useQuizCreationStore();
+    const {modifyQuestion, addedQuestion, removeQuestion} = useQuizCreationStore();
 
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
     const multipleChoiceQuestionFormSchema = z.object({
@@ -171,8 +171,13 @@ export default function MultipleChoiceQuestionEditCmp({
                     <div className={"flex flex-row gap-2"}>
                         <Button type={"submit"} size={"sm"} className={"w-fit" +
                             ""}>Save</Button>
-                        <Button size={"sm"} variant={"ghost"} type={"button"}
-                                onClick={() => setQuestionMode ? setQuestionMode(mode) : null}>Cancel</Button>
+                          <Button size={"sm"} variant={"ghost"} type={"button"}
+                                onClick={() => {
+                                    setQuestionMode ? setQuestionMode(mode) : null;
+                                    if (addedQuestion == question.questionId) {
+                                        removeQuestion(question.questionId);
+                                    }
+                                }}>Cancel</Button>
                     </div>
                 </form>
             </Form>

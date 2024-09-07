@@ -11,20 +11,9 @@ import {useQuizCreationStore} from "@/store/QuizCreationStore";
 const generateQuiz = async (url: string, data: z.infer<typeof quizCreationSchema>) => {
     const response = await AxiosInstance.post(url, data);
     return response.data;
-    // wait 5 seconds before calling axios.get('/Quiz.json');
-    // return new Promise<Quiz>((resolve) => {
-    //     setTimeout(() => {
-    //         resolve(axios.get<Quiz>('/GeneratedQuiz.json').then((response) => response.data));
-    //     }, 5000);
-    // });
 }
 
 
-export const useQuizCreationQuery = () => {
-    useQuery({
-        queryKey: ['created_quiz'],
-    })
-}
 
 export const useQuizCreationMutation = (quizCreationMethod: QuizCreationOptionType) => {
     let url = '';

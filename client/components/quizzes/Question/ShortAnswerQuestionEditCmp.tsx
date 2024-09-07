@@ -25,7 +25,11 @@ export default function ShortAnswerQuestionEditCmp({
                                                        setQuestionMode,
                                                        index
                                                    }: ShortAnswerQuestionEditCmpProps) {
-    const {modifyQuestion} = useQuizCreationStore();
+    const {
+        modifyQuestion,
+        removeQuestion,
+        addedQuestion
+    } = useQuizCreationStore();
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
     const shortAnswerQuestionFormSchema = z.object({
         questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
@@ -107,7 +111,12 @@ export default function ShortAnswerQuestionEditCmp({
                         <Button type={"submit"} size={"sm"} className={"w-fit" +
                             ""}>Save</Button>
                         <Button size={"sm"} variant={"ghost"} type={"button"}
-                                onClick={() => setQuestionMode ? setQuestionMode(mode) : null}>Cancel</Button>
+                                onClick={() => {
+                                    setQuestionMode ? setQuestionMode(mode) : null;
+                                    if (addedQuestion == question.questionId) {
+                                        removeQuestion(question.questionId);
+                                    }
+                                }}>Cancel</Button>
                     </div>
                 </form>
             </Form>
