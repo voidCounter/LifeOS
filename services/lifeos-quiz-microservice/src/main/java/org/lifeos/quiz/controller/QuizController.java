@@ -33,6 +33,12 @@ public class QuizController {
         return ResponseEntity.ok("Hello from quiz controller");
     }
 
+    @PostMapping("/save")
+    public ResponseEntity<String> saveQuiz(@RequestBody QuizDTO quizDTO) {
+        log.info("Quiz: {}", quizDTO);
+        return ResponseEntity.ok("Quiz saved successfully");
+    }
+
     @GetMapping("/{quizId}/questions")
     public ResponseEntity<Quiz> getQuiz(@PathVariable UUID quizId) {
         try {

@@ -28,7 +28,11 @@ export default function TrueFalseQuestionEditCmp({
                                                      setQuestionMode,
                                                      index
                                                  }: TrueFalseQuestionEditCmpProps) {
-    const {modifyQuestion} = useQuizCreationStore();
+    const {
+        modifyQuestion,
+        addedQuestion,
+        removeQuestion
+    } = useQuizCreationStore();
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
     const [selectedCorrectOption, setSelectedCorrectOption] = useState(question.answer);
     const trueFalseQuestionFormSchema = z.object({
@@ -172,7 +176,12 @@ export default function TrueFalseQuestionEditCmp({
                         <Button type={"submit"} size={"sm"} className={"w-fit" +
                             ""}>Save</Button>
                         <Button size={"sm"} variant={"ghost"} type={"button"}
-                                onClick={() => setQuestionMode ? setQuestionMode(mode) : null}>Cancel</Button>
+                                onClick={() => {
+                                    setQuestionMode ? setQuestionMode(mode) : null;
+                                    if (addedQuestion == question.questionId) {
+                                        removeQuestion(question.questionId);
+                                    }
+                                }}>Cancel</Button>
                     </div>
                 </form>
             </Form>
