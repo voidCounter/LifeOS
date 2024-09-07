@@ -71,6 +71,8 @@ export default function TrueFalseQuestionEditCmp({
                                        <FormLabel>Question statement</FormLabel>
                                        <FormControl>
                                            <Textarea
+                                               placeholder={"Question" +
+                                                   " statement.."}
                                                className="resize-y"
                                                {...field}
                                            />
@@ -87,7 +89,7 @@ export default function TrueFalseQuestionEditCmp({
                                 <FormLabel>The statement is - </FormLabel>
                                 <FormControl>
                                     <RadioGroup
-                                        defaultValue={field.value.toString()}
+                                        defaultValue={field.value?.toString() ?? "true"}
                                         onValueChange={(value) => {
                                             field.onChange(value === "true");
                                             setSelectedCorrectOption(value === "true");

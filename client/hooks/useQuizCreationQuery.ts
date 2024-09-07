@@ -46,7 +46,7 @@ export const useQuizCreationMutation = (quizCreationMethod: QuizCreationOptionTy
         onSuccess: (data) => {
             if (data && data.questions) {
                 data.questions.forEach((question) => {
-                    useQuizCreationStore.getState().addQuestion(question);
+                    useQuizCreationStore.getState().loadQuestion(question);
                 })
             }
         },

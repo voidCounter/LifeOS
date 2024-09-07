@@ -9,7 +9,6 @@ export default function QuizLayout({
     return (
         <main className="w-full h-full">
             {children}
-            <div className={"h-32"}></div>
         </main>
     )
 }

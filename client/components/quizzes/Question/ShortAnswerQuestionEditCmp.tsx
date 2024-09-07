@@ -80,6 +80,7 @@ export default function ShortAnswerQuestionEditCmp({
                                 <FormLabel>Answer</FormLabel>
                                 <FormControl>
                                     <Textarea
+                                        placeholder={"Question statement.."}
                                         className="resize-y"
                                         {...field}
                                     />
