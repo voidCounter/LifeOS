@@ -20,14 +20,18 @@ import {SelectTagInput} from "@/components/ui/SelectTagInput";
 import {useState} from "react";
 import {InputTags} from "@/components/ui/InputTags";
 import {useMutation} from "@tanstack/react-query";
+import {createdQuizResponse, saveQuiz} from "@/api-handlers/quizzes";
+import {LoaderCircle} from "lucide-react";
+import {useRouter} from "next/navigation";
 
 export default function SaveQuizForm() {
+    const router = useRouter();
     const {questions} = useQuizCreationStore();
     const saveQuizFormSchema = z.object({
         quizTitle: z.string().min(2, {message: "Quiz title must be at least 2 characters long"}),
         quizDescription: z.string().min(10, {message: "Quiz description must be at least 10 characters long"}),
         published: z.boolean().default(false),
-        category: z.array(z.string().min(2, {
+        categories: z.array(z.string().min(2, {
             message: "Category must be at least" +
                 " 2 characters long"
         })).min(1, {message: "At least one category must be selected"}),
@@ -35,6 +39,19 @@ export default function SaveQuizForm() {
         return {
             ...data,
             questions: questions
+        }
+    })
+
+    const {mutate: saveQuizIntoDB, isPending} = useMutation({
+        mutationFn: (data: any): Promise<createdQuizResponse> => {
+            return saveQuiz(data);
+        },
+        onSuccess: (response) => {
+            console.log("Successfully added the quiz: ", response);
+            router.push(`/app/quizzes/quiz/${response.quizId}`);
+        },
+        onError: (error) => {
+            console.log("Failed to save quiz: ", error);
         }
     })
 
@@ -46,15 +63,14 @@ export default function SaveQuizForm() {
                 quizTitle: "",
                 quizDescription: "",
                 published: false,
-                category: []
+                categories: []
             }
         });
 
     const onSubmit = (data: z.infer<typeof saveQuizFormSchema>) => {
-        console.log(data);
+        console.log("Saving quiz: ", data);
+        saveQuizIntoDB(data);
     }
-
-    const [category, setCategory] = useState<string[]>([]);
 
     return (
         <div className={"flex flex-col w-full"}>
@@ -85,7 +101,7 @@ export default function SaveQuizForm() {
                                )}/>
                     <FormField
                         control={form.control}
-                        name="category"
+                        name="categories"
                         render={({field}) => (
                             <FormItem>
                                 <FormLabel>Quiz Category</FormLabel>
@@ -119,7 +135,15 @@ export default function SaveQuizForm() {
                                        </FormControl>
                                    </FormItem>
                                )}/>
-                    <Button type={"submit"}>Save quiz</Button>
+                    <Button type={"submit"}>
+                        {
+                            isPending ? <div className={"flex flex-row gap-2" +
+                                " items-center"}>
+                                <LoaderCircle className={"animate-spin mr-2"}
+                                              strokeWidth={1}/>
+                                Saving Quiz</div> : "Save quiz"
+                        }
+                    </Button>
                 </form>
             </Form></div>
     );

@@ -20,7 +20,7 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
     const router = useRouter();
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
-        queryKey: [`quiz-${params.quizId}`], queryFn: fetchQuizwithQuestions
+        queryKey: [`quiz-${params.quizId}`], queryFn: () => fetchQuizwithQuestions(params.quizId)
     })
     if (isLoading) return <div>...Loading</div>
     if (error) return <div>{error.message}</div>

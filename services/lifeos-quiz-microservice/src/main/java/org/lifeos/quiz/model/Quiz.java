@@ -1,12 +1,20 @@
 package org.lifeos.quiz.model;
 
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
+import org.lifeos.quiz.dto.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.sql.SQLType;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,15 +30,20 @@ public class Quiz {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User creator;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Question> questions;
 
     private boolean published = false;
     private boolean deleted = false;
 
-    private String category;
+    @Type(ListArrayType.class)
+    @Column(name = "categories", columnDefinition = "text[]")
+    private List<String> categories;
+
     private String quizDescription;
     private String language;
     @CreationTimestamp
@@ -38,13 +51,47 @@ public class Quiz {
     @LastModifiedDate
     private Timestamp lastModifiedAt;
 
-    public Quiz(String quizTitle, String quizDescription, String category, User creator) {
-        this.quizTitle = quizTitle;
-        this.quizDescription = quizDescription;
-        this.category = category;
+    public Quiz(QuizDTO quizDTO,
+                User creator) {
+        this.quizTitle = quizDTO.getQuizTitle();
+        this.quizDescription = quizDTO.getQuizDescription();
+        this.categories = quizDTO.getCategories();
         this.creator = creator;
+        this.published = quizDTO.isPublished();
     }
 
     public Quiz() {
+    }
+
+    public static Quiz fromDTO(QuizDTO quizDTO, User creator) {
+        Quiz quiz = new Quiz();
+        quiz.setQuizTitle(quizDTO.getQuizTitle());
+        quiz.setQuizDescription(quizDTO.getQuizDescription());
+        quiz.setCategories(quizDTO.getCategories());
+        quiz.setCreator(creator);
+        quiz.setPublished(quizDTO.isPublished());
+
+        // Converting questions
+        List<Question> questions = new ArrayList<>();
+        for (QuestionDTO questionDTO : quizDTO.getQuestions()) {
+            Question question = null;
+            if (questionDTO instanceof MultipleChoiceQuestionDTO) {
+                question = MultipleChoiceQuestion.fromDTO((MultipleChoiceQuestionDTO) questionDTO);
+            } else if (questionDTO instanceof ShortAnswerQuestionDTO) {
+                question = ShortAnswerQuestion.fromDTO((ShortAnswerQuestionDTO) questionDTO);
+            } else if (questionDTO instanceof TrueFalseQuestionDTO) {
+                question = TrueFalseQuestion.fromDTO((TrueFalseQuestionDTO) questionDTO);
+            }
+
+            if (question != null) {
+                question.setQuestionStatement(questionDTO.getQuestionStatement());
+                question.setQuestionDifficulty(QuizDifficulty.valueOf(questionDTO.getQuestionDifficulty()));
+                question.setQuestionType(QuestionType.valueOf(questionDTO.getQuestionType()));
+                question.setQuiz(quiz);
+                questions.add(question);
+            }
+        }
+        quiz.setQuestions(questions);
+        return quiz;
     }
 }

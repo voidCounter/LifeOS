@@ -8,6 +8,6 @@ import java.util.List;
 public class GeneratedQuizDTO {
     private String quizTitle;
     private String quizDescription;
-    private List<String> category;
+    private List<String> categories;
     private QuestionDTO[] questions;
 }
