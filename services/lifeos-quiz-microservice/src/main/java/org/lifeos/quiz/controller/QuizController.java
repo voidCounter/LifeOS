@@ -1,6 +1,5 @@
 package org.lifeos.quiz.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.lifeos.quiz.dto.QuizDTO;
 import org.lifeos.quiz.dto.QuizbyPromptDTO;
 import org.lifeos.quiz.model.Quiz;
@@ -11,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -34,9 +33,27 @@ public class QuizController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<String> saveQuiz(@RequestBody QuizDTO quizDTO) {
-        log.info("Quiz: {}", quizDTO);
-        return ResponseEntity.ok("Quiz saved successfully");
+    public ResponseEntity<?> saveQuiz(@RequestBody QuizDTO quizDTO,
+                                      @RequestHeader(name = "user-id",
+                                              required = false) UUID userId) {
+        String quizId = quizService.saveQuiz(quizDTO, userId);
+        if (quizId == null || quizId.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz not saved");
+        }
+        Map<String, String> response = new HashMap<>();
+        response.put("quizId", quizId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{quizId}")
+    public ResponseEntity<Quiz> getQuizWithQuestions(@PathVariable UUID quizId) {
+        try {
+            Quiz quiz = quizService.getQuiz(quizId);
+            log.info("Quiz: {}", quiz);
+            return ResponseEntity.ok(quiz);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     @GetMapping("/{quizId}/questions")

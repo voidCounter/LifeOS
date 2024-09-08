@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @JsonTypeName("SHORT_ANSWER")
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ShortAnswerDTO extends QuestionDTO {
+public class ShortAnswerQuestionDTO extends QuestionDTO {
     private String answer;
     private String answerExplanation;
 }

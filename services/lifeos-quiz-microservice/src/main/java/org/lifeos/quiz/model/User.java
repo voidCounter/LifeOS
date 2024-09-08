@@ -2,6 +2,7 @@ package org.lifeos.quiz.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -23,5 +24,6 @@ public class User {
     private List<Folder> folders;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
+    @ToString.Exclude
     private List<Quiz> createdQuizzes;
 }

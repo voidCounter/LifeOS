@@ -14,7 +14,6 @@ export default function AppLayout({
         <main className="w-full h-full">
             <SidebarLayout>
                 <ProtectedLayout>
-                    <ReactQueryDevtools initialIsOpen={false}/>
                     {children}
                 </ProtectedLayout>
             </SidebarLayout>

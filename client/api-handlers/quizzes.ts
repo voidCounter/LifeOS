@@ -2,6 +2,8 @@ import {Quiz} from "@/types/QuizTypes/Quiz";
 import {QuizTest} from "@/types/QuizTypes/QuizTest";
 import {Languages} from "@/types/Language";
 import axios from "axios";
+import {AxiosInstance} from "@/utils/AxiosInstance";
+import {z} from "zod";
 
 export async function fetchLocalQuizzes(): Promise<Quiz[]> {
     const response = await fetch('/quizzes.json'); // Path to your local
@@ -19,11 +21,9 @@ export async function fetchQuizTests(): Promise<QuizTest[]> {
     return response.json();
 }
 
-export async function fetchQuizwithQuestions(): Promise<Quiz> {
-    const response = await fetch('/Quiz.json');
-
-    if (!response.ok) throw new Error('Failed to fetch the quiz with questions!')
-    return response.json();
+export async function fetchQuizwithQuestions(quizId: String): Promise<Quiz> {
+    const response = await AxiosInstance.get(`/quiz/${quizId}`);
+    return response.data;
 }
 
 export async function fetchQuizTest(): Promise<QuizTest> {
@@ -36,4 +36,13 @@ export async function fetchQuizTest(): Promise<QuizTest> {
 export async function fetchLanguages(): Promise<Languages> {
     const {data}: { data: Languages } = await axios.get('/isoLangs.json');
     return data;
+}
+
+export interface createdQuizResponse {
+    quizId: string;
+}
+
+export async function saveQuiz(data: any): Promise<createdQuizResponse> {
+    const response = await AxiosInstance.post('/quiz/save', data);
+    return response.data;
 }
