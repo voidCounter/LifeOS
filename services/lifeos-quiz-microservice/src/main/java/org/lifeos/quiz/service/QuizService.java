@@ -27,28 +27,27 @@ public class QuizService {
     private final UserRepository userRepository;
     private final AIServiceClient aiServiceClient;
     private final ObjectMapper jacksonObjectMapper;
+    private final ModelMapper modelMapper;
 
-    public QuizService(QuizRepository quizRepository,
-                       UserRepository userRepository,
-                       AIServiceClient aiServiceClient,
-                       ObjectMapper jacksonObjectMapper) {
+    public QuizService(QuizRepository quizRepository, UserRepository userRepository, AIServiceClient aiServiceClient, ObjectMapper jacksonObjectMapper, ModelMapper modelMapper) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.aiServiceClient = aiServiceClient;
         this.jacksonObjectMapper = jacksonObjectMapper;
+        this.modelMapper = modelMapper;
     }
 
     public void addQuiz(QuizDTO quizDTO, UUID userId) {
-        User creator =
-                userRepository.findById(userId).
-                        orElseThrow(() -> new RuntimeException("User not found"));
-        Quiz quiz = new Quiz(quizDTO, creator);
+        User creator = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Quiz quiz = Quiz.fromDTO(quizDTO, creator);
         quizRepository.save(quiz);
     }
 
 
     public Quiz getQuiz(UUID quizId) {
-        return quizRepository.findAllByQuizId(quizId);
+        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
+        log.info("quiz: {}", quiz);
+        return quiz;
     }
 
     public List<Question> getAllQuestionsByQuizId(UUID quizId) {
@@ -57,8 +56,7 @@ public class QuizService {
 
     public GeneratedQuizDTO createQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         log.info("Creating quiz by prompt: {}", quizbyPromptDTO.getNumberOfQuestions());
-        String generatedQuiz =
-                aiServiceClient.generateQuizByPrompt(quizbyPromptDTO);
+        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizbyPromptDTO);
         log.info("Generated Quiz: {}", generatedQuiz);
         try {
             return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);

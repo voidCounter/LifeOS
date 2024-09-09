@@ -1,5 +1,8 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -17,13 +20,19 @@ public class User {
     private UUID userId;
     private String email;
     private String name;
+    @JsonIgnore
+    private String password;
+    private String username;
+    private String avatarUrl;
     @Column(name = "knowledge_xp")
     private BigInteger knowledgeXP;
 
     @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Folder> folders;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator")
+    @JsonBackReference
     @ToString.Exclude
     private List<Quiz> createdQuizzes;
 }

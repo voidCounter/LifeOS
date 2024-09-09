@@ -27,11 +27,7 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
     const [current, setCurrent] = useState(0)
     const [count, setCount] = useState(0)
 
-
     const router = useRouter();
-
-    console.log("current: ", current, count);
-
 
     const revealAnswer = useQuizLearningStore((state) => state.revealAnswer);
     const setRevealAnswer = useQuizLearningStore(state => state.setRevealAnswer);
@@ -40,8 +36,9 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
 
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
-        queryKey: [`quiz-${params.quizId}`], queryFn: fetchQuizwithQuestions
-    });
+        queryKey: [`quiz-${params.quizId}`],
+        queryFn: () => fetchQuizwithQuestions(params.quizId)
+    })
 
     useEffect(() => {
         if (!api) {

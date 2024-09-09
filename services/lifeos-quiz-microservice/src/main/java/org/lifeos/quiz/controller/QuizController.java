@@ -49,22 +49,22 @@ public class QuizController {
     public ResponseEntity<Quiz> getQuizWithQuestions(@PathVariable UUID quizId) {
         try {
             Quiz quiz = quizService.getQuiz(quizId);
-            log.info("Quiz: {}", quiz);
+//            log.info("Quiz: {}", quizDTO);
             return ResponseEntity.ok(quiz);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
-    @GetMapping("/{quizId}/questions")
-    public ResponseEntity<Quiz> getQuiz(@PathVariable UUID quizId) {
-        try {
-            Quiz quiz = quizService.getQuiz(quizId);
-            return ResponseEntity.ok(quiz);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
+//    @GetMapping("/{quizId}/questions")
+//    public ResponseEntity<Quiz> getQuiz(@PathVariable UUID quizId) {
+//        try {
+//            Quiz quiz = quizService.getQuiz(quizId);
+//            return ResponseEntity.ok(quiz);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+//        }
+//    }
 
     @PostMapping("/create/byprompt")
     public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizbyPromptDTO quizbyPromptDTO) {

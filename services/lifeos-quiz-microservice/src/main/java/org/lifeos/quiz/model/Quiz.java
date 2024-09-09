@@ -1,5 +1,7 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,12 +30,13 @@ public class Quiz {
     private UUID quizId;
     private String quizTitle;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @ToString.Exclude
+    @JsonManagedReference
     private User creator;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz", cascade = CascadeType.ALL)
+    @JsonManagedReference
     @ToString.Exclude
     private List<Question> questions;
 

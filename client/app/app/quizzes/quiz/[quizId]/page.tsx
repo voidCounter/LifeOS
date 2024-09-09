@@ -10,6 +10,7 @@ import SectionHeader from "@/components/SectionHeader";
 
 import QuestionRenderer from "@/components/quizzes/Question/QuestionRenderer";
 import {usePathname, useRouter} from "next/navigation";
+import {create} from "zustand";
 
 interface QuizDetailsProps {
     quizId: string
@@ -20,8 +21,10 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
     const router = useRouter();
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
-        queryKey: [`quiz-${params.quizId}`], queryFn: () => fetchQuizwithQuestions(params.quizId)
+        queryKey: [`quiz-${params.quizId}`],
+        queryFn: () => fetchQuizwithQuestions(params.quizId)
     })
+
     if (isLoading) return <div>...Loading</div>
     if (error) return <div>{error.message}</div>
     if (quiz == undefined) return <div>...Loading</div>
@@ -32,13 +35,19 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
                 className={"text-3xl"}>{quiz?.quizTitle}</h1>
                 <div
                     className={"flex flex-row gap-2 justify-center items-center"}>
+                    {quiz?.categories?.map((item, index) =>
+                        <Badge
+                            key={index}
+                            variant={"outline"}>{item}</Badge>
+                    )}
                     <Badge
-                        variant={"outline"}>{quiz?.questionCount} questions</Badge>
+                        variant={"outline"}>{quiz?.questions?.length} questions</Badge>
                     <QuizRating rating={quiz?.rating ?? ""}/>
                 </div>
             </div>
-            <UserAvatar avatarURL={quiz?.user?.avatarUrl ?? ""} name={""}
-                        userName={quiz?.user?.username}/>
+            <UserAvatar avatarURL={quiz?.creator?.avatarUrl ?? ""}
+                        name={quiz?.creator?.name}
+                        userName={quiz?.creator?.username}/>
             <div className={"flex flex-row gap-3 mt-4"}><Button
                 variant={"default"}
                 onClick={() => router.push(`${pathname}/test`)}>Practice

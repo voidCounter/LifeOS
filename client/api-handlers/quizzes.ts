@@ -23,6 +23,7 @@ export async function fetchQuizTests(): Promise<QuizTest[]> {
 
 export async function fetchQuizwithQuestions(quizId: String): Promise<Quiz> {
     const response = await AxiosInstance.get(`/quiz/${quizId}`);
+    console.log(response.data);
     return response.data;
 }
 
