@@ -1,5 +1,6 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class MultipleChoiceOption {
 
     @ManyToOne
     @JoinColumn(name = "question_id")
+    @JsonBackReference
     private Question question;
 
     public static MultipleChoiceOption fromDTO(OptionDTO optionDTO, Question question) {

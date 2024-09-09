@@ -14,6 +14,7 @@ import lombok.Data;
         @JsonSubTypes.Type(value = TrueFalseQuestionDTO.class, name = "TRUE_FALSE")
 })
 public class QuestionDTO {
+    private String questionId;
     private String questionStatement;
     private String quizId;
     private String questionType;

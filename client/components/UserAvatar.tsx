@@ -1,19 +1,22 @@
 import Image from "next/image";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 interface UserAvatarProps {
     avatarURL: string,
     name: string,
     userName: string,
 }
+
 export function UserAvatar({avatarURL, name, userName}: UserAvatarProps) {
     return (
         <div
             className="self-stretch justify-start items-center gap-2 inline-flex">
             {/* User avatar */}
-            <Image alt={"avatar"} className="w-7 h-7 rounded-full"
-                   width={7}
-                   height={8}
-                   src={avatarURL}/>
+            <Avatar className={"h-8 w-8"}>
+                <AvatarImage src={avatarURL ?? ""}/>
+                <AvatarFallback
+                    className={"bg-foreground/20"}>{userName.toUpperCase()[0]}</AvatarFallback>
+            </Avatar>
 
             {/* User name */}
             <div

@@ -15,12 +15,12 @@ export default function LearnQuiz({params}: { params: TestQuizProps }) {
     const pathname = usePathname();
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
-        queryKey: [`quiz-${params.quizId}`], queryFn: fetchQuizwithQuestions
-    });
+        queryKey: [`quiz-${params.quizId}`],
+        queryFn: () => fetchQuizwithQuestions(params.quizId)
+    })
     if (isLoading) return <div>...Loading</div>
     if (error) return <div>{error.message}</div>
     if (quiz == undefined) return <div>...Loading</div>
-
 
     return (
         <div className={"pt-10 flex flex-col gap-10 h-full "}>
