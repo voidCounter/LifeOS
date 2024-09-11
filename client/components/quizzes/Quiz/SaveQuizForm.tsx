@@ -19,18 +19,35 @@ import {useQuizCreationStore} from "@/store/QuizCreationStore";
 import {SelectTagInput} from "@/components/ui/SelectTagInput";
 import {useState} from "react";
 import {InputTags} from "@/components/ui/InputTags";
-import {useMutation} from "@tanstack/react-query";
-import {createdQuizResponse, saveQuiz} from "@/api-handlers/quizzes";
-import {LoaderCircle} from "lucide-react";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {
+    createdQuizResponse,
+    fetchLanguages,
+    saveQuiz
+} from "@/api-handlers/quizzes";
+import {Check, ChevronsUpDown, LoaderCircle} from "lucide-react";
 import {useRouter} from "next/navigation";
+import {Language, Languages} from "@/types/Language";
+import {
+    quizCreationSchema
+} from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {
+    Command,
+    CommandEmpty, CommandGroup,
+    CommandInput, CommandItem,
+    CommandList
+} from "@/components/ui/command";
 
 export default function SaveQuizForm() {
     const router = useRouter();
-    const {questions} = useQuizCreationStore();
+    const {questions, removeAllQuestions} = useQuizCreationStore();
     const saveQuizFormSchema = z.object({
         quizTitle: z.string().min(2, {message: "Quiz title must be at least 2 characters long"}),
         quizDescription: z.string().min(10, {message: "Quiz description must be at least 10 characters long"}),
         published: z.boolean().default(false),
+        language: z.string(),
         categories: z.array(z.string().min(2, {
             message: "Category must be at least" +
                 " 2 characters long"
@@ -42,12 +59,29 @@ export default function SaveQuizForm() {
         }
     })
 
+    const {
+        isLoading: languageLoading,
+        data: languages,
+        error: languagesError
+    } = useQuery<Languages>({
+        queryKey: ['languages'],
+        queryFn: fetchLanguages,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
+    const sortLanguages = (a: [string, Language], b: [string, Language]) => {
+        return a[0].localeCompare(b[0]);
+    }
+
+
     const {mutate: saveQuizIntoDB, isPending} = useMutation({
         mutationFn: (data: any): Promise<createdQuizResponse> => {
             return saveQuiz(data);
         },
         onSuccess: (response) => {
             console.log("Successfully added the quiz: ", response);
+            // removing all saved questions after saving the quiz.
+            removeAllQuestions();
             router.push(`/app/quizzes/quiz/${response.quizId}`);
         },
         onError: (error) => {
@@ -113,6 +147,70 @@ export default function SaveQuizForm() {
                             </FormItem>
                         )}
                     />
+                    <FormField control={form.control} name={"language"}
+                               render={({field}) => (
+                                   <FormItem className={"flex flex-col gap-1"}>
+                                       <FormLabel>Language</FormLabel>
+                                       <Popover>
+                                           <PopoverTrigger asChild>
+                                               <FormControl>
+                                                   <Button
+                                                       variant="outline"
+                                                       role="combobox"
+                                                       className={cn(
+                                                           " justify-between" +
+                                                           " truncate",
+                                                           !field.value && "text-muted-foreground"
+                                                       )}
+                                                   >
+                                                       {field.value
+                                                           ? Object.entries(languages ?? {}).find(
+                                                               ([short, language]) => language.name === field.value
+                                                           )?.[1].name
+                                                           : "Select language"}
+                                                       <ChevronsUpDown
+                                                           className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                                   </Button>
+                                               </FormControl>
+                                           </PopoverTrigger>
+                                           <PopoverContent
+                                               className="w-[300px] p-0">
+                                               <Command>
+                                                   <CommandInput
+                                                       placeholder="Search language..."/>
+                                                   <CommandList>
+                                                       <CommandEmpty>No language
+                                                           found.</CommandEmpty>
+                                                       <CommandGroup>
+                                                           {Object.entries(languages ?? {}).sort(sortLanguages).map(([short, language]) => (
+                                                               <CommandItem
+                                                                   value={language.name}
+                                                                   key={language.name}
+                                                                   onSelect={() => {
+                                                                       form.setValue("language", language.name)
+                                                                   }}
+                                                               >
+                                                                   <Check
+                                                                       className={cn(
+                                                                           "mr-2 h-4 w-4",
+                                                                           language.name === field.value
+                                                                               ? "opacity-100"
+                                                                               : "opacity-0"
+                                                                       )}
+                                                                   />
+                                                                   {language.name}
+                                                                   <span
+                                                                       className={"text-muted-foreground ml-1"}>({language.nativeName})</span>
+                                                               </CommandItem>
+                                                           ))}
+                                                       </CommandGroup>
+                                                   </CommandList>
+                                               </Command>
+                                           </PopoverContent>
+                                       </Popover>
+                                       {/*<FormDescription></FormDescription>*/}
+                                       <FormMessage/></FormItem>
+                               )}/>
                     <FormField name={"published"} control={form.control}
                                render={({field}) => (
                                    <FormItem

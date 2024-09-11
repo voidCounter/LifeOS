@@ -61,7 +61,7 @@ export default function QuizCard({
                     <div>{
                         variant == "createdByMe" &&
                         <DropdownMenu>
-                            <DropdownMenuTrigger>
+                            <DropdownMenuTrigger asChild={true}>
                                 <Button size={"icon"} variant={"ghost"}>
                                     <MoreVerticalIcon strokeWidth={2}
                                                       className={"w-5 h-5"}></MoreVerticalIcon>
@@ -83,8 +83,8 @@ export default function QuizCard({
                         {
                             variant == "quizTest" &&
                             <div
-                                className={`${((quizTest?.quizTestScore ?? 0) < (quizTest?.quiz.questionCount ?? 0) / 2) ? "bg-destructive" : "bg-success-foreground"} text-sm text-background px-2 py-1 rounded-sm`}>
-                                {quizTest?.quizTestScore ?? 0}/{quizTest?.quiz.questionCount}
+                                className={`${((quizTest?.quizTestScore ?? 0) < (quizTest?.quiz.numberOfQuestions ?? 0) / 2) ? "bg-destructive" : "bg-success-foreground"} text-sm text-background px-2 py-1 rounded-sm`}>
+                                {quizTest?.quizTestScore ?? 0}/{quizTest?.quiz.numberOfQuestions}
                             </div>
                         }
                     </div>
@@ -92,10 +92,12 @@ export default function QuizCard({
                 {/* info + rating */}
                 <div className="justify-start items-center gap-2 inline-flex">
                     {showQuestionCount && <Badge
-                        variant={"outline"}>{quiz.questionCount} questions </Badge>}
+                        variant={"outline"}>{quiz.numberOfQuestions} questions </Badge>}
                     {
                         showCategories &&
-                        <Badge variant={"outline"}>{quiz.category}</Badge>
+                        quiz?.categories?.map((category, index) =>
+                            <Badge variant={"outline"}
+                                   key={index}>{category}</Badge>)
                     }
                     {
                         showRating &&
@@ -106,7 +108,8 @@ export default function QuizCard({
             {
                 variant == "createdByMe" &&
                 <div className="flex items-center space-x-2">
-                    <Switch id="visibility"/>
+                    <Switch id="visibility"
+                            onClick={(e) => e.stopPropagation()}/>
                     <Label htmlFor={"visibility"}>Public</Label>
                 </div>
             }
@@ -114,7 +117,8 @@ export default function QuizCard({
                 (variant != "createdByMe" && (showCreator)) &&
                 <UserAvatar
                     avatarURL={"https://images.unsplash.com/photo-1533636721434-0e2d61030955?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
-                    name={quiz.creator.username} userName={quiz.creator.username}/>
+                    name={quiz.creator.username}
+                    userName={quiz.creator.username}/>
             }
             {
                 variant == "quizTest" &&

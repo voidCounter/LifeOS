@@ -15,7 +15,7 @@ export default function Navbar() {
     return (
         <nav className={"flex fixed top-0 flex-row justify-between w-full" +
             " max-w-[800px]" +
-            " bg-white/30 backdrop-blur-md p-2"}>
+            " backdrop-blur-md p-1"}>
             <div
                 className={"flex flex-row justify-center items-center"}>Lifeos
             </div>
@@ -23,7 +23,9 @@ export default function Navbar() {
             <div>
                 {
                     isAuthenticated && authenticatedUser ?
-                        <LoggedInUserAvatar showUsername={false} variant={"ghost"}
+                        <LoggedInUserAvatar showUsername={false}
+                                            className={"p-1"}
+                                            variant={"ghost"}
                                             onClick={() => router.push("/app")}/> :
                         <Button variant={"outline"} size={"sm"}
                                 onClick={() => router.push("/login")}>Login</Button>

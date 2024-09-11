@@ -43,6 +43,14 @@ export interface createdQuizResponse {
     quizId: string;
 }
 
+export async function fetchQuizzesCreatedByUser(userId: string): Promise<Quiz[]> {
+    const {data}: {
+        data: Quiz[]
+    } = await AxiosInstance.get(`/quiz/createdBy/${userId}`);
+    console.log(data);
+    return data;
+}
+
 export async function saveQuiz(data: any): Promise<createdQuizResponse> {
     const response = await AxiosInstance.post('/quiz/save', data);
     return response.data;

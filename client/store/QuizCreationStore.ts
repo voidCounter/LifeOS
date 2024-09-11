@@ -22,6 +22,8 @@ import React, {createRef} from "react";
  */
 interface QuizCreationStore {
     addedQuestion: string,
+    quizLanguage: string,
+    setQuizLanguage: (language: string) => void,
     showSaveQuizModal: boolean,
     questionCount: number
     quizGenerating: boolean,
@@ -38,6 +40,8 @@ export const useQuizCreationStore = create<QuizCreationStore>()(
     persist(
         (set) => ({
             addedQuestion: "",
+            quizLanguage: "English",
+            setQuizLanguage: (language) => set({quizLanguage: language}),
             showSaveQuizModal: false,
             questionCount: 0,
             quizGenerating: false,

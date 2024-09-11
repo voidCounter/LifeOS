@@ -7,10 +7,26 @@ import {QueryClientProvider} from "@tanstack/react-query";
 import {queryClient} from "@/lib/react-query";
 import PageActions from "@/components/PageActions";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import {usePathname, useRouter} from "next/navigation";
+import {usePageStateStore} from "@/store/PageStateStore";
 
 export default function SidebarLayout({children}: {
     children: React.ReactNode
 }) {
+    const {setLastRoute, lastRoute} = usePageStateStore();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (lastRoute) {
+            router.push(lastRoute);
+        }
+    }, []);
+
+    useEffect(() => {
+        setLastRoute(pathname);
+    }, [pathname]);
+
     const [isSidebarOpen, setSidebarOpen] = useState(() => {
         const sideBarState = localStorage.getItem("isSidebarOpen");
         return sideBarState !== null ? JSON.parse(sideBarState) : true;
@@ -26,7 +42,7 @@ export default function SidebarLayout({children}: {
             <div className="w-full h-full overflow-hidden">
                 <div className="">
                     <div
-                        className={`absolute w-60 h-full transform border-r transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} pt-2`}
+                        className={`absolute w-60 h-screen transform border-r transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} pt-2`}
                     >
                         <Nav/>
                     </div>

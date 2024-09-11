@@ -1,8 +1,11 @@
 package org.lifeos.quiz.controller;
 
+import org.lifeos.quiz.dto.ErrorDTO;
 import org.lifeos.quiz.dto.QuizDTO;
+import org.lifeos.quiz.dto.QuizWithQuestionsDTO;
 import org.lifeos.quiz.dto.QuizbyPromptDTO;
 import org.lifeos.quiz.model.Quiz;
+import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service.QuizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,9 +23,11 @@ public class QuizController {
     private static final Logger log = LoggerFactory.getLogger(QuizController.class);
     // get all question under a quizset
     private final QuizService quizService;
+    private final UserRepository userRepository;
 
-    public QuizController(QuizService quizService) {
+    public QuizController(QuizService quizService, UserRepository userRepository) {
         this.quizService = quizService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/hello")
@@ -32,11 +38,23 @@ public class QuizController {
         return ResponseEntity.ok("Hello from quiz controller");
     }
 
+    @GetMapping("/createdBy/{userId}")
+    public ResponseEntity<?> getQuizzesCreatedByUser(@RequestHeader(name =
+            "user-id", required = false) UUID reqUserId,
+                                                                 @PathVariable UUID userId) {
+        log.info("userids: {}", reqUserId + " " + userId);
+        if (!reqUserId.equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDTO.builder().message("You're not authorized to view the quizzes").build());
+        }
+
+        return ResponseEntity.ok(quizService.getQuizzesCreatedByUser(reqUserId));
+    }
+
     @PostMapping("/save")
-    public ResponseEntity<?> saveQuiz(@RequestBody QuizDTO quizDTO,
+    public ResponseEntity<?> saveQuiz(@RequestBody QuizWithQuestionsDTO quizWithQuestionsDTO,
                                       @RequestHeader(name = "user-id",
                                               required = false) UUID userId) {
-        String quizId = quizService.saveQuiz(quizDTO, userId);
+        String quizId = quizService.saveQuiz(quizWithQuestionsDTO, userId);
         if (quizId == null || quizId.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Quiz not saved");
         }
@@ -68,15 +86,16 @@ public class QuizController {
 
     @PostMapping("/create/byprompt")
     public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizbyPromptDTO quizbyPromptDTO) {
+        log.info("Creating quiz by prompt: {}", quizbyPromptDTO);
         return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByPrompt(quizbyPromptDTO));
     }
 
     @PostMapping("/{quizId}/questions/new")
-    public ResponseEntity<?> addNewQuiz(@RequestBody QuizDTO quizDTO,
+    public ResponseEntity<?> addNewQuiz(@RequestBody QuizWithQuestionsDTO quizWithQuestionsDTO,
                                         @RequestHeader("UserID") UUID userId) {
         try {
-            log.info("Adding quiz -> controller: {}", quizDTO);
-            quizService.addQuiz(quizDTO, userId);
+            log.info("Adding quiz -> controller: {}", quizWithQuestionsDTO);
+            quizService.addQuiz(quizWithQuestionsDTO, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body("Quiz added " +
                     "successfully");
         } catch (Exception e) {
