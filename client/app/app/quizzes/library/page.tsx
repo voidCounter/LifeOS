@@ -30,7 +30,7 @@ export default function Explore() {
                                 Tests</TabsTrigger>
                             <TabsTrigger value="folders">Folders</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="quizzes"
+                        <TabsContent value="quizzes" className={"w-full"}
                         >
                             <CreatedQuizzes/>
                         </TabsContent>

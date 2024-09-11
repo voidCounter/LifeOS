@@ -1,6 +1,5 @@
 import {User} from "@/types/User";
 import {create} from "zustand";
-import {JWTTOkenDTO} from "@/types/QuizTypes/JWTTokenDTO";
 import {persist} from "zustand/middleware";
 
 interface AuthStore {

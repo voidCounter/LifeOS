@@ -17,7 +17,7 @@ export default function SearchandCreate() {
             />
         </div>
         <Button size={"icon"} variant={"default"}
-                onClick={() => router.push("/app/quizzes/create/notes")}>
+                onClick={() => router.push("/app/quizzes/create/prompt")}>
             <PlusSquare className={"w-8 h-8"}
                         strokeWidth={1}></PlusSquare>
         </Button>

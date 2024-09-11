@@ -10,10 +10,11 @@ import lombok.Data;
         "questionType")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = MultipleChoiceQuestionDTO.class, name = "MULTIPLE_CHOICE"),
-        @JsonSubTypes.Type(value = ShortAnswerDTO.class, name = "SHORT_ANSWER"),
+        @JsonSubTypes.Type(value = ShortAnswerQuestionDTO.class, name = "SHORT_ANSWER"),
         @JsonSubTypes.Type(value = TrueFalseQuestionDTO.class, name = "TRUE_FALSE")
 })
 public class QuestionDTO {
+    private String questionId;
     private String questionStatement;
     private String quizId;
     private String questionType;

@@ -2,16 +2,18 @@
 import {QuizCreationOptionType} from "@/config/QuizCreationTabsConfig";
 import {useForm} from "react-hook-form";
 import {
-    getQuizCreationSchema
+    quizCreationSchema
 } from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
     Form,
-    FormControl, FormDescription,
+    FormControl,
+    FormDescription,
     FormField,
     FormItem,
-    FormLabel, FormMessage
+    FormLabel,
+    FormMessage
 } from "@/components/ui/form";
 import {
     Select,
@@ -21,35 +23,157 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {Button} from "@/components/ui/button";
-import {AxiosInstance} from "@/utils/AxiosInstance";
+import {
+    Check,
+    ChevronsUpDown,
+    Circle,
+    LoaderCircle,
+    SparklesIcon
+} from "lucide-react";
+import {Textarea} from "@/components/ui/textarea";
+import {Input} from "@/components/ui/input";
+import {useQuery} from "@tanstack/react-query";
+import {fetchLanguages} from "@/api-handlers/quizzes";
+import {Language, Languages} from "@/types/Language";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {cn} from "@/lib/utils";
+import {useQuizCreationMutation} from "@/hooks/useQuizCreationQuery";
+import {useQuizCreationStore} from "@/store/QuizCreationStore";
+import {useEffect} from "react";
 
 
-export default function QuizCreationForm(quizCreationMethod: QuizCreationOptionType) {
-    const schema = getQuizCreationSchema(quizCreationMethod);
-    const form = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+export default function QuizCreationForm({quizCreationMethod}: {
+    quizCreationMethod: QuizCreationOptionType
+}) {
+    const {quizGenerating, setQuizGenerating} = useQuizCreationStore();
+    const {
+        isLoading: languageLoading,
+        data: languages,
+        error: languagesError
+    } = useQuery<Languages>({
+        queryKey: ['languages'],
+        queryFn: fetchLanguages,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    });
+    const form = useForm<z.infer<typeof quizCreationSchema>>({
+        resolver: zodResolver(quizCreationSchema),
+        defaultValues: {
+            articleUrl: "",
+            youtubeUrl: "",
+        },
     });
 
-    async function onSubmit(data: z.infer<typeof schema>) {
-        try {
-            const responseData = await AxiosInstance.get("/quiz/hello");
-            console.log(responseData);
-        } catch (error) {
-            console.error("Quiz creation failed due to: ", error);
+    form.setValue("creationMethod", quizCreationMethod.toUpperCase() as "PROMPT" | "ARTICLE" | "NOTE" | "YOUTUBE");
+
+    const {
+        mutate: generateQuiz,
+        isPending: isGenerating,
+        data: quiz,
+        error
+    } = useQuizCreationMutation(quizCreationMethod);
+
+    async function onSubmit(data: z.infer<typeof quizCreationSchema>) {
+        console.log(data);
+        generateQuiz(data);
+    }
+
+    const sortLanguages = (a: [string, Language], b: [string, Language]) => {
+        return a[0].localeCompare(b[0]);
+    }
+
+    const renderSpecificFields = () => {
+        switch (quizCreationMethod) {
+            case "note":
+                return (<div>Enter notes</div>);
+            case "youtube":
+                return (
+                    <FormField control={form.control} name={"youtubeUrl"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Youtube URL
+                                       </FormLabel>
+                                       <Input
+                                           placeholder="Enter youtube URL"
+                                           {...field}/>
+                                       <FormDescription>Make sure the video
+                                           is
+                                           public.
+                                       </FormDescription>
+                                       <FormMessage/>
+                                   </FormItem>
+                               )}/>
+                );
+            case "article":
+                return (
+                    <FormField control={form.control} name={"articleUrl"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Article URL</FormLabel>
+                                       <Input
+                                           placeholder="Enter article URL"
+                                           {...field}/>
+                                       <FormDescription>The URL should be
+                                           public
+                                           and parsable.</FormDescription>
+                                       <FormMessage/>
+                                   </FormItem>
+                               )}/>
+                );
+            default:
+                return null;
         }
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-                <FormField control={form.control} name={"difficulty"}
+            <form onSubmit={form.handleSubmit(onSubmit)} className={"flex" +
+                " static" +
+                " mt-8" +
+                " flex-col gap-6"}>
+                {renderSpecificFields()}
+                <FormField control={form.control} name={"prompt"}
                            render={({field}) => (
                                <FormItem>
-                                   <FormLabel>Questions Difficulty</FormLabel>
+                                   <FormLabel>Prompt
+                                   </FormLabel>
+                                   <FormControl>
+                                       <Textarea
+                                           placeholder="Create a quiz about world world war 2."
+                                           className="resize-y"
+                                           {...field}
+                                       />
+                                   </FormControl>
+                                   <FormDescription>Make your prompt
+                                       descriptive
+                                       to get good
+                                       results!</FormDescription>
+                                   <FormMessage/>
+                               </FormItem>
+                           )}/>
+                <FormField control={form.control}
+                           name={"questionsDifficulty"}
+                           render={({field}) => (
+                               <FormItem>
+                                   <FormLabel>Questions
+                                       Difficulty</FormLabel>
                                    <Select onValueChange={field.onChange}
                                            defaultValue={field.value}>
                                        <FormControl>
-                                           <SelectTrigger>
+                                           <SelectTrigger
+                                               className={"data-[placeholder]:text-muted-foreground"}>
                                                <SelectValue
                                                    placeholder={"Select" +
                                                        " questions" +
@@ -71,14 +195,15 @@ export default function QuizCreationForm(quizCreationMethod: QuizCreationOptionT
                                    <FormMessage/>
                                </FormItem>
                            )}/>
-                <FormField control={form.control} name={"questionType"}
+                <FormField control={form.control} name={"questionsType"}
                            render={({field}) => (
                                <FormItem>
                                    <FormLabel>Questions Type</FormLabel>
                                    <Select onValueChange={field.onChange}
                                            defaultValue={field.value}>
                                        <FormControl>
-                                           <SelectTrigger>
+                                           <SelectTrigger
+                                               className={"data-[placeholder]:text-muted-foreground"}>
                                                <SelectValue
                                                    placeholder={"Select" +
                                                        " questions" +
@@ -103,31 +228,108 @@ export default function QuizCreationForm(quizCreationMethod: QuizCreationOptionT
                            )}/>
                 <FormField control={form.control} name={"language"}
                            render={({field}) => (
-                               <FormItem>
+                               <FormItem className={"flex flex-col gap-1"}>
                                    <FormLabel>Language</FormLabel>
+                                   <Popover>
+                                       <PopoverTrigger asChild>
+                                           <FormControl>
+                                               <Button
+                                                   variant="outline"
+                                                   role="combobox"
+                                                   className={cn(
+                                                       " justify-between" +
+                                                       " truncate",
+                                                       !field.value && "text-muted-foreground"
+                                                   )}
+                                               >
+                                                   {field.value
+                                                       ? Object.entries(languages ?? {}).find(
+                                                           ([short, language]) => language.name === field.value
+                                                       )?.[1].name
+                                                       : "Select language"}
+                                                   <ChevronsUpDown
+                                                       className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                               </Button>
+                                           </FormControl>
+                                       </PopoverTrigger>
+                                       <PopoverContent
+                                           className="w-[300px] p-0">
+                                           <Command>
+                                               <CommandInput
+                                                   placeholder="Search language..."/>
+                                               <CommandList>
+                                                   <CommandEmpty>No language
+                                                       found.</CommandEmpty>
+                                                   <CommandGroup>
+                                                       {Object.entries(languages ?? {}).sort(sortLanguages).map(([short, language]) => (
+                                                           <CommandItem
+                                                               value={language.name}
+                                                               key={language.name}
+                                                               onSelect={() => {
+                                                                   form.setValue("language", language.name)
+                                                               }}
+                                                           >
+                                                               <Check
+                                                                   className={cn(
+                                                                       "mr-2 h-4 w-4",
+                                                                       language.name === field.value
+                                                                           ? "opacity-100"
+                                                                           : "opacity-0"
+                                                                   )}
+                                                               />
+                                                               {language.name}
+                                                               <span
+                                                                   className={"text-muted-foreground ml-1"}>({language.nativeName})</span>
+                                                           </CommandItem>
+                                                       ))}
+                                                   </CommandGroup>
+                                               </CommandList>
+                                           </Command>
+                                       </PopoverContent>
+                                   </Popover>
+                                   {/*<FormDescription></FormDescription>*/}
+                                   <FormMessage/></FormItem>
+                           )}/>
+                <FormField control={form.control} name={"numberOfQuestions"}
+                           render={({field}) => (
+                               <FormItem>
+                                   <FormLabel>Number of
+                                       questions</FormLabel>
                                    <Select onValueChange={field.onChange}
                                            defaultValue={field.value}>
                                        <FormControl>
-                                           <SelectTrigger>
-                                               <SelectValue
-                                                   placeholder={"Select" +
-                                                       " questions" +
-                                                       " language"}/>
+                                           <SelectTrigger
+                                               className={"data-[placeholder]:text-muted-foreground"}>
+                                               <SelectValue className={""}
+                                                            placeholder={"Select number of questions"}/>
                                            </SelectTrigger>
                                        </FormControl>
                                        <SelectContent>
-                                           <SelectItem
-                                               value="English">English</SelectItem>
-                                           <SelectItem
-                                               value="Hindi">Hindi</SelectItem>
-                                           <SelectItem
-                                               value="Spanish">Spanish</SelectItem>
+                                           {
+                                               [5, 10, 15, 20].map((number) => (
+                                                   <SelectItem key={number}
+                                                               value={number.toString()}>{number}</SelectItem>))
+                                           }
                                        </SelectContent>
                                    </Select>
                                    {/*<FormDescription></FormDescription>*/}
                                    <FormMessage/></FormItem>
                            )}/>
-                <Button type="submit">Generate</Button>
+                <Button type="submit" disabled={isGenerating}>
+                    {
+                        isGenerating ?
+                            <div className={"flex justify-center items-center"}>
+                                <LoaderCircle className={"animate-spin mr-2"}
+                                              strokeWidth={1}/>
+                                Generating Quiz
+                            </div> :
+                            <div className={"flex"}><SparklesIcon
+                                className={"w-5 h-5 mr-2"}
+                                strokeWidth={1}/>
+                                Generate Quiz
+                            </div>
+                    }
+                </Button>
             </form>
         </Form>
     );

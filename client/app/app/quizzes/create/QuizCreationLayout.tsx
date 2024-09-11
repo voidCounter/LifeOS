@@ -4,17 +4,25 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {quizCreationOptions} from "@/config/QuizCreationTabsConfig";
 import Link from "next/link";
 import {usePathname, useRouter} from "next/navigation";
+import {cn} from "@/lib/utils";
+import {useQuizCreationStore} from "@/store/QuizCreationStore";
+import {Space} from "lucide-react";
 
-export default function QuizCreationLayout({children}: {
-    children: React.ReactNode
-}) {
+interface QuizCreationLayoutProps {
+    children: React.ReactNode;
+    className?: string;
+}
+
+export default function QuizCreationLayout({className, children}:
+                                               QuizCreationLayoutProps
+) {
     const router = useRouter();
     const pathname = usePathname();
     return (
-        <div className={"w-full"}>
+        <div className={`${cn(className)} w-full h-screen overflow-y-scroll px-2 no-scrollbar`}>
             <Tabs
                 value={pathname.split("/").pop()}
-                className="w-full mt-4 flex flex-col items-center"
+                className="w-full flex flex-col items-center"
             >
                 <TabsList
                     className={`w-full  grid sticky top-0 z-50 h-fit rounded-xl`}
@@ -35,7 +43,7 @@ export default function QuizCreationLayout({children}: {
                                         <creationOption.tabIcon strokeWidth={1}
                                                                 className={"w-6" +
                                                                     " h-6"}/>
-                                        {creationOption.tabName}
+                                        {creationOption.tabName.charAt(0).toUpperCase() + creationOption.tabName.slice(1)}
                                     </div>
                                 </Link>
                             </TabsTrigger>
@@ -53,6 +61,7 @@ export default function QuizCreationLayout({children}: {
                     )
                 }
             </Tabs>
+            <div className={"py-16"}></div>
         </div>
     );
 }

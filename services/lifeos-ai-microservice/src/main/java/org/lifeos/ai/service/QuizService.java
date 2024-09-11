@@ -4,6 +4,7 @@ import org.lifeos.ai.dto.QuizbyPromptDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,9 +19,6 @@ public class QuizService {
 
     @Value("classPath:/prompts/QuizSystemPrompt.st")
     private Resource systemPromptResource;
-
-//    @Value("classPath:/prompts/QuizUserPrompt.st")
-//    private Resource userPromptResource;
 
 
     public QuizService(@Qualifier("quizClient") ChatClient chatClient) {
@@ -41,10 +39,13 @@ public class QuizService {
     public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         try {
             return this.chatClient.prompt()
-                    .system(sp -> sp.param("questionCount", quizbyPromptDTO.getQuestionCount()))
+                    .advisors(new SimpleLoggerAdvisor())
+                    .system(sp -> sp.param("numberOfQuestions",
+                            quizbyPromptDTO.getNumberOfQuestions()))
                     .system(sp -> sp.param("language", quizbyPromptDTO.getLanguage()))
                     .system(sp -> sp.param("questionsType", quizbyPromptDTO.getQuestionsType()))
-                    .system(sp -> sp.param("questionsDifficulty", quizbyPromptDTO.getQuestionsDifficulty()))
+                    .system(sp -> sp.param("questionsDifficulty",
+                            quizbyPromptDTO.getQuestionsDifficulty()))
                     .user(quizbyPromptDTO.getPrompt())
                     .call()
                     .content();

@@ -15,14 +15,25 @@ const quizInformationSchema = z.object({
 
 });
 
+const promptSchema =
+    z.string().min(MIN_PROMPT_ALLOWED, {
+        message: `Minimum ${MIN_PROMPT_ALLOWED} characters required`,
+    }).max(MAX_PROMPT_ALLOWED,
+        {message: `Maximum ${MAX_PROMPT_ALLOWED} characters allowed`});
+
 const baseQuizCreationSchema = z.object({
-    questionType: z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER", "MIX"]).default("MULTIPLE_CHOICE"),
-    difficulty: z.enum(["EASY", "MEDIUM", "HARD", "MIX"]).default("MIX"),
-    language: z.enum(["English", "Hindi", "Spanish"]).default("English"),
-    numberOfQuestions: z.enum(["5", "10", "15", "20"]).default("10"),
+    questionsType:
+        z.enum(["MULTIPLE_CHOICE", "TRUE_FALSE", "SHORT_ANSWER", "MIX"]).default("MULTIPLE_CHOICE"),
+    questionsDifficulty:
+        z.enum(["EASY", "MEDIUM", "HARD", "MIX"]).default("MIX"),
+    language:
+        z.string().default("English"),
+    numberOfQuestions:
+        z.enum(["5", "10", "15", "20"]).default("10"),
 })
 
-const noteSchema = z.object({
+
+const noteSchema = baseQuizCreationSchema.extend({
     note: z.instanceof(File).refine((file) => {
         return !file || file.size <= MAX_UPLOAD_SIZE;
     }, "Max file size is 5MB").refine((file) => {
@@ -32,32 +43,36 @@ const noteSchema = z.object({
     }, `File type not supported. Supported file types are ${ACCEPTED_FILE_TYPES.join(", ")}`),
 });
 
-export const getQuizCreationSchema = (quizCreationType: QuizCreationOptionType) => {
-    switch (quizCreationType) {
-        case "Prompt":
-            return baseQuizCreationSchema.extend({
-                prompt: z.string().min(MIN_PROMPT_ALLOWED, {
-                    message: `Minimum ${MIN_PROMPT_ALLOWED} characters required`,
-                }).max(MAX_PROMPT_ALLOWED,
-                    {message: `Maximum ${MAX_PROMPT_ALLOWED} characters allowed`}),
-            })
-        case "Note":
-            return baseQuizCreationSchema.extend({
-                notes: z.array(noteSchema).min(MIN_FILE_ALLOWED, {
-                    message: `Minimum ${MIN_FILE_ALLOWED} file required`,
-                }).max(MAX_FILE_ALLOWED, {
-                    message: `Maximum ${MAX_FILE_ALLOWED} files allowed`,
-                }),
-            })
-        case "Article":
-            return baseQuizCreationSchema.extend({
-                articleUrl: z.string().url("Invalid Article URL"),
-            })
-        case "Youtube":
-            return baseQuizCreationSchema.extend({
-                youtubeUrl: z.string().url("Invalid Youtube URL"),
-            })
-        default:
-            return baseQuizCreationSchema;
-    }
-}
+const promptQuizCreationSchema = baseQuizCreationSchema.extend({
+    creationMethod: z.enum(["PROMPT"]).default("PROMPT"),
+    prompt: promptSchema
+});
+
+const articleQuizCreationSchema = baseQuizCreationSchema.extend({
+    creationMethod: z.enum(["ARTICLE"]).default("ARTICLE"),
+    articleUrl: z.string().url("Invalid Article URL").default(""),
+    prompt: promptSchema.optional()
+})
+
+const youtubeQuizCreationSchema = baseQuizCreationSchema.extend({
+    creationMethod: z.enum(["YOUTUBE"]).default("YOUTUBE"),
+    youtubeUrl: z.string().url("Invalid Youtube URL").default(""),
+    prompt: promptSchema.optional()
+});
+
+const noteQuizCreationSchema = baseQuizCreationSchema.extend({
+    creationMethod: z.enum(["NOTE"]).default("NOTE"),
+    notes: z.array(noteSchema).min(MIN_FILE_ALLOWED, {
+        message: `Minimum ${MIN_FILE_ALLOWED} file required`,
+    }).max(MAX_FILE_ALLOWED, {
+        message: `Maximum ${MAX_FILE_ALLOWED} files allowed`,
+    }),
+    prompt: promptSchema.optional()
+});
+
+export const quizCreationSchema = z.discriminatedUnion("creationMethod", [
+    promptQuizCreationSchema,
+    articleQuizCreationSchema,
+    youtubeQuizCreationSchema,
+    noteQuizCreationSchema,
+]);
