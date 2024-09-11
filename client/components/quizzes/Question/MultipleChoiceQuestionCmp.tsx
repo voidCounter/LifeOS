@@ -5,23 +5,13 @@ import BaseQuestionCmp from "./BaseQuestionCmp";
 import {QuizMode} from "@/types/QuizTypes/QuizMode";
 import {BaseQuestionProps} from "@/types/QuizTypes/BaseQuestionProps";
 import QuestionOption from "./QuestionOption";
+import {useRef, useState} from "react";
+import MultipleChoiceQuestionEditCmp
+    from "@/components/quizzes/Question/MultipleChoiceQuestionEditCmp";
 
 interface MultipleChoiceQuestionCmpProps extends BaseQuestionProps<MultipleChoiceQuestion> {
 }
 
-
-interface MultipleChoiceOptionEditProps {
-    option: MultipleChoiceOption,
-    onChange: (option: MultipleChoiceOption) => void
-}
-
-const MultipleChoiceOptionEdit = ({
-                                      option,
-                                      onChange
-                                  }: MultipleChoiceOptionEditProps) => {
-
-
-}
 
 export default function MultipleChoicequestionCmp({
                                                       index,
@@ -30,15 +20,26 @@ export default function MultipleChoicequestionCmp({
                                                       showEditingOption = false
                                                   }: MultipleChoiceQuestionCmpProps
 ) {
+    const [questionMode, setQuestionMode] = useState(mode);
+    if (questionMode === "Edit") {
+        return (<MultipleChoiceQuestionEditCmp index={index} question={question}
+                                               mode={mode}
+                                               setQuestionMode={setQuestionMode}
+                                               showEditingOption={showEditingOption}/>);
+    }
     return (
-        <BaseQuestionCmp index={index} question={question} mode={mode}
-                         showEditingOption={showEditingOption}>
+        <BaseQuestionCmp index={index} question={question} mode={questionMode}
+                         showEditingOption={showEditingOption}
+                         setQuestionMode={(mode: QuizMode) => setQuestionMode(mode)}>
             {
                 question.options.map((option, index) => (
-                    <div key={index} className={"w-full"}>
-                        <QuestionOption option={option.optionText}
-                                        optionExplanation={option.optionExplanation}
-                                        isCorrect={option.correct} mode={mode}/>
+                    <div key={question.questionId + option.optionId}
+                         className={"w-full"}>
+                        <QuestionOption
+                            id={question.questionId + option.optionId}
+                            option={option.optionText}
+                            optionExplanation={option.optionExplanation}
+                            isCorrect={option.correct} mode={questionMode}/>
                     </div>
                 ))}
         </BaseQuestionCmp>

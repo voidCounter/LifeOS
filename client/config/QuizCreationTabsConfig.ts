@@ -7,7 +7,12 @@ import {
     Video
 } from "lucide-react";
 
-export type QuizCreationOptionType = "Prompt" | "Article" | "Youtube" | "Note" | "Manual";
+export type QuizCreationOptionType =
+    "prompt"
+    | "article"
+    | "youtube"
+    | "note"
+
 export interface QuizCreationTabConfig {
     tabIcon: LucideIcon,
     tabName: QuizCreationOptionType,
@@ -18,32 +23,27 @@ export interface QuizCreationTabConfig {
 export const quizCreationOptions: QuizCreationTabConfig[] = [
     {
         tabIcon: TextIcon,
-        tabName: "Prompt",
+        tabName: "prompt",
         onClick: () => {
         }
     },
     {
         tabIcon: NewspaperIcon,
-        tabName: "Article",
+        tabName: "article",
         onClick: () => {
         }
     },
     {
         tabIcon: Video,
-        tabName: "Youtube",
+        tabName: "youtube",
         onClick: () => {
         }
     },
     {
         tabIcon: NotebookIcon,
-        tabName: "Note",
+        tabName: "note",
         onClick: () => {
         }
     },
-    {
-        tabIcon: SquareMousePointer,
-        tabName: "Manual",
-        onClick: () => {
-        }
-    }
+
 ];

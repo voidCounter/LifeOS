@@ -1,38 +1,9 @@
 import React from "react";
 import navConfig from "@/config/navConfig";
 import {cn} from "@/lib/utils";
-import {
-    Accordion, AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import {Accordion} from "@/components/ui/accordion";
 
 import NavItem from "@/components/navItem";
-import {UserAvatar} from "@/components/UserAvatar";
-import LoggedInUserAvatar from "@/components/LoggedInUserAvatar";
-import {Button} from "@/components/ui/button";
-import {
-    CreditCard,
-    Keyboard,
-    LifeBuoy,
-    LogOut,
-    Settings,
-    User
-} from "lucide-react";
 import LoggedInUserMenu from "@/components/LoggedInUserMenu";
 
 export function Nav({className}: { className?: string }) {

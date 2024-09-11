@@ -1,5 +1,7 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
@@ -14,9 +16,9 @@ import java.util.UUID;
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "questionType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = MultipleChoiceQuestion.class, name="MULTIPLE_CHOICE"),
-        @JsonSubTypes.Type(value = ShortAnswerQuestion.class, name="SHORT_ANSWER"),
-        @JsonSubTypes.Type(value = TrueFalseQuestion.class, name="TRUE_FALSE")
+        @JsonSubTypes.Type(value = MultipleChoiceQuestion.class, name = "MULTIPLE_CHOICE"),
+        @JsonSubTypes.Type(value = ShortAnswerQuestion.class, name = "SHORT_ANSWER"),
+        @JsonSubTypes.Type(value = TrueFalseQuestion.class, name = "TRUE_FALSE")
 })
 public class Question {
     @Id
@@ -30,6 +32,7 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
+    @JsonBackReference
     private Quiz quiz;
 }
 

@@ -1,4 +1,4 @@
-package org.lifeos.lifeosaimicroservice.model;
+package org.lifeos.ai.model;
 
 public enum StageType {
     ROADMAP,

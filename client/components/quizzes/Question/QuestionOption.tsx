@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import {useQuizLearningStore} from "@/store/QuizLearningStore";
 
 interface QuestionOptionProps {
+    id: string
     option: string | undefined,
     optionExplanation: string | undefined,
     isCorrect: boolean | undefined,
@@ -11,6 +12,7 @@ interface QuestionOptionProps {
 }
 
 export default function QuestionOption({
+                                           id,
                                            option,
                                            optionExplanation,
                                            isCorrect,
@@ -19,6 +21,9 @@ export default function QuestionOption({
     const [checked, setChecked] = useState(false);
     const revealAnswer = useQuizLearningStore(state => state.revealAnswer);
     const setRevealAnswer = useQuizLearningStore(state => state.setRevealAnswer);
+    if (option === "Gitanjal") {
+        console.log(id);
+    }
     useEffect(() => {
         setChecked(false);
     }, [revealAnswer]);
@@ -26,10 +31,10 @@ export default function QuestionOption({
         case "View":
             return (
                 <div className="flex items-center space-x-2">
-                    <Checkbox id={option} disabled={true}
+                    <Checkbox id={id} disabled={true}
                               className={"cursor-default"}/>
                     <label
-                        htmlFor={option}
+                        htmlFor={id}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                         {option}
@@ -42,7 +47,7 @@ export default function QuestionOption({
                     <div
                         className={`flex items-center space-x-2 w-full ${checked && (isCorrect ? "text-success-foreground" : "text-destructive")}
                         ${revealAnswer && isCorrect && "text-success-foreground"}`}>
-                        <Checkbox id={option}
+                        <Checkbox id={id}
                                   className={`cursor-default ${checked && (isCorrect ? "bg-success-foreground" : "bg-destructive")}
                                   ${revealAnswer && isCorrect && "text-success-foreground"}
                                   `}
@@ -52,10 +57,10 @@ export default function QuestionOption({
                                           setChecked(true);
                                       } else setChecked(false);
                                   }}
-                                  checked={revealAnswer ?(isCorrect): checked}
+                                  checked={revealAnswer ? (isCorrect) : checked}
                         />
                         <label
-                            htmlFor={option}
+                            htmlFor={id}
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 w-full"
                         >
                             {option}
