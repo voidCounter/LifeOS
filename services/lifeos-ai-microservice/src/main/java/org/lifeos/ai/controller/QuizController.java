@@ -21,9 +21,9 @@ public class QuizController {
     }
 
     @PostMapping("/generate-quiz-by-prompt")
-    public ResponseEntity<String> getQuiz(@RequestBody QuizbyPromptDTO quizbyPromptDTO, @RequestHeader("UserId") String userId) {
+    public ResponseEntity<String> getQuiz(@RequestBody QuizbyPromptDTO quizbyPromptDTO, @RequestHeader(value = "UserId", required = false) String userId) {
         log.info("Requested by: {}", userId);
-        log.info("Requested Question number: {}", quizbyPromptDTO.getNumberOfQuestions());
+        log.info("Request: {}", quizbyPromptDTO.toString());
         String generatedQuiz =
                 quizService.generateQuizByPrompt(quizbyPromptDTO);
         return ResponseEntity.ok(generatedQuiz);

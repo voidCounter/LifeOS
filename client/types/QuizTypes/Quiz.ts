@@ -11,7 +11,7 @@ export interface Quiz {
     lastModified_at: string | null;
     categories: string[],
     rating: string | null;
-    questionCount: number | null;
+    numberOfQuestions: number | null;
     questions?: Question[];
     quizDescription: string | null;
 }

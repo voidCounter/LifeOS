@@ -105,6 +105,6 @@ export default function CreatedQuizView({className}: { className?: string }) {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className={"py-52"}></div>
+            <div className={"py-16"}></div>
         </div>);
 }

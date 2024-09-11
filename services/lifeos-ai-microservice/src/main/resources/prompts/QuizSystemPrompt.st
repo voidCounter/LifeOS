@@ -45,6 +45,6 @@ Make sure all the questionStatement is based on accurate information and that
 explanations should include relevant context, reasoning, and additional
 information.
 
-Create a quiz that contains {numberOfQuestions}
+Create a quiz that contains exactly {numberOfQuestions}
 number of {questionsType} questions of {questionsDifficulty} difficulty in
 {language} language.

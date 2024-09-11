@@ -4,12 +4,14 @@ import Image from "next/image";
 import {Button} from "@/components/ui/button";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import React, {forwardRef} from "react";
+import {cn} from "@/lib/utils";
 
 interface LoggedInUserAvatarProps {
     showName?: boolean,
     showUsername?: boolean,
     showAvatar?: boolean,
     onClick?: () => void,
+    className?: string,
     variant?: "outline" | "default" | "ghost",
     ref: React.ForwardedRef<HTMLButtonElement>
 }
@@ -18,21 +20,23 @@ const LoggedInUserAvatar = React.forwardRef<HTMLDivElement, LoggedInUserAvatarPr
                                                                                           showName = true,
                                                                                           showUsername = true,
                                                                                           showAvatar = true,
+                                                                                          className,
                                                                                           variant = "ghost",
                                                                                           onClick = () => {
                                                                                           },
                                                                                       }, ref) => {
     const {authenticatedUser} = useAuthStore();
     return (
-        <div ref={ref} className={"bg-secondary rounded-md cursor-pointer" +
+        <div ref={ref} className={cn(className, "bg-secondary rounded-md" +
+            " cursor-pointer" +
             " flex" +
             " h-fit" +
             " justify-start" +
-            " items-center py-1" +
+            " items-center" +
             " gap-2 w-full px-2" +
-            " items-center"} onClick={onClick}>
+            " items-center")} onClick={onClick}>
             {/* User avatar */}
-            <div className={"flex gap-2 w-full items-center p-2"}>
+            <div className={"flex gap-2 w-full items-center"}>
                 {
                     showAvatar &&
                     <Avatar className={"h-8 w-8"}>
@@ -51,7 +55,7 @@ const LoggedInUserAvatar = React.forwardRef<HTMLDivElement, LoggedInUserAvatarPr
                     {
                         showUsername &&
                         <h3
-                            className="text-muted-foreground text-sm leading-none">@{authenticatedUser?.username?? "username"}</h3>
+                            className="text-muted-foreground text-sm leading-none">@{authenticatedUser?.username ?? "username"}</h3>
 
                     }
                 </div>

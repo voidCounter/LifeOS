@@ -16,6 +16,11 @@ import {Progress} from "@/components/ui/progress";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "next/navigation";
 import {useQuizLearningStore} from "@/store/QuizLearningStore";
+import {useErrorNotification} from "@/hooks/useErrorNotification";
+import {isError} from "node:util";
+import Loading from "@/app/app/loading";
+import {AxiosError} from "axios";
+import ErrorCmp from "@/components/ErrorCmp";
 
 interface LearnQuizProps {
     quizId: string
@@ -35,10 +40,16 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
     const setCurrentlyLearningQuestion = useQuizLearningStore(state => state.setCurrentlyLearningQuestion);
 
 
-    const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
+    const {data: quiz, isLoading, isError, error} = useQuery<Quiz, Error>({
         queryKey: [`quiz-${params.quizId}`],
-        queryFn: () => fetchQuizwithQuestions(params.quizId)
+        queryFn: () => fetchQuizwithQuestions(params.quizId + "32"),
     })
+
+    // useErrorNotification({
+    //     isError: isError,
+    //     description: error?.message ?? "",
+    //     title: error?.name ?? "Error"
+    // });
 
     useEffect(() => {
         if (!api) {
@@ -55,9 +66,13 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
     }, [api, current, quiz?.questions, setCurrentlyLearningQuestion, setRevealAnswer]);
 
 
-    if (isLoading) return <div>...Loading</div>
-    if (error) return <div>{error.message}</div>
-    if (quiz == undefined) return <div>...Loading</div>
+    if (isLoading) return <Loading/>
+    if (isError) {
+        const axiosError = error as AxiosError;
+        return <ErrorCmp status={axiosError.status ?? 0} title={error?.name}
+                         message={error?.message}/>
+    }
+    if (quiz == undefined) return <div></div>
 
     return (<div
         className={"flex flex-col w-full justify-center" +

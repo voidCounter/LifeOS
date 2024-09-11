@@ -10,7 +10,9 @@ import SectionHeader from "@/components/SectionHeader";
 
 import QuestionRenderer from "@/components/quizzes/Question/QuestionRenderer";
 import {usePathname, useRouter} from "next/navigation";
-import {create} from "zustand";
+import {AxiosError} from "axios";
+import ErrorCmp from "@/components/ErrorCmp";
+import Loading from "@/app/app/loading";
 
 interface QuizDetailsProps {
     quizId: string
@@ -20,19 +22,32 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
     const pathname = usePathname();
     const router = useRouter();
 
-    const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
+    const {data: quiz, isLoading, error, isError} = useQuery<Quiz, Error>({
         queryKey: [`quiz-${params.quizId}`],
         queryFn: () => fetchQuizwithQuestions(params.quizId)
     })
 
-    if (isLoading) return <div>...Loading</div>
-    if (error) return <div>{error.message}</div>
-    if (quiz == undefined) return <div>...Loading</div>
+    // useErrorNotification({
+    //     isError,
+    //     description: error?.message ?? "",
+    //     title: "Failed to load quiz"
+    // });
+
+
+    if (isLoading) return <Loading/>
+    if (isError) {
+        const axiosError = error as AxiosError;
+        return <ErrorCmp status={axiosError.status ?? 0} title={error?.name}
+                         message={error?.message}/>
+    }
+    if (quiz == undefined) return <div></div>
     return (
         <div
             className="flex-col justify-start items-start gap-4 inline-flex mt-10 w-full">
-            <div className={"flex-col gap-2 items-start justify-start flex"}><h1
-                className={"text-3xl"}>{quiz?.quizTitle}</h1>
+            <div
+                className={"flex-col gap-2 items-start justify-start flex"}>
+                <h1
+                    className={"text-3xl"}>{quiz?.quizTitle}</h1>
                 <div
                     className={"flex flex-row gap-2 justify-center items-center"}>
                     {quiz?.categories?.map((item, index) =>
@@ -61,14 +76,16 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
                 <div className={"flex flex-col gap-2 mt-6"}>
                     {
                         quiz?.questions?.map((question, index) =>
-                            <QuestionRenderer question={question} index={index}
+                            <QuestionRenderer question={question}
+                                              index={index}
                                               key={question.questionId}
                                               showEditingOption={false}
                                               mode={"View"}/>
                         )
                     }
                 </div>
+                <div className={"py-12"}></div>
             </section>
-
-        </div>);
+        </div>
+    );
 }

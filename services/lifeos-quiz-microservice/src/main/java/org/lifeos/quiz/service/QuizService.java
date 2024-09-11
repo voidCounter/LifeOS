@@ -3,10 +3,7 @@ package org.lifeos.quiz.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.lifeos.quiz.dto.GeneratedQuizDTO;
-import org.lifeos.quiz.dto.QuestionDTO;
-import org.lifeos.quiz.dto.QuizDTO;
-import org.lifeos.quiz.dto.QuizbyPromptDTO;
+import org.lifeos.quiz.dto.*;
 import org.lifeos.quiz.model.*;
 import org.lifeos.quiz.repository.QuizRepository;
 import org.lifeos.quiz.repository.UserRepository;
@@ -16,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,9 +33,9 @@ public class QuizService {
         this.modelMapper = modelMapper;
     }
 
-    public void addQuiz(QuizDTO quizDTO, UUID userId) {
+    public void addQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User creator = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Quiz quiz = Quiz.fromDTO(quizDTO, creator);
+        Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, creator);
         quizRepository.save(quiz);
     }
 
@@ -67,9 +63,18 @@ public class QuizService {
 
     // returns created quiz id
     @Transactional
-    public String saveQuiz(QuizDTO quizDTO, UUID userId) {
+    public String saveQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        Quiz quiz = Quiz.fromDTO(quizDTO, user);
+        Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, user);
         return quizRepository.save(quiz).getQuizId().toString();
+    }
+
+    public List<QuizDTO> getQuizzesCreatedByUser(UUID reqUserId) {
+        User creator =
+                userRepository.findById(reqUserId).orElse(null);
+        if (creator == null) {
+            throw new RuntimeException("User not found");
+        }
+        return quizRepository.findAllByCreator(creator).stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
     }
 }

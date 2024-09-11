@@ -4,6 +4,7 @@ import org.lifeos.ai.dto.QuizbyPromptDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -18,9 +19,6 @@ public class QuizService {
 
     @Value("classPath:/prompts/QuizSystemPrompt.st")
     private Resource systemPromptResource;
-
-//    @Value("classPath:/prompts/QuizUserPrompt.st")
-//    private Resource userPromptResource;
 
 
     public QuizService(@Qualifier("quizClient") ChatClient chatClient) {
@@ -40,8 +38,8 @@ public class QuizService {
 
     public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
         try {
-            log.info("Generating quiz by prompt: {}", quizbyPromptDTO.getNumberOfQuestions());
             return this.chatClient.prompt()
+                    .advisors(new SimpleLoggerAdvisor())
                     .system(sp -> sp.param("numberOfQuestions",
                             quizbyPromptDTO.getNumberOfQuestions()))
                     .system(sp -> sp.param("language", quizbyPromptDTO.getLanguage()))

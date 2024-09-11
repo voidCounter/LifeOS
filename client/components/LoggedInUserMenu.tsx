@@ -42,7 +42,7 @@ export default function LoggedInUserMenu() {
         <div className={"p-2 w-full"}>
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger className={"w-full"} asChild={false}>
-                    <LoggedInUserAvatar/>
+                    <LoggedInUserAvatar className={"p-2"}/>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" side={"top"}>
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
