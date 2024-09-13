@@ -10,9 +10,9 @@ import {useQuizCreationStore} from "@/store/QuizCreationStore";
 
 const generateQuiz = async (url: string, data: z.infer<typeof quizCreationSchema>) => {
     const response = await AxiosInstance.post(url, data);
+    console.log(response.data);
     return response.data;
 }
-
 
 
 export const useQuizCreationMutation = (quizCreationMethod: QuizCreationOptionType) => {

@@ -1,11 +1,9 @@
 package org.lifeos.user.service;
 
 import jakarta.servlet.http.Cookie;
-import org.lifeos.user.Exception.ExpiredRefreshTokenException;
 import org.lifeos.user.Exception.NoRefreshCookieFoundException;
 import org.lifeos.user.Exception.UserAlreadyExistsException;
 import org.lifeos.user.Exception.UserNotFoundException;
-import org.lifeos.user.dto.AuthErrorDTO;
 import org.lifeos.user.dto.AuthRequestDTO;
 import org.lifeos.user.dto.JwtTokenDTO;
 import org.lifeos.user.dto.UserDTO;
@@ -16,8 +14,6 @@ import org.lifeos.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -5,7 +5,7 @@ import {useAuthStore} from "@/store/AuthStore";
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {User} from "@/types/User";
 import {AxiosInstance} from "@/utils/AxiosInstance";
 import {
@@ -19,12 +19,15 @@ import {Input} from "@/components/ui/input";
 import {PasswordInput} from "@/components/ui/PasswordInput";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
-import {AuthErrorType} from "@/types/AuthErrorType";
+import {FormErrorType} from "@/types/FormErrorType";
+import {useMutation} from "@tanstack/react-query";
+import Loading from "@/app/app/loading";
 
 const loginSchema = z.object({
     email: z.string(),
     password: z.string(),
 });
+
 
 export default function Login() {
     const {authenticatedUser, setAuthenticatedUser} = useAuthStore();
@@ -37,21 +40,26 @@ export default function Login() {
         },
     })
 
-    const onLoginFormSubmit = async (data: z.infer<typeof loginSchema>) => {
-        try {
-            const response: AxiosResponse<User> = await AxiosInstance.post("/auth/login", data);
-
-            // save the token in the store
+    const {mutate: login, isPending, isError} = useMutation({
+        mutationFn: (data: z.infer<typeof loginSchema>) => AxiosInstance.post("/auth/login", data),
+        onSuccess: data => {
+            const response: AxiosResponse<User> = data;
             setAuthenticatedUser(response.data);
             router.push("/app");
-        } catch (error: any) {
-            const errorInfo: AuthErrorType = error.response.data;
-            loginForm.setError(errorInfo.field, {
+        },
+        onError: error => {
+            const axiosError: FormErrorType = (error as AxiosError)?.response?.data as FormErrorType;
+            loginForm.setError(axiosError.field, {
                 type: "server",
-                message: errorInfo.message
+                message: axiosError.message
             });
         }
+    })
+
+    function onLoginFormSubmit(data: z.infer<typeof loginSchema>) {
+        login(data);
     }
+
     return (
         <div className={"w-full px-4 h-screen no-scrollbar flex" +
             " justify-center overflow-y-scroll" +
@@ -95,7 +103,8 @@ export default function Login() {
                                                        autoComplete="current-password" {...field}
                                                    />
                                                </FormControl>
-                                               <FormMessage className={"text-sm font-normal"}/>
+                                               <FormMessage
+                                                   className={"text-sm font-normal"}/>
                                            </FormItem>
                                        )}>
                             </FormField>
@@ -107,7 +116,9 @@ export default function Login() {
                         </div>
                         <div className={"w-full pt-4"}>
                             <Button type={"submit"} className={"w-full"}
-                            >Login</Button>
+                                    disabled={isPending}
+                            >{isPending ? <Loading
+                                text={"Logging in"}/> : "Login"}</Button>
                         </div>
                     </form>
                 </Form>

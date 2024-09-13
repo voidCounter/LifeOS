@@ -14,6 +14,7 @@
         <module>lifeos-ai-microservice</module>
         <module>lifeos-service-registry</module>
         <module>lifeos-pathway-microservice</module>
+        <module>lifeos-resource-loader</module>
         <module>lifeos-gateway</module>
     </modules>
 

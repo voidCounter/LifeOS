@@ -1,10 +1,8 @@
 package org.lifeos.user.controller;
 
-import io.jsonwebtoken.Jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.lifeos.user.dto.AuthErrorDTO;
 import org.lifeos.user.dto.AuthRequestDTO;
 import org.lifeos.user.dto.JwtTokenDTO;
 import org.lifeos.user.model.RefreshToken;

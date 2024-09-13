@@ -1,6 +1,7 @@
 package org.lifeos.ai.service;
 
-import org.lifeos.ai.dto.QuizbyPromptDTO;
+import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
+import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 public class QuizService {
     private static final Logger log = LoggerFactory.getLogger(QuizService.class);
     private final ChatClient chatClient;
+
 
     @Value("classPath:/prompts/QuizSystemPrompt.st")
     private Resource systemPromptResource;
@@ -36,7 +38,7 @@ public class QuizService {
     }
 
 
-    public String generateQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
+    public String generateQuizByPrompt(QuizByPromptDTO quizbyPromptDTO) {
         try {
             return this.chatClient.prompt()
                     .advisors(new SimpleLoggerAdvisor())
@@ -55,4 +57,9 @@ public class QuizService {
         }
     }
 
+    public String generateQuizByYoutube(QuizByYoutubeDTO quizByYoutubeDTO) {
+        // retrieve chunks based on the query
+        // provide the chunks to the chat client and generate quiz
+        return "Hello";
+    }
 }

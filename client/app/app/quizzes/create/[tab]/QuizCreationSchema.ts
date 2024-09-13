@@ -56,7 +56,15 @@ const articleQuizCreationSchema = baseQuizCreationSchema.extend({
 
 const youtubeQuizCreationSchema = baseQuizCreationSchema.extend({
     creationMethod: z.enum(["YOUTUBE"]).default("YOUTUBE"),
-    youtubeUrl: z.string().url("Invalid Youtube URL").default(""),
+    youtubeUrl: z.string().refine((url) => {
+        const standardYoutubeRegex = /^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/;
+        const shortenedYoutubeRegex = /^https:\/\/youtu\.be\/[\w-]+(\?.*)?$/;
+        return standardYoutubeRegex.test(url) || shortenedYoutubeRegex.test(url)
+    }, {
+        message: "Invalid youtube URL format. It should be" +
+            " https://www.youtube.com/watch?v={VIDEO_ID} or" +
+            " https://youtu.be/{VIDEO_ID}?..."
+    }),
     prompt: promptSchema.optional()
 });
 
