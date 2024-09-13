@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 import {Hind_Siliguri} from "next/font/google";
+import QueryProvider from "@/layouts/QueryProvicer";
 
 
 export const metadata: Metadata = {
@@ -30,7 +31,9 @@ export default function RootLayout({
               className={`${uncutsans.className}`}>
         <body className="flex flex-row w-full bg-background">
         <div className="overflow-hidden w-full h-screen">
-            {children}
+            <QueryProvider>
+                {children}
+            </QueryProvider>
         </div>
         </body>
         </html>

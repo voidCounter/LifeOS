@@ -16,6 +16,8 @@ export default function ProtectedLayout({children}: {
     }, [authenticatedUser, router]);
 
     return (
-        <div className={"w-full"}>{children}</div>
+        <div className={"w-full"}>
+            {children}
+        </div>
     );
 }
