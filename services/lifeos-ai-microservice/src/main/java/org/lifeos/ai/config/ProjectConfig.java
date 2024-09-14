@@ -24,10 +24,13 @@ public class ProjectConfig {
     @Value("classPath:/prompts/QuizSystemPrompt.st")
     private Resource quizSystemPromptResource;
 
+    @Value("classPath:/prompts/JSONSyntaxPrompt.st")
+    private Resource jsonSyntaxPromptResource;
+
 
     @Bean
     ChatClient quizClient(ChatClient.Builder builder) {
-        return builder.defaultSystem(quizSystemPromptResource).build();
+        return builder.defaultSystem(quizSystemPromptResource).defaultUser(jsonSyntaxPromptResource).build();
     }
 
     @Bean

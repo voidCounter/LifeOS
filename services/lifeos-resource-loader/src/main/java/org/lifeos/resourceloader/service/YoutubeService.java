@@ -19,14 +19,17 @@ public class YoutubeService {
     private final ResourceReader resourceReader;
     private final ResourceTokenSplitter resourceTokenSplitter;
     private final VectorStore vectorStore;
+    private final LoaderService loaderService;
 
     public YoutubeService(YoutubeTranscriptApi youtubeTranscriptApi,
                           ResourceReader resourceReader,
-                          ResourceTokenSplitter resourceTokenSplitter, VectorStore vectorStore) {
+                          ResourceTokenSplitter resourceTokenSplitter,
+                          VectorStore vectorStore, LoaderService loaderService) {
         this.youtubeTranscriptApi = youtubeTranscriptApi;
         this.resourceReader = resourceReader;
         this.resourceTokenSplitter = resourceTokenSplitter;
         this.vectorStore = vectorStore;
+        this.loaderService = loaderService;
     }
 
     public String extractVideoId(String youtubeURL) {
@@ -48,23 +51,21 @@ public class YoutubeService {
                     "en");
             transcript =
                     transcriptContent.getContent().stream().map(TranscriptContent.Fragment::getText).collect(java.util.stream.Collectors.joining(" "));
+            transcript = transcript.replaceAll("\\r?\\n", " ").trim();
         } catch (TranscriptRetrievalException e) {
             throw new RuntimeException("Error parsing youtube video.");
         }
         return transcript;
     }
 
-    public void loadTranscript(String youtubeURL) {
+    public String loadTranscript(String youtubeURL) {
         String videoID = extractVideoId(youtubeURL);
         String transcript = getTranscript(videoID);
         Resource resource = new ByteArrayResource(transcript.getBytes());
-        // load
-        List<Document> loadedText = resourceReader.loadText(resource,
-                "Youtube-" + videoID + ".txt", youtubeURL);
-        // split into chunks
-        List<Document> splitTexts =
-                resourceTokenSplitter.splitDocuments(loadedText);
-        // adding to vector store
-        vectorStore.add(splitTexts);
+        // loading the resource
+        String fileName = "youtube-" + videoID + ".txt";
+        loaderService.loadText(resource, fileName, youtubeURL);
+        // the filename will be used for metadata filtering
+        return fileName;
     }
 }

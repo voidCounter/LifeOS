@@ -5,6 +5,13 @@ spring:
     name: lifeos-resource-loader
 
   ai:
+    vectorstore:
+      chroma:
+        client:
+          host: http://localhost
+          port: 8090
+        initialize-schema: true
+
     vertex:
       ai:
         embedding:
@@ -12,13 +19,14 @@ spring:
           location: ${secrets.vertex-ai-location}
           text:
             options:
-                model: text-embedding-004
+              auto-truncate: false
+              model: text-multilingual-embedding-002
         gemini:
           project-id: ${secrets.vertex-ai-project-id}
           location: ${secrets.vertex-ai-location}
           chat:
             options:
-              model: gemini-1.5-flash-001
+              model: gemini-1.5-pro-001
 
 eureka:
   client:

@@ -58,17 +58,16 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-tika-document-reader</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.github.thoroldvix</groupId>
             <artifactId>youtube-transcript-api</artifactId>
             <version>0.3.4</version>
         </dependency>        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-docker-compose -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-docker-compose</artifactId>
-            <version>3.3.3</version>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-vertex-ai-gemini-spring-boot-starter

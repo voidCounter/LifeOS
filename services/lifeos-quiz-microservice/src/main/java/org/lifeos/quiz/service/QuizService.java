@@ -69,17 +69,17 @@ public class QuizService {
         }
     }
 
-    public String createQuizByYoutube(QuizByYoutubeDTO quizCreationDTO) {
+    public GeneratedQuizDTO createQuizByYoutube(QuizByYoutubeDTO quizCreationDTO) {
         String generatedQuiz =
                 aiServiceClient.generateQuizByYoutube(quizCreationDTO);
-//        try {
-//            return jacksonObjectMapper.readValue(generatedQuiz,
-//                    GeneratedQuizDTO.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException("Error parsing quiz Data", e);
-//        }
-        return generatedQuiz;
 
+        log.info("Generated Quiz: {}", generatedQuiz);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz,
+                    GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
     }
 
     // returns created quiz id
