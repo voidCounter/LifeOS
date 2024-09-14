@@ -6,14 +6,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ResourceReader {
     public List<Document> loadText(Resource resource, String fileName,
                                    String sourceURL) {
         TextReader textReader = new TextReader(resource);
+        textReader.getCustomMetadata().put("fileName", fileName);
         textReader.getCustomMetadata().put("source", sourceURL);
-        textReader.getCustomMetadata().put("filename", fileName);
-        return textReader.read();
+        List<Document> documents = textReader.read();
+        documents.forEach(doc -> doc.getMetadata().put("source", sourceURL));
+        return documents;
     }
 }

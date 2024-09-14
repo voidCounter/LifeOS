@@ -9,9 +9,12 @@ import java.nio.charset.StandardCharsets;
 
 @Service
 public class FileService {
-    public String convertResourceToString(Resource resourceFile) throws IOException {
-        // Read the resource file content as a String
-        return StreamUtils.copyToString(resourceFile.getInputStream(),
-                StandardCharsets.UTF_8);
+    public String convertResourceToString(Resource resourceFile) {
+        try {
+            return StreamUtils.copyToString(resourceFile.getInputStream(),
+                    StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException("Error converting resource to string");
+        }
     }
 }
