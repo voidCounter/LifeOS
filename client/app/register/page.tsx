@@ -15,9 +15,13 @@ import {Button} from "@/components/ui/button";
 import React from "react";
 import {PasswordInput} from "@/components/ui/PasswordInput";
 import {AxiosInstance} from "@/utils/AxiosInstance";
-import {AuthErrorType} from "@/types/AuthErrorType";
+import {FormErrorType} from "@/types/FormErrorType";
 import {HttpStatus} from "@/types/HttpStatus";
 import {useRouter} from "next/navigation";
+import {useMutation} from "@tanstack/react-query";
+import {AxiosError, AxiosResponse} from "axios";
+import {User} from "@/types/User";
+import Loading from "@/app/app/loading";
 
 const registerSchema = z.object({
     name: z.string(),
@@ -38,19 +42,24 @@ export default function Register() {
         }
     })
 
-    const onRegisterFormSubmit = async (data: z.infer<typeof registerSchema>) => {
-        try {
-            const response = await AxiosInstance.post("/auth/register", data);
-            if (response.status === HttpStatus.CREATED) {
+    const {mutate: register, isPending, isError} = useMutation({
+        mutationFn: (data: z.infer<typeof registerSchema>) => AxiosInstance.post("/auth/register", data),
+        onSuccess: data => {
+            const response: AxiosResponse<User> = data;
+            if (data.status === HttpStatus.CREATED)
                 router.push("/login");
-            }
-        } catch (error: any) {
-            const errorInfo: AuthErrorType = error.response.data;
-            registerForm.setError(errorInfo.field, {
+        },
+        onError: error => {
+            const axiosError: FormErrorType = (error as AxiosError)?.response?.data as FormErrorType;
+            registerForm.setError(axiosError.field, {
                 type: "server",
-                message: errorInfo.message
+                message: axiosError.message
             });
         }
+    })
+
+    function onRegisterFormSubmit(data: z.infer<typeof registerSchema>) {
+        register(data);
     }
 
     return (
@@ -120,7 +129,9 @@ export default function Register() {
                         </FormField>
                         <div className={"w-full pt-4"}>
                             <Button type={"submit"} className={"w-full"}
-                            >Register</Button>
+                                    disabled={isPending}
+                            >{isPending ? <Loading
+                                text={"Registering"}/> : "Register"}</Button>
                         </div>
                     </form>
                 </Form>

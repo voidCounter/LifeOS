@@ -52,4 +52,14 @@ public class RoutingConfig {
                 .build();
     }
 
+    @Bean
+    public RouterFunction<ServerResponse> resourceLoaderService() {
+        return GatewayRouterFunctions.route("resource-loader-service")
+                .route(RequestPredicates.path("/api/resource-loader/**"),
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-resource-loader"))
+                .before(stripPrefix(2))
+                .build();
+    }
+
 }

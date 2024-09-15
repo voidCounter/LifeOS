@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class AuthErrorDTO {
+public class FormErrorDTO {
     private String field;
     private String message;
 }

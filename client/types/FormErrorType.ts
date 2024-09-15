@@ -1,4 +1,4 @@
-export interface AuthErrorType {
+export interface FormErrorType {
     message: string;
     field: "email" | "password";
 }

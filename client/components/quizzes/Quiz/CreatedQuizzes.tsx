@@ -29,7 +29,7 @@ export default function CreatedQuizzes() {
         description: error?.message ?? "",
     })
 
-    if (isLoading) return <Loading/>
+    if (isLoading) return <Loading className={"mt-12"}/>
     return (<div className={"w-full h-full flex flex-col gap-2"}>
         {
             quizzes?.map((quiz: Quiz) => <QuizCard

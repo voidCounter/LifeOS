@@ -1,0 +1,38 @@
+spring:
+  config:
+    import: 'optional:classpath:secrets.yaml'
+  application:
+    name: lifeos-resource-loader
+
+  ai:
+    vectorstore:
+      chroma:
+        client:
+          host: http://localhost
+          port: 8090
+        initialize-schema: true
+
+    vertex:
+      ai:
+        embedding:
+          project-id: ${secrets.vertex-ai-project-id}
+          location: ${secrets.vertex-ai-location}
+          text:
+            options:
+              auto-truncate: false
+              model: text-multilingual-embedding-002
+        gemini:
+          project-id: ${secrets.vertex-ai-project-id}
+          location: ${secrets.vertex-ai-location}
+          chat:
+            options:
+              model: gemini-1.5-pro-001
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+server:
+  port: 8086
