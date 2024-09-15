@@ -52,6 +52,7 @@ import {cn} from "@/lib/utils";
 import {useQuizCreationMutation} from "@/hooks/useQuizCreationQuery";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
 import {useEffect} from "react";
+import extractVideoID from "@/utils/extractVideoID";
 
 
 export default function QuizCreationForm({quizCreationMethod}: {
@@ -112,6 +113,18 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                            is
                                            public.
                                        </FormDescription>
+                                       {
+                                           field.value && extractVideoID(field.value) &&
+                                           <div>
+                                               <iframe
+                                                   src={"https://www.youtube.com/embed/" + extractVideoID(field.value)}
+                                                   className={"w-full h-64" +
+                                                       " rounded-lg"}
+                                                   allowFullScreen
+                                                   title={"Youtube video"}/>
+                                           </div>
+                                       }
+
                                        <FormMessage/>
                                    </FormItem>
                                )}/>
