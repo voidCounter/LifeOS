@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.lifeos.quiz.dto.*;
-import org.lifeos.quiz.model.*;
+import org.lifeos.quiz.model.Question;
+import org.lifeos.quiz.model.Quiz;
+import org.lifeos.quiz.model.User;
 import org.lifeos.quiz.repository.QuizRepository;
 import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service_clients.AIServiceClient;
@@ -25,7 +27,12 @@ public class QuizService {
     private final ObjectMapper jacksonObjectMapper;
     private final ModelMapper modelMapper;
 
-    public QuizService(QuizRepository quizRepository, UserRepository userRepository, AIServiceClient aiServiceClient, ObjectMapper jacksonObjectMapper, ModelMapper modelMapper) {
+    public QuizService(QuizRepository quizRepository,
+                       UserRepository userRepository,
+                       AIServiceClient aiServiceClient,
+                       ObjectMapper jacksonObjectMapper,
+                       ModelMapper modelMapper
+    ) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.aiServiceClient = aiServiceClient;
@@ -50,12 +57,26 @@ public class QuizService {
         return quizRepository.findAllByQuizId(quizId).getQuestions();
     }
 
-    public GeneratedQuizDTO createQuizByPrompt(QuizbyPromptDTO quizbyPromptDTO) {
-        log.info("Creating quiz by prompt: {}", quizbyPromptDTO.getNumberOfQuestions());
-        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizbyPromptDTO);
+    @Transactional
+    public GeneratedQuizDTO createQuizByPrompt(QuizCreationDTO quizCreationDTO) {
+        log.info("Creating quiz by prompt: {}", quizCreationDTO.getNumberOfQuestions());
+        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizCreationDTO);
         log.info("Generated Quiz: {}", generatedQuiz);
         try {
             return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
+    }
+
+    public GeneratedQuizDTO createQuizByYoutube(QuizByYoutubeDTO quizCreationDTO) {
+        String generatedQuiz =
+                aiServiceClient.generateQuizByYoutube(quizCreationDTO);
+
+        log.info("Generated Quiz: {}", generatedQuiz);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz,
+                    GeneratedQuizDTO.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error parsing quiz Data", e);
         }
@@ -77,4 +98,6 @@ public class QuizService {
         }
         return quizRepository.findAllByCreator(creator).stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
     }
+
+
 }

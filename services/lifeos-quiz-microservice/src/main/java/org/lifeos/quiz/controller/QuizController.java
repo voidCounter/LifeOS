@@ -1,9 +1,6 @@
 package org.lifeos.quiz.controller;
 
-import org.lifeos.quiz.dto.ErrorDTO;
-import org.lifeos.quiz.dto.QuizDTO;
-import org.lifeos.quiz.dto.QuizWithQuestionsDTO;
-import org.lifeos.quiz.dto.QuizbyPromptDTO;
+import org.lifeos.quiz.dto.*;
 import org.lifeos.quiz.model.Quiz;
 import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service.QuizService;
@@ -14,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,7 +37,7 @@ public class QuizController {
     @GetMapping("/createdBy/{userId}")
     public ResponseEntity<?> getQuizzesCreatedByUser(@RequestHeader(name =
             "user-id", required = false) UUID reqUserId,
-                                                                 @PathVariable UUID userId) {
+                                                     @PathVariable UUID userId) {
         log.info("userids: {}", reqUserId + " " + userId);
         if (!reqUserId.equals(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorDTO.builder().message("You're not authorized to view the quizzes").build());
@@ -85,10 +81,16 @@ public class QuizController {
 //    }
 
     @PostMapping("/create/byprompt")
-    public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizbyPromptDTO quizbyPromptDTO) {
-        log.info("Creating quiz by prompt: {}", quizbyPromptDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByPrompt(quizbyPromptDTO));
+    public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizCreationDTO quizCreationDTO) {
+        log.info("Creating quiz by prompt: {}", quizCreationDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByPrompt(quizCreationDTO));
     }
+
+    @PostMapping("/create/byyoutube")
+    public ResponseEntity<?> createQuizByYoutube(@RequestBody QuizByYoutubeDTO quizCreationDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByYoutube(quizCreationDTO));
+    }
+
 
     @PostMapping("/{quizId}/questions/new")
     public ResponseEntity<?> addNewQuiz(@RequestBody QuizWithQuestionsDTO quizWithQuestionsDTO,
