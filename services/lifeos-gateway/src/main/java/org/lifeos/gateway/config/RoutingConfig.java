@@ -61,5 +61,14 @@ public class RoutingConfig {
                 .before(stripPrefix(2))
                 .build();
     }
+    @Bean
+    public RouterFunction<ServerResponse> pathwayService() {
+        return GatewayRouterFunctions.route("pathway-service")
+                .route(RequestPredicates.path("/api/pathway/**"),
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-pathway-microservice"))
+                .before(stripPrefix(2))
+                .build();
+    }
 
 }
