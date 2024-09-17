@@ -35,6 +35,8 @@ export default function LoggedInUserMenu() {
             }
         } catch (error) {
             console.error("Logout failed: ", error);
+            deleteAuthenticatedUser();
+            router.push("/");
         }
     }
 

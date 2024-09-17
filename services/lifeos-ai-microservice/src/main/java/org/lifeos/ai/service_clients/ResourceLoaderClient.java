@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "lifeos-resource-loader")
 public interface ResourceLoaderClient {
     @PostMapping("/youtube/loadYoutubeTranscript")
-    ResponseEntity<String> loadTranscript(@RequestBody String youtubeURL);
+    ResponseEntity<String> loadYoutubeTranscript(@RequestBody String youtubeURL);
 
     @PostMapping("/retrieve")
     String retrieve(@RequestBody RetrievalQueryDTO retrievalQueryDTO);
+
+    @PostMapping("/web-article/loadWebArticle")
+    ResponseEntity<String> loadWebArticle(@RequestBody String articleURL);
 }

@@ -1,6 +1,5 @@
 package org.lifeos.resourceloader.service;
 
-import org.apache.pdfbox.Loader;
 import org.lifeos.resourceloader.utils.ResourceReader;
 import org.lifeos.resourceloader.utils.ResourceTokenSplitter;
 import org.slf4j.Logger;

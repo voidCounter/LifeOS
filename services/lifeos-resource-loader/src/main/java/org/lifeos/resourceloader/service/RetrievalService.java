@@ -24,7 +24,7 @@ public class RetrievalService {
         log.info("Doing similarity search: {}",
                 retrievalQueryDTO.getQuery() + " ---- into ----" + retrievalQueryDTO.getFileName());
         List<Document> matchedDocs =
-                vectorStore.similaritySearch(SearchRequest.query(retrievalQueryDTO.getQuery()).withTopK(5).withFilterExpression("fileName == '" + retrievalQueryDTO.getFileName() + "'"));
+                vectorStore.similaritySearch(SearchRequest.query(retrievalQueryDTO.getQuery()).withTopK(3).withFilterExpression("fileName == '" + retrievalQueryDTO.getFileName() + "'"));
         return matchedDocs.stream().map(Document::getContent).collect(Collectors.joining("\n"));
     }
 }
