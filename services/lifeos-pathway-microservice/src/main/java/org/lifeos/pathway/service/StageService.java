@@ -1,7 +1,6 @@
 package org.lifeos.pathway.service;
 
-import lombok.RequiredArgsConstructor;
-import org.lifeos.pathway.controller.StageController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lifeos.pathway.dto.*;
 import org.lifeos.pathway.model.Roadmap;
 import org.lifeos.pathway.model.Stage;
@@ -9,23 +8,41 @@ import org.lifeos.pathway.model.StageType;
 import org.lifeos.pathway.model.User;
 import org.lifeos.pathway.repository.StageRepository;
 import org.lifeos.pathway.repository.UserRepository;
+import org.lifeos.pathway.service_client.AiServiceClient;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class StageService {
 
     private static final Logger log = LoggerFactory.getLogger(StageService.class);
 
     private final StageRepository stageRepository;
     private final UserRepository userRepository;
+    private final AiServiceClient aiServiceClient;
+    private final ObjectMapper jacksonObjectMapper;
+    private final ModelMapper modelMapper;
+
+    public StageService(
+            StageRepository stageRepository,
+            UserRepository userRepository,
+            AiServiceClient aiServiceClient,
+            ObjectMapper jacksonObjectMapper,
+            ModelMapper modelMapper
+    ) {
+        this.stageRepository = stageRepository;
+        this.userRepository = userRepository;
+        this.aiServiceClient = aiServiceClient;
+        this.jacksonObjectMapper = jacksonObjectMapper;
+        this.modelMapper = modelMapper;
+    }
 
     private Stage isPresentStageId(UUID stageId) {
         Optional<Stage> stage = stageRepository.findById(stageId);
@@ -76,10 +93,15 @@ public class StageService {
         );
     }
 
-    public void updateStage(StageUpdateDTO stageUpdateDTO) {
-
-        if (stageUpdateDTO.getPublished()) {
-
+    public List<Question> generateQuestion(StageCreationDTO stageCreationDTO) {
+        log.info("Generating stage with prompt: {}", stageCreationDTO.getPrompt());
+        List<Question> generatedQuestions = aiServiceClient.generatePathwayByPrompt(stageCreationDTO);
+        log.info("Generated Stage: {}", generatedQuestions);
+        try {
+            return generatedQuestions;
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing stage Data", e);
         }
     }
+
 }

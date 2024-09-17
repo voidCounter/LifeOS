@@ -1,9 +1,9 @@
-package org.lifeos.ai.dto;
+package org.lifeos.pathway.dto;
 
 import lombok.Data;
 
 @Data
-public class StageRequestDTO {
+public class StageCreationDTO {
     private String prompt;
     private String language;
 }
