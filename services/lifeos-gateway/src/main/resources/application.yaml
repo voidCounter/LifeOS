@@ -2,6 +2,11 @@ logging:
   level:
     org.springframework.cloud.gateway: DEBUG
 spring:
+  sql:
+    init:
+      mode: always
+  jpa:
+    defer-datasource-initialization: true
   main:
     allow-bean-definition-overriding: true
   config:

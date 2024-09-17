@@ -58,9 +58,9 @@ public class QuizService {
     }
 
     @Transactional
-    public GeneratedQuizDTO createQuizByPrompt(QuizCreationDTO quizCreationDTO) {
-        log.info("Creating quiz by prompt: {}", quizCreationDTO.getNumberOfQuestions());
-        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizCreationDTO);
+    public GeneratedQuizDTO createQuizByPrompt(QuizByPromptDTO quizByPromptDTO) {
+        log.info("Creating quiz by prompt: {}", quizByPromptDTO.getNumberOfQuestions());
+        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizByPromptDTO);
         log.info("Generated Quiz: {}", generatedQuiz);
         try {
             return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
@@ -100,4 +100,14 @@ public class QuizService {
     }
 
 
+    public Object createQuizByArticle(QuizByArticleDTO quizByArticleDTO) {
+        log.info("Creating quiz by article: {}",
+                quizByArticleDTO.getNumberOfQuestions());
+        String generatedQuiz = aiServiceClient.generateQuizByArticle(quizByArticleDTO);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
+    }
 }

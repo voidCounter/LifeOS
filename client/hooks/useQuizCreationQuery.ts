@@ -16,20 +16,7 @@ const generateQuiz = async (url: string, data: z.infer<typeof quizCreationSchema
 
 
 export const useQuizCreationMutation = (quizCreationMethod: QuizCreationOptionType) => {
-    let url = '';
-    switch (quizCreationMethod) {
-        case "prompt":
-            url = '/quiz/create/byprompt';
-            break;
-        case "article":
-            url = '/quiz/create/byarticle';
-            break;
-        case "youtube":
-            url = '/quiz/create/byyoutube';
-            break;
-        default:
-            break;
-    }
+    let url = '/quiz/create';
     return useMutation<Quiz, Error, z.infer<typeof quizCreationSchema>>({
         mutationFn: (data: z.infer<typeof quizCreationSchema>) => generateQuiz(url, data),
         onSuccess: (data) => {

@@ -1,9 +1,9 @@
 package org.lifeos.ai.controller;
 
 
+import org.lifeos.ai.dto.quiz.QuizByArticleDTO;
 import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
 import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
-import org.lifeos.ai.dto.quiz.QuizCreationDTO;
 import org.lifeos.ai.service.QuizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class QuizController {
 
     @PostMapping("/generate-quiz-by-prompt")
     public ResponseEntity<String> getQuizByPrompt(@RequestBody QuizByPromptDTO quizCreationDTO,
-                                          @RequestHeader(value = "UserId", required = false) String userId) {
+                                                  @RequestHeader(value = "UserId", required = false) String userId) {
         log.info("Requested by: {}", userId);
         log.info("Request: {}", quizCreationDTO.toString());
         String generatedQuiz =
@@ -33,9 +33,17 @@ public class QuizController {
     }
 
     @PostMapping("/generate-quiz-by-youtube")
-    public ResponseEntity<String> getQuizByYoutube(@RequestBody QuizByYoutubeDTO quizByYoutubeDTO, @RequestHeader(value = "UserId", required = false) String userId) {
+    public ResponseEntity<String> generateQuizByYoutube(@RequestBody QuizByYoutubeDTO quizByYoutubeDTO, @RequestHeader(value = "UserId", required = false) String userId) {
         String generatedQuiz =
                 quizService.generateQuizByYoutube(quizByYoutubeDTO);
+        return ResponseEntity.ok(generatedQuiz);
+    }
+
+    @PostMapping("/generate-quiz-by-article")
+    public ResponseEntity<String> generateQuizByArticle(@RequestBody QuizByArticleDTO quizByArticleDTO,
+                                                        @RequestHeader(value = "UserId", required = false) String userId) {
+        String generatedQuiz =
+                quizService.generateQuizByArticle(quizByArticleDTO);
         return ResponseEntity.ok(generatedQuiz);
     }
 }
