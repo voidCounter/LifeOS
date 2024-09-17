@@ -1,11 +1,7 @@
 package org.lifeos.pathway.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.mapping.List;
-import org.lifeos.pathway.dto.StageDTO;
-import org.lifeos.pathway.dto.StageDeleteDTO;
-import org.lifeos.pathway.dto.StageResponseDTO;
-import org.lifeos.pathway.model.Stage;
+import org.lifeos.pathway.dto.*;
 import org.lifeos.pathway.model.StageType;
 import org.lifeos.pathway.service.StageService;
 import org.slf4j.Logger;
@@ -14,10 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/pathway")
 @RequiredArgsConstructor
 public class StageController {
 
@@ -82,6 +78,31 @@ public class StageController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
                             e.getMessage() + "\n failed to delete stage with id "+ stageDeleteDTO.getStageId()
+                    );
+        }
+    }
+
+    @PostMapping(value = "/generate-questions", produces = "application/json")
+    public ResponseEntity<?> generateStageWithPrompt(
+            @RequestBody StageCreationDTO stageCreationDTO,
+            @RequestHeader(value = "UserId", required = false) String userId
+    ) {
+        try {
+            log.info("Generating stage with prompt: {}", stageCreationDTO);
+            List<Question> generatedQuestion =
+                    stageService
+                            .generateQuestion(stageCreationDTO);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(
+                            generatedQuestion
+                    );
+        } catch (Exception e) {
+            log.error("Error generating stage with prompt: {}", stageCreationDTO.getPrompt(), e);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                            e.getMessage() + "\n failed to generate stage with prompt: " + stageCreationDTO.getPrompt()
                     );
         }
     }
