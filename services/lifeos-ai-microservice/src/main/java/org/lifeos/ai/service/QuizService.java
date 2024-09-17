@@ -27,9 +27,9 @@ public class QuizService {
     private final FileService fileService;
 
 
-    @Value("classPath:/prompts/QuizSystemPrompt.st")
+    @Value("classpath:/prompts/QuizSystemPrompt.st")
     private Resource systemPromptResource;
-    @Value("classPath:/prompts/ResourceExtraPrompt.st")
+    @Value("classpath:/prompts/ResourceExtraPrompt.st")
     private Resource resourceExtraPrompt;
 
 
