@@ -117,9 +117,10 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                            field.value && extractVideoID(field.value) &&
                                            <div>
                                                <iframe
-                                                   src={"https://www.youtube.com/embed/" + extractVideoID(field.value)}
+                                                   src={"https://www.youtube-nocookie.com/embed/" + extractVideoID(field.value)}
                                                    className={"w-full h-64" +
                                                        " rounded-lg"}
+                                                   allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                    allowFullScreen
                                                    title={"Youtube video"}/>
                                            </div>
