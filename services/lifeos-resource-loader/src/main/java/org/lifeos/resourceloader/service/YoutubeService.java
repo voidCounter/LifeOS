@@ -63,7 +63,7 @@ public class YoutubeService {
         String transcript = getTranscript(videoID);
         Resource resource = new ByteArrayResource(transcript.getBytes());
         // loading the resource
-        String fileName = "youtube-" + videoID + ".txt";
+        String fileName = "youtube-" + videoID.hashCode() + ".txt";
         loaderService.loadText(resource, fileName, youtubeURL);
         // the filename will be used for metadata filtering
         return fileName;

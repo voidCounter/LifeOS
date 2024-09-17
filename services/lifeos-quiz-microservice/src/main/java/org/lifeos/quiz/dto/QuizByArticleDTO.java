@@ -1,13 +1,15 @@
 package org.lifeos.quiz.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
-@JsonTypeName("YOUTUBE")
 @Data
-public class QuizByYoutubeDTO extends QuizCreationDTO {
-    private String youtubeUrl;
+@JsonTypeName("ARTICLE")
+@EqualsAndHashCode(callSuper = true)
+public class QuizByArticleDTO extends QuizCreationDTO {
+    private String articleUrl;
     private String prompt;
 }
+

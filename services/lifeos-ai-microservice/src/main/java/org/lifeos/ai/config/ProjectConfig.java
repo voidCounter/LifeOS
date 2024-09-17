@@ -30,7 +30,7 @@ public class ProjectConfig {
 
     @Bean
     ChatClient quizClient(ChatClient.Builder builder) {
-        return builder.defaultSystem(quizSystemPromptResource).defaultUser(jsonSyntaxPromptResource).build();
+        return builder.defaultSystem(quizSystemPromptResource).build();
     }
 
     @Bean
