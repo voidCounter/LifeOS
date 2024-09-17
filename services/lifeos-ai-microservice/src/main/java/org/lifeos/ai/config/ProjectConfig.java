@@ -18,19 +18,19 @@ import java.util.List;
 @ComponentScan(basePackages = {"org.lifeos.ai.config"})
 public class ProjectConfig {
     private static final Logger log = LoggerFactory.getLogger(ProjectConfig.class);
-    @Value("classPath:/prompts/PathwaySystemPrompt.st")
+    @Value("classpath:/prompts/PathwaySystemPrompt.st")
     private Resource pathwaySystemPromptResource;
 
-    @Value("classPath:/prompts/QuizSystemPrompt.st")
+    @Value("classpath:/prompts/QuizSystemPrompt.st")
     private Resource quizSystemPromptResource;
 
-    @Value("classPath:/prompts/JSONSyntaxPrompt.st")
+    @Value("classpath:/prompts/JSONSyntaxPrompt.st")
     private Resource jsonSyntaxPromptResource;
 
 
     @Bean
     ChatClient quizClient(ChatClient.Builder builder) {
-        return builder.defaultSystem(quizSystemPromptResource).defaultUser(jsonSyntaxPromptResource).build();
+        return builder.defaultSystem(quizSystemPromptResource).build();
     }
 
     @Bean

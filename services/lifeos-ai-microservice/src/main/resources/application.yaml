@@ -20,7 +20,7 @@ logging:
         ai:
           chat:
             client:
-              advisor=DEBUG:
+              advisor: DEBUG
 eureka:
   client:
     service-url:

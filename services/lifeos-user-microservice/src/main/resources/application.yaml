@@ -1,6 +1,11 @@
 server:
   port: 8083
 spring:
+  sql:
+    init:
+      mode: always
+  jpa:
+    defer-datasource-initialization: true
   config:
     import: 'optional:classpath:secrets.yaml'
   application:

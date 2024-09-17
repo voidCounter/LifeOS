@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "folders")
 public class Folder {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID folderId;
     private String folderTitle;
     @ManyToOne()

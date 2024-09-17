@@ -1,8 +1,10 @@
 package org.lifeos.ai.service;
 
 import org.lifeos.ai.dto.RetrievalQueryDTO;
+import org.lifeos.ai.dto.quiz.QuizByArticleDTO;
 import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
 import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
+import org.lifeos.ai.dto.quiz.QuizCreationDTO;
 import org.lifeos.ai.service_clients.ResourceLoaderClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 
 @Service
 public class QuizService {
@@ -26,9 +27,9 @@ public class QuizService {
     private final FileService fileService;
 
 
-    @Value("classPath:/prompts/QuizSystemPrompt.st")
+    @Value("classpath:/prompts/QuizSystemPrompt.st")
     private Resource systemPromptResource;
-    @Value("classPath:/prompts/ResourceExtraPrompt.st")
+    @Value("classpath:/prompts/ResourceExtraPrompt.st")
     private Resource resourceExtraPrompt;
 
 
@@ -50,18 +51,18 @@ public class QuizService {
         }
     }
 
-
-    public String generateQuizByPrompt(QuizByPromptDTO quizbyPromptDTO) {
+    public String generateQuiz(QuizCreationDTO quizCreationDTO, String userPrompt) {
         try {
             return this.chatClient.prompt()
                     .advisors(new SimpleLoggerAdvisor())
                     .system(sp -> sp.param("numberOfQuestions",
-                            quizbyPromptDTO.getNumberOfQuestions()))
-                    .system(sp -> sp.param("language", quizbyPromptDTO.getLanguage()))
-                    .system(sp -> sp.param("questionsType", quizbyPromptDTO.getQuestionsType()))
+                            quizCreationDTO.getNumberOfQuestions()))
+                    .system(sp -> sp.param("language", quizCreationDTO.getLanguage()))
+                    .system(sp -> sp.param("questionsType",
+                            quizCreationDTO.getQuestionsType()))
                     .system(sp -> sp.param("questionsDifficulty",
-                            quizbyPromptDTO.getQuestionsDifficulty()))
-                    .user(quizbyPromptDTO.getPrompt())
+                            quizCreationDTO.getQuestionsDifficulty()))
+                    .user(userPrompt)
                     .call()
                     .content();
         } catch (Exception e) {
@@ -70,10 +71,14 @@ public class QuizService {
         }
     }
 
+    public String generateQuizByPrompt(QuizByPromptDTO quizbyPromptDTO) {
+        return generateQuiz(quizbyPromptDTO, quizbyPromptDTO.getPrompt());
+    }
+
     public String generateQuizByYoutube(QuizByYoutubeDTO quizByYoutubeDTO) {
         // load youtube transcript
         ResponseEntity<String> loadingResponse =
-                resourceLoaderClient.loadTranscript(quizByYoutubeDTO.getYoutubeUrl());
+                resourceLoaderClient.loadYoutubeTranscript(quizByYoutubeDTO.getYoutubeUrl());
         log.info("Response of loading things: {}", loadingResponse.getBody());
 
         // TODO: Handle the case when the user query is empty
@@ -83,28 +88,29 @@ public class QuizService {
                         .query(quizByYoutubeDTO.getPrompt()).fileName(loadingResponse.getBody())
                         .build());
 
-        log.info("Similar chunks: {}", similarChunks);
-        log.info("resourceExtraPrompt: {}", fileService.convertResourceToString(resourceExtraPrompt));
-        try {
-            return this.chatClient.prompt()
-                    .advisors(new SimpleLoggerAdvisor(AdvisedRequest::userText,
-                            response -> String.valueOf(response.getResult())))
-                    .system(sp -> sp.param("numberOfQuestions",
-                            quizByYoutubeDTO.getNumberOfQuestions()))
-                    .system(sp -> sp.param("language", quizByYoutubeDTO.getLanguage()))
-                    .system(sp -> sp.param("questionsType",
-                            quizByYoutubeDTO.getQuestionsType()))
-                    .system(sp -> sp.param("questionsDifficulty",
-                            quizByYoutubeDTO.getQuestionsDifficulty()))
-                    .user(quizByYoutubeDTO.getPrompt() + fileService.convertResourceToString(resourceExtraPrompt) + "\n " +
-                            "Resource:" +
-                            " " + similarChunks)
-                    .call()
-                    .content();
-        } catch (Exception e) {
-            log.error("Error generating quiz: ", e);
-            return "Error generating quiz";
-        }
         // provide the chunks to the chat client and generate quiz
+        return generateQuiz(quizByYoutubeDTO,
+                quizByYoutubeDTO.getPrompt() + "\n " + fileService.convertResourceToString(resourceExtraPrompt) + "\n " + "Resource: \n" + similarChunks);
+
+    }
+
+    public String generateQuizByArticle(QuizByArticleDTO quizByArticleDTO) {
+        // load article content
+        ResponseEntity<String> loadingResponse =
+                resourceLoaderClient.loadWebArticle(quizByArticleDTO.getArticleUrl());
+
+        // retrieve similar chunks based on the prompt
+        String similarChunks =
+                resourceLoaderClient.retrieve(RetrievalQueryDTO.builder()
+                        .query(quizByArticleDTO.getPrompt()).fileName(loadingResponse.getBody())
+                        .build());
+
+        // provide the chunks to the chat client and generate quiz
+        String generatedQuiz = generateQuiz(quizByArticleDTO,
+                quizByArticleDTO.getPrompt() + "\n " + fileService.convertResourceToString(resourceExtraPrompt) + "\n " + "Resource: \n" + similarChunks);
+        if (generatedQuiz.startsWith("```json")) {
+            generatedQuiz = generatedQuiz.substring(8, generatedQuiz.length() - 3);
+        }
+        return generatedQuiz;
     }
 }
