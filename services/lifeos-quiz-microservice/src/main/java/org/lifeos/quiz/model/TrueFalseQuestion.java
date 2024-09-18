@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 import org.lifeos.quiz.dto.TrueFalseQuestionDTO;
 
 @EqualsAndHashCode(callSuper = true)
