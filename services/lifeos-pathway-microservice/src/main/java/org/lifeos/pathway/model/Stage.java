@@ -1,6 +1,7 @@
 package org.lifeos.pathway.model;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,7 +60,7 @@ public class Stage {
     private Timestamp dueDate;
     @Column(name = "title")
     private String title;
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "jsonb")
     private String description;
 
     public Stage(StageDTO stageDTO) {

@@ -11,6 +11,10 @@ import java.util.List;
 
 @FeignClient(name = "lifeos-AI-microservice")
 public interface AiServiceClient {
-    @PostMapping("/generate-pathway-by-prompt")
-    List<Question> generatePathwayByPrompt(@RequestBody StageCreationDTO stageCreationDTO);
+    @PostMapping("/generate-questions")
+    String generatePathwayQuestions(
+            @RequestBody StageCreationDTO stageCreationDTO
+    );
+    @PostMapping("/generate-pathway")
+    String generatePathwayByPrompt(StageCreationDTO stageCreationDTO);
 }
