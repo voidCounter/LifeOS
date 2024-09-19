@@ -1,10 +1,7 @@
 package org.lifeos.ai.service;
 
 import org.lifeos.ai.dto.RetrievalQueryDTO;
-import org.lifeos.ai.dto.quiz.QuizByArticleDTO;
-import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
-import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
-import org.lifeos.ai.dto.quiz.QuizCreationDTO;
+import org.lifeos.ai.dto.quiz.*;
 import org.lifeos.ai.service_clients.ResourceLoaderClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class QuizService {
@@ -85,7 +84,7 @@ public class QuizService {
         // retrieve similar chunks based on the prompt
         String similarChunks =
                 resourceLoaderClient.retrieve(RetrievalQueryDTO.builder()
-                        .query(quizByYoutubeDTO.getPrompt()).fileName(loadingResponse.getBody())
+                        .query(quizByYoutubeDTO.getPrompt()).fileNames(List.of(Objects.requireNonNull(loadingResponse.getBody())))
                         .build());
 
         // provide the chunks to the chat client and generate quiz
@@ -102,7 +101,7 @@ public class QuizService {
         // retrieve similar chunks based on the prompt
         String similarChunks =
                 resourceLoaderClient.retrieve(RetrievalQueryDTO.builder()
-                        .query(quizByArticleDTO.getPrompt()).fileName(loadingResponse.getBody())
+                        .query(quizByArticleDTO.getPrompt()).fileNames(List.of(Objects.requireNonNull(loadingResponse.getBody())))
                         .build());
 
         // provide the chunks to the chat client and generate quiz
@@ -112,5 +111,21 @@ public class QuizService {
             generatedQuiz = generatedQuiz.substring(8, generatedQuiz.length() - 3);
         }
         return generatedQuiz;
+    }
+
+    public String generateQuizByNotes(QuizByNotesDTO quizByNotesDTO) {
+        // retrieve similar chunks based on the given prompt and file names
+        log.info("Retrieving similar chunks for quiz by notes: {}",
+                quizByNotesDTO.toString());
+        String similarChunks =
+                resourceLoaderClient.retrieve(RetrievalQueryDTO.builder()
+                        .query(quizByNotesDTO.getPrompt()).fileNames(quizByNotesDTO.getFiles())
+                        .build());
+
+        log.info("Similar chunks: {}", similarChunks);
+
+        // provide the chunks to the chat client and generate quiz
+        return generateQuiz(quizByNotesDTO,
+                quizByNotesDTO.getPrompt() + "\n " + fileService.convertResourceToString(resourceExtraPrompt) + "\n " + "Resource: \n" + similarChunks);
     }
 }

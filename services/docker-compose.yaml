@@ -2,6 +2,14 @@ networks:
   net:
     driver: bridge
 services:
+  #  postgres:
+  #    image: postgres:15
+  #    environment:
+  #      POSTGRES_USER: lifeos_admin
+  #      POSTGRES_PASSWORD: lifeos_admin
+  #      POSTGRES_DB: lifeos
+  #    ports:
+  #      - 5434:5434
   server:
     image: ghcr.io/chroma-core/chroma:latest
     environment:

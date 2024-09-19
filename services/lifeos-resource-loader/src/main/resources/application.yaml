@@ -18,9 +18,9 @@ spring:
           project-id: ${secrets.vertex-ai-project-id}
           location: ${secrets.vertex-ai-location}
           text:
-            options:
-              auto-truncate: false
-              model: text-multilingual-embedding-002
+#            options.dimension: 512
+            options.auto-truncate: false
+            options.model: text-multilingual-embedding-002
         gemini:
           project-id: ${secrets.vertex-ai-project-id}
           location: ${secrets.vertex-ai-location}
