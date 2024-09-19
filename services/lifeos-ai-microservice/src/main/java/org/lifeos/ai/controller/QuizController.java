@@ -2,6 +2,7 @@ package org.lifeos.ai.controller;
 
 
 import org.lifeos.ai.dto.quiz.QuizByArticleDTO;
+import org.lifeos.ai.dto.quiz.QuizByNotesDTO;
 import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
 import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
 import org.lifeos.ai.service.QuizService;
@@ -44,6 +45,14 @@ public class QuizController {
                                                         @RequestHeader(value = "UserId", required = false) String userId) {
         String generatedQuiz =
                 quizService.generateQuizByArticle(quizByArticleDTO);
+        return ResponseEntity.ok(generatedQuiz);
+    }
+
+    @PostMapping("/generate-quiz-by-notes")
+    public ResponseEntity<String> generateQuizByArticle(@RequestBody QuizByNotesDTO quizByNotesDTO,
+                                                        @RequestHeader(value = "UserId", required = false) String userId) {
+        String generatedQuiz =
+                quizService.generateQuizByNotes(quizByNotesDTO);
         return ResponseEntity.ok(generatedQuiz);
     }
 }

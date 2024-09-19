@@ -2,15 +2,17 @@ package org.lifeos.resourceloader.utils;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.TextReader;
+import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Component
 public class ResourceReader {
-    public List<Document> loadText(Resource resource, String fileName,
+    public List<Document> readText(Resource resource, String fileName,
                                    String sourceURL) {
         TextReader textReader = new TextReader(resource);
         textReader.getCustomMetadata().put("fileName", fileName);
@@ -18,5 +20,15 @@ public class ResourceReader {
         List<Document> documents = textReader.read();
         documents.forEach(doc -> doc.getMetadata().put("source", sourceURL));
         return documents;
+    }
+
+    public List<Document> readFile(Resource resource) {
+        if (Objects.requireNonNull(resource.getFilename()).endsWith(".pdf")) {
+            PagePdfDocumentReader pagePdfDocumentReader = new PagePdfDocumentReader(resource);
+            return pagePdfDocumentReader.read();
+        } else {
+            TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(resource);
+            return tikaDocumentReader.read();
+        }
     }
 }

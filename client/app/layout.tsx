@@ -3,6 +3,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import {Hind_Siliguri} from "next/font/google";
 import QueryProvider from "@/layouts/QueryProvicer";
+import {Toaster} from "@/components/ui/sonner";
 
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
         <body className="flex flex-row w-full bg-background">
         <div className="overflow-hidden w-full h-screen">
             <QueryProvider>
+                <Toaster/>
                 {children}
             </QueryProvider>
         </div>

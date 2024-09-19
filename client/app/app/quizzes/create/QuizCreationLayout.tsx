@@ -19,7 +19,8 @@ export default function QuizCreationLayout({className, children}:
     const router = useRouter();
     const pathname = usePathname();
     return (
-        <div className={`${cn(className)} w-full h-screen overflow-y-scroll px-2 no-scrollbar`}>
+        <div
+            className={`${cn(className)} w-full h-screen overflow-y-scroll px-2 no-scrollbar`}>
             <Tabs
                 value={pathname.split("/").pop()}
                 className="w-full flex flex-col items-center"
