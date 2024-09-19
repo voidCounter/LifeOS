@@ -1,10 +1,6 @@
 package org.lifeos.ai.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lifeos.ai.dto.StageRequestDTO;
-import org.lifeos.ai.dto.pathway.Question;
-import org.lifeos.ai.dto.pathway.QuestionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,7 +11,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 @Service
 public class PathwayService {
@@ -33,7 +28,15 @@ public class PathwayService {
     public PathwayService(@Qualifier("pathwayClient") ChatClient chatClient) {
         this.chatClient = chatClient;
     }
-    private boolean shouldAskQuestion = false;
+
+    @PostConstruct
+    public void validateQuestionPrompt() {
+        if (!questionPromptResource.exists()) {
+            log.error("Question prompt resource not found: {}", questionPromptResource.getFilename());
+        } else {
+            log.info("System prompt: {}", systemPromptResource);
+        }
+    }
 
     @PostConstruct
     public void validateSystemPrompt() {
@@ -44,9 +47,9 @@ public class PathwayService {
         }
     }
 
-    public List<Question> generateQuestions(StageRequestDTO stageRequestDTO) {
+    public String generatePathwayQuestions(StageRequestDTO stageRequestDTO) {
         try {
-            String generatedQuestions =  this.chatClient
+            return this.chatClient
                     .prompt()
                     .system(questionPromptResource)
                     .system(sp -> sp.param ("user_prompt", stageRequestDTO.getPrompt()))
@@ -55,19 +58,27 @@ public class PathwayService {
                     .advisors(new SimpleLoggerAdvisor())
                     .call()
                     .content();
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            log.info("Generated questions: {}", generatedQuestions);
-            List<Question> questions = objectMapper.readValue(generatedQuestions, new TypeReference<List<Question>>() {});
-            return questions;
         } catch (Exception e) {
             log.error("Error generating stage: ", e);
-            return null;
+            return "Error generating questions";
         }
     }
 
-    public  generateStages() {
 
+    public String generatePathwayByPrompt(StageRequestDTO stageRequestDTO) {
+        try {
+            return this.chatClient
+                    .prompt()
+                    .system(systemPromptResource)
+                    .system(sp -> sp.param ("user_prompt", stageRequestDTO.getPrompt()))
+                    .system(sp -> sp.param ("language", stageRequestDTO.getLanguage()))
+                    .user(stageRequestDTO.getPrompt())
+                    .advisors(new SimpleLoggerAdvisor())
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            log.error("Error generating stage: ", e);
+            return "Error generating pathway";
+        }
     }
-
 }

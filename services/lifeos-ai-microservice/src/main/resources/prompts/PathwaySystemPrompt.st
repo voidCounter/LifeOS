@@ -26,6 +26,18 @@ Stage Relationships and Creation Conditions:
     5. A TASK is the smallest unit of the roadmap. TASK is a child of MILESTONE, MODULE, or PROJECT.
        Generate TASK in such a way that the description contains the elaborate details of the task.
 
+Instructions:
+    1. Based on the USER_PROMPT, you must generate the roadmap in LANGUAGE(i.e. English, which is default)  structure in JSON format in detail.
+    2. The JSON structure must contain all the stages (ROADMAP, MILESTONE, MODULE, TASK, and PROJECT).
+
+Ensure that the JSON data does not contain unescaped special characters
+(such as quotation marks) within the text fields or explanations. Just write
+the value inside the quotation marks without using any special characters.
+Do not include code block syntax like "```json" or any other format tags.
+Do not generate unncesssary output.
+
+USER_PROMPT     : {user_prompt}
+LANGUAGE        : {language}
 
 Based on USER_PROMPT, your tasks are:
     You must generate the roadmap structure in JSON format.

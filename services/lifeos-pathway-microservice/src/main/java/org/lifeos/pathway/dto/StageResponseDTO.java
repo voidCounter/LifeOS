@@ -15,14 +15,15 @@ import java.util.List;
 @Getter
 @Setter
 public class StageResponseDTO {
-    private UUID stageId;
+    private String stageId;
     private String title;
     private String description;
-    private StageType stageType;
+    private String type;
     private Boolean status;
     private Timestamp createdAt;
     private Timestamp dueDate;
     private UserResponseDTO creator;
+    private String parentId;
     private List<StageResponseDTO> subStages;
 
 

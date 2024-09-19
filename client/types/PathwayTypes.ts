@@ -5,7 +5,7 @@ export type PathwayPromptType = {
 
 export enum GeneratedQuestionType {
     OPEN_ENDED = "OPEN_ENDED",
-    YES_NO = "YES/NO",
+    YES_NO = "YES_NO",
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
     DATE = "DATE"
 }

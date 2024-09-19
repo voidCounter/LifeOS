@@ -18,7 +18,7 @@ import {
 
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
-import { Check, ChevronsUpDown, FileQuestion, Info, SparklesIcon } from "lucide-react"
+import { Check, ChevronsUpDown, FileQuestion, Info, LoaderCircle, SparklesIcon } from "lucide-react"
 import SectionHeader from "@/components/SectionHeader"
 import { Select } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -27,11 +27,13 @@ import { Language, Languages } from "@/types/Language"
 import { fetchLanguages } from "@/api-handlers/language"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { cn } from "@/lib/utils"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { AxiosInstance } from "@/utils/AxiosInstance"
-import { generatePathwayByPrompt } from "@/api-handlers/pathway"
 import { log } from "console"
-import { GeneratedQuestionType } from "@/types/PathwayTypes"
+import { GeneratedQuestion, GeneratedQuestionType } from "@/types/PathwayTypes"
+import { generateQuestionByPrompt } from "@/api-handlers/pathway"
+import { usePathwayPromptStore, usePathwayQuestionStore } from "@/store/PathwayQuestionStore"
+import { useChatWindowStore } from "@/store/ChatWindowStore"
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_FILE_TYPES = [
@@ -60,6 +62,10 @@ export function PathwayInputForm() {
         },
     })
 
+    const addQuestions = usePathwayQuestionStore((state) => state.addQuestions);
+    const toggleOpen = useChatWindowStore((state) => state.toggleOpen);
+    
+
     const GeneratedQuestionTypeSchema = z.enum([
         GeneratedQuestionType.OPEN_ENDED,
         GeneratedQuestionType.YES_NO,
@@ -74,23 +80,35 @@ export function PathwayInputForm() {
         options: z.array(z.string()).optional(),
     });
 
+    const setPrompt = usePathwayPromptStore((state) => state.setPrompt);
+    const setLanguage = usePathwayPromptStore((state) => state.setLanguage);
+
+    const [questionLoading, setQuestionLoading] = useState<boolean>(false);
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-        console.log(data);
-        const returnedString = await generatePathwayByPrompt(data);
-        const parsedData = await JSON.parse(returnedString);
-        try {
-            const validatedQuestion = GeneratedQuestionSchema.parse(parsedData);
-            console.log(validatedQuestion);
-        } catch (error) {
-            console.log("[PathwayInputForm.tsx] Error parsing pathway data," + error);
-            
+        setQuestionLoading(true);
+        const questions: GeneratedQuestion[] | undefined = await generateQuestionByPrompt(data);
+        setPrompt(data.prompt);
+        setLanguage(data.language);
+        if (questions) {
+            try {
+                questions.forEach((question) => {
+                    GeneratedQuestionSchema.parse(question);
+                })
+                addQuestions(questions);
+                toggleOpen(true);
+            } catch (error) {
+                console.error("[PathwayInputForm] Error parsing questions: " + error);
+            } finally {
+                setQuestionLoading(false);
+            }
+        } else {
+            console.error("Error Creating Questions");
+            setQuestionLoading(false);
         }
-        
+
     }
-    const fetchPathway = async (prompt: string, language: string): Promise<string> => {
-        return generatePathwayByPrompt({ prompt, language });
-    };
+
     const {
         isLoading: languageLoading,
         data: languages,
@@ -101,7 +119,7 @@ export function PathwayInputForm() {
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
-    
+
 
 
     const sortLanguages = (a: [string, Language], b: [string, Language]) => {
@@ -207,7 +225,15 @@ export function PathwayInputForm() {
                     <Button
                         type="submit"
                         className="w-full"
+                        disabled={questionLoading}
                     >
+                        {
+                            questionLoading ?
+                            <div className={"flex justify-center items-center"}>
+                                <LoaderCircle className={"animate-spin mr-2"}
+                                              strokeWidth={1}/>
+                                Generating Questions
+                            </div> :
                         <div
                             className={"flex"}
                         >
@@ -216,7 +242,7 @@ export function PathwayInputForm() {
                                 strokeWidth={1}
                             />
                             Generate Roadmap
-                        </div>
+                        </div>}
                     </Button>
 
                 </form>
