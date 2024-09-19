@@ -28,13 +28,6 @@ public class FileUploadController {
         log.info("Files uploaded: {}", files.size());
         List<String> fileNames =
                 files.stream().map(file -> loaderService.loadFile(file.getResource())).toList();
-
-        // wait for 6 seconds
-        try {
-            Thread.sleep(6000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return ResponseEntity.ok(fileNames);
     }
 }
