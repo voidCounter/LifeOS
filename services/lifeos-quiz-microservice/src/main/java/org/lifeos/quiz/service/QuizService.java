@@ -110,4 +110,18 @@ public class QuizService {
             throw new RuntimeException("Error parsing quiz Data", e);
         }
     }
+
+    public Object createQuizByNotes(QuizByNotesDTO quizCreationDTO) {
+        // wait for 2 min
+        log.info("the files: {}",
+                quizCreationDTO.getFiles());
+        String generatedQuiz =
+                aiServiceClient.generateQuizByNotes(quizCreationDTO);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
+
+    }
 }

@@ -7,6 +7,6 @@ import java.util.Map;
 
 @Data
 public class RetrievalQueryDTO {
-    private String fileName;
+    private List<String> fileNames;
     private String query;
 }

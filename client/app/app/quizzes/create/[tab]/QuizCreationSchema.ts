@@ -1,10 +1,10 @@
 import {z} from "zod";
 import {QuizCreationOptionType} from "@/config/QuizCreationTabsConfig";
 
-const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
-const ACCEPTED_FILE_TYPES = ["doc", "docx", "pdf", "ppt", "pptx", "xls", "xlsx", "txt"];
+const MAX_UPLOAD_SIZE = 2 * 1024 * 1024;
+const ACCEPTED_FILE_TYPES = ["doc", "docx", "pdf", "ppt", "pptx", "xls", "xlsx", "txt", "epub"];
 const MIN_FILE_ALLOWED = 1;
-const MAX_FILE_ALLOWED = 3;
+const MAX_FILE_ALLOWED = 2;
 const MIN_PROMPT_ALLOWED = 10;
 const MAX_PROMPT_ALLOWED = 500;
 
@@ -33,16 +33,6 @@ const baseQuizCreationSchema = z.object({
 })
 
 
-const noteSchema = baseQuizCreationSchema.extend({
-    note: z.instanceof(File).refine((file) => {
-        return !file || file.size <= MAX_UPLOAD_SIZE;
-    }, "Max file size is 5MB").refine((file) => {
-        if (!file) return true;
-        const fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1).toLowerCase();
-        return ACCEPTED_FILE_TYPES.includes(fileExtension);
-    }, `File type not supported. Supported file types are ${ACCEPTED_FILE_TYPES.join(", ")}`),
-});
-
 const promptQuizCreationSchema = baseQuizCreationSchema.extend({
     creationMethod: z.enum(["PROMPT"]).default("PROMPT"),
     prompt: promptSchema
@@ -68,13 +58,27 @@ const youtubeQuizCreationSchema = baseQuizCreationSchema.extend({
     prompt: promptSchema.optional()
 });
 
+const noteFilesSchema = z.array(z.string());
+
 const noteQuizCreationSchema = baseQuizCreationSchema.extend({
     creationMethod: z.enum(["NOTE"]).default("NOTE"),
-    notes: z.array(noteSchema).min(MIN_FILE_ALLOWED, {
-        message: `Minimum ${MIN_FILE_ALLOWED} file required`,
-    }).max(MAX_FILE_ALLOWED, {
-        message: `Maximum ${MAX_FILE_ALLOWED} files allowed`,
-    }),
+    files: z.array(z.instanceof(File)).refine((files: Array<File>) => {
+            return files.length >= MIN_FILE_ALLOWED && files.length <= MAX_FILE_ALLOWED;
+        },
+        `Minimum ${MIN_FILE_ALLOWED} and Maximum ${MAX_FILE_ALLOWED} files allowed`
+    ).refine((files: Array<File>) => {
+            return files.every((file) => file.size <= MAX_UPLOAD_SIZE);
+        },
+        `File size must be less than ${MAX_UPLOAD_SIZE / 1024 / 1024}MB`
+    ).refine((files: Array<File>) => {
+            return files.every(file => {
+                const fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1).toLowerCase();
+                console.log(fileExtension);
+                return ACCEPTED_FILE_TYPES.includes(fileExtension);
+            })
+        },
+        `File type not supported. Supported file types are ${ACCEPTED_FILE_TYPES.join(", ")}`
+    ).or(noteFilesSchema),
     prompt: promptSchema.optional()
 });
 

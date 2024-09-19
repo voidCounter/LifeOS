@@ -5,21 +5,22 @@ import {
     requestInterceptoronFulfilled,
     requestInterceptoronRejected, responseInterceptoronRejected
 } from "@/utils/AxiosInterceptors";
+import {FileUp} from "lucide-react";
 
 // Axios Interceptor Instance
-export const AxiosInstance = axios.create({
+export const FileUploaderAxiosInstance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BACKEND_API,
     headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
     },
     withCredentials: true,
 });
 
-AxiosInstance.interceptors.request.use(
+FileUploaderAxiosInstance.interceptors.request.use(
     requestInterceptoronFulfilled, requestInterceptoronRejected
 );
 
 // Axios Interceptor: Response Method
-AxiosInstance.interceptors.response.use(
+FileUploaderAxiosInstance.interceptors.response.use(
     (response) => response, responseInterceptoronRejected
 );

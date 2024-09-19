@@ -10,12 +10,9 @@ import java.util.List;
 
 @Component
 public class ResourceTokenSplitter {
-    private static final Logger log = LoggerFactory.getLogger(ResourceTokenSplitter.class);
-
     public List<Document> splitDocuments(List<Document> documents) {
         TokenTextSplitter splitter = new TokenTextSplitter(1000, 400, 10,
                 5000, true);
-        log.info("lets start chunking: {}", documents);
         return splitter.apply(documents);
     }
 }

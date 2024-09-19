@@ -91,25 +91,11 @@ public class QuizController {
         else if (quizCreationDTO instanceof QuizByArticleDTO)
             return ResponseEntity.status(HttpStatus.OK)
                     .body(quizService.createQuizByArticle((QuizByArticleDTO) quizCreationDTO));
+        else if (quizCreationDTO instanceof QuizByNotesDTO)
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(quizService.createQuizByNotes((QuizByNotesDTO) quizCreationDTO));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
     }
-
-//    @PostMapping("/create/byprompt")
-//    public ResponseEntity<?> createQuizByPrompt(@RequestBody QuizCreationDTO quizByPromptDTO) {
-//        log.info("Creating quiz by prompt: {}", quizByPromptDTO);
-//        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByPrompt((QuizByPromptDTO) quizByPromptDTO));
-//    }
-//
-//    @PostMapping("/create/byyoutube")
-//    public ResponseEntity<?> createQuizByYoutube(@RequestBody QuizByYoutubeDTO quizCreationDTO) {
-//        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByYoutube(quizCreationDTO));
-//    }
-//
-//    @PostMapping("/create/byarticle")
-//    public ResponseEntity<?> createQuizByArticle(@RequestBody QuizByArticleDTO quizByArticleDTO) {
-//        return ResponseEntity.status(HttpStatus.OK).body(quizService.createQuizByArticle(quizByArticleDTO));
-//    }
-
 
     @PostMapping("/{quizId}/questions/new")
     public ResponseEntity<?> addNewQuiz(@RequestBody QuizWithQuestionsDTO quizWithQuestionsDTO,
