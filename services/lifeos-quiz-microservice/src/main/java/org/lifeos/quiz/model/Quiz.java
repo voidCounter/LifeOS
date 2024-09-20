@@ -1,12 +1,16 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.Array;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 import org.lifeos.quiz.dto.*;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -45,6 +49,12 @@ public class Quiz {
     @Type(ListArrayType.class)
     @Column(name = "categories", columnDefinition = "text[]")
     private List<String> categories;
+
+    @Column(name = "embedding")
+    @JsonIgnore
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 768)
+    private float[] embedding;
 
     private String quizDescription;
     private String language;

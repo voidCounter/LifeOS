@@ -10,6 +10,7 @@ import org.lifeos.quiz.model.User;
 import org.lifeos.quiz.repository.QuizRepository;
 import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service_clients.AIServiceClient;
+import org.lifeos.quiz.service_clients.ResourceLoaderClient;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +27,19 @@ public class QuizService {
     private final AIServiceClient aiServiceClient;
     private final ObjectMapper jacksonObjectMapper;
     private final ModelMapper modelMapper;
+    private final ResourceLoaderClient resourceLoaderClient;
 
     public QuizService(QuizRepository quizRepository,
                        UserRepository userRepository,
                        AIServiceClient aiServiceClient,
+                       ResourceLoaderClient resourceLoaderClient,
                        ObjectMapper jacksonObjectMapper,
                        ModelMapper modelMapper
     ) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.aiServiceClient = aiServiceClient;
+        this.resourceLoaderClient = resourceLoaderClient;
         this.jacksonObjectMapper = jacksonObjectMapper;
         this.modelMapper = modelMapper;
     }
@@ -43,15 +47,15 @@ public class QuizService {
     public void addQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User creator = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, creator);
+
         quizRepository.save(quiz);
     }
 
-
     public Quiz getQuiz(UUID quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
-        log.info("quiz: {}", quiz);
-        return quiz;
+        //        log.info("quiz: {}", quiz);
+        return quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
     }
+
 
     public List<Question> getAllQuestionsByQuizId(UUID quizId) {
         return quizRepository.findAllByQuizId(quizId).getQuestions();
@@ -86,7 +90,11 @@ public class QuizService {
     @Transactional
     public String saveQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
         Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, user);
+        float[] embedding =
+                resourceLoaderClient.getEmbedding(quiz.getQuizTitle() + " " + quiz.getQuizDescription());
+        quiz.setEmbedding(embedding);
         return quizRepository.save(quiz).getQuizId().toString();
     }
 
@@ -97,6 +105,12 @@ public class QuizService {
             throw new RuntimeException("User not found");
         }
         return quizRepository.findAllByCreator(creator).stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
+    }
+
+    public List<QuizDTO> searchByQuery(String query) {
+        float[] queryEmbedding = resourceLoaderClient.getEmbedding(query);
+        // TODO: Write a query that will do similarity search
+        return List.of();
     }
 
 
