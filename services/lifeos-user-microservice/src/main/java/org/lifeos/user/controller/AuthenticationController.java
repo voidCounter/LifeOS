@@ -54,7 +54,7 @@ public class AuthenticationController {
 
     private void setJwtCookie(HttpServletResponse response, JwtTokenDTO jwtTokenDTO) {
         Cookie jwtCookie = new Cookie("jwt", jwtTokenDTO.getToken());
-        jwtCookie.setMaxAge(jwtExpirationInMs);
+        jwtCookie.setMaxAge(jwtExpirationInMs / 1000);
         jwtCookie.setPath("/");
         jwtCookie.setDomain("");
         jwtCookie.setHttpOnly(true);

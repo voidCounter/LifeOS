@@ -1,6 +1,6 @@
 "use client"
 import {useRouter} from "next/navigation";
-import SearchandCreate from "@/app/app/quizzes/components/SearchandCreate";
+import SearchandCreate from "@/components/SearchandCreate";
 
 export default function Explore() {
     const router = useRouter();
