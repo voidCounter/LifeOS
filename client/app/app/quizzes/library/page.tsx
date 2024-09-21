@@ -7,7 +7,7 @@ import CreatedQuizzes from "@/components/quizzes/Quiz/CreatedQuizzes";
 import TakenQuizTests from "@/components/quizzes/Quiz/TakenQuizTests";
 import SectionHeader from "@/components/SectionHeader";
 import {router} from "next/client";
-import SearchandCreate from "@/app/app/quizzes/components/SearchandCreate";
+import SearchandCreate from "@/components/SearchandCreate";
 
 export default function Explore() {
     return (
