@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -57,6 +58,13 @@ public class QuizController {
         Map<String, String> response = new HashMap<>();
         response.put("quizId", quizId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuizzes(@RequestParam String query) {
+        List<QuizDTO> quizzes = quizService.searchByQuery(query);
+        log.info("query: {}", query);
+        return ResponseEntity.ok(quizzes);
     }
 
     @GetMapping("/{quizId}")

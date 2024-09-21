@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @Service
 public class WebArticleService {
-    private LoaderService loaderService;
+    private final LoaderService loaderService;
 
     public WebArticleService(LoaderService loaderService) {
         this.loaderService = loaderService;

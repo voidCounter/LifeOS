@@ -12,6 +12,7 @@ public class QuizDTO {
     private String quizTitle;
     private String quizDescription;
     private int numberOfQuestions;
+    private UserDTO creator;
     private List<String> categories;
     private boolean published;
 }

@@ -2,14 +2,32 @@ networks:
   net:
     driver: bridge
 services:
-  #  postgres:
-  #    image: postgres:15
-  #    environment:
-  #      POSTGRES_USER: lifeos_admin
-  #      POSTGRES_PASSWORD: lifeos_admin
-  #      POSTGRES_DB: lifeos
-  #    ports:
-  #      - 5434:5434
+#  postgres:
+#    image: ankane/pgvector:latest
+#    container_name: postgres
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: password
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ~/postgres-volume/:/var/lib/postgresql/data
+#    command: [ "postgres", "-c", "shared_preload_libraries=pg_stat_statements" ]
+#    healthcheck:
+#      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#
+#    init_pgvector:
+#      image: postgres:latest
+#      depends_on:
+#        postgres:
+#          condition: service_healthy
+#      environment:
+#        POSTGRES_USER: postgres
+#        POSTGRES_PASSWORD: password
+#      command: [ "psql", "-h", "postgres", "-U", "postgres", "-c", "CREATE EXTENSION IF NOT EXISTS vector;" ]
   server:
     image: ghcr.io/chroma-core/chroma:latest
     environment:
