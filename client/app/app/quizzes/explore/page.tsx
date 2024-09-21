@@ -10,7 +10,7 @@ export default function Explore() {
 
             </div>
             {/* Search and create */}
-            <SearchandCreate/>
+            <SearchandCreate showSearchButton={false}/>
         </main>
     );
 }

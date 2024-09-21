@@ -60,9 +60,10 @@ public class QuizController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search/q={searchQuery}")
-    public ResponseEntity<?> searchQuizzes(@PathVariable String searchQuery) {
-        List<QuizDTO> quizzes = quizService.searchByQuery(searchQuery);
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuizzes(@RequestParam String query) {
+        List<QuizDTO> quizzes = quizService.searchByQuery(query);
+        log.info("query: {}", query);
         return ResponseEntity.ok(quizzes);
     }
 

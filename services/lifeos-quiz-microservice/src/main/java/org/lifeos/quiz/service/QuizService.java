@@ -110,7 +110,9 @@ public class QuizService {
     public List<QuizDTO> searchByQuery(String query) {
         float[] queryEmbedding = resourceLoaderClient.getEmbedding(query);
         // TODO: Write a query that will do similarity search
-        return List.of();
+        List<Quiz> gotQuizzes =
+                quizRepository.findAllBySearchQuery(queryEmbedding);
+        return gotQuizzes.stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
     }
 
 
