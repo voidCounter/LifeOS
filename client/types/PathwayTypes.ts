@@ -1,5 +1,8 @@
+import { StageType } from "./PathwayTypes/Pathway";
+
 export type PathwayPromptType = {
-    prompt: string 
+    type: StageType;
+    context: string; 
     language: string;
 }
 

@@ -57,4 +57,13 @@ public class ProjectConfig {
                 .build();
     }
 
+    @Bean
+    ChatClient subStageGenerationClient(ChatClient.Builder builder) {
+        return builder
+                .defaultAdvisors(
+                        new SimpleLoggerAdvisor()
+                )
+                .build();
+    }
+
 }

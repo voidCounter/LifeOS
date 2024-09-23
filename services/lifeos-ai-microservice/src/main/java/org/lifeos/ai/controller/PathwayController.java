@@ -2,6 +2,8 @@ package org.lifeos.ai.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lifeos.ai.dto.StageRequestDTO;
+import org.lifeos.ai.dto.pathway.SubStageGenerationDTO;
+import org.lifeos.ai.dto.pathway.TaskGenerationDTO;
 import org.lifeos.ai.service.PathwayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +33,27 @@ public class PathwayController {
                 .body(generatedQuestions);
     }
 
-    @PostMapping(value = "/generate-pathway", produces = "application/json")
-    public ResponseEntity<String> generatePathwayByPrompt(
-            @RequestBody StageRequestDTO stageRequestDTO,
-            @RequestHeader(value = "UserId", required = false) String userId
-    ) {
-        log.info("Requested by: {}", userId);
-        log.info("Request: {}", stageRequestDTO);
-        String generatedPathway =
+
+
+    @PostMapping(value = "/generate-substages", produces = "application/json")
+    public ResponseEntity<String> generateSubStagePrompt(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO
+            ) {
+        log.info("Request: {}", subStageGenerationDTO);
+        String generatedRoadmap =
                 pathwayService
-                        .generatePathwayByPrompt(stageRequestDTO);
+                        .generateSubStageByPrompt(subStageGenerationDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(generatedPathway);
+                .body(generatedRoadmap);
     }
+
+    @PostMapping(value = "/generate-task", produces = "application/json")
+    public String generateTask(
+            @RequestBody TaskGenerationDTO taskGenerationDTO
+            ) {
+        log.info("Request: {}", taskGenerationDTO);
+        return pathwayService.generateTask(taskGenerationDTO);
+    }
+
 }

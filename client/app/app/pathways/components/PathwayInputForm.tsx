@@ -20,51 +20,36 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Check, ChevronsUpDown, FileQuestion, Info, LoaderCircle, SparklesIcon } from "lucide-react"
 import SectionHeader from "@/components/SectionHeader"
-import { Select } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useQuery } from "@tanstack/react-query"
 import { Language, Languages } from "@/types/Language"
 import { fetchLanguages } from "@/api-handlers/language"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { cn } from "@/lib/utils"
-import { useEffect, useState } from "react"
-import { AxiosInstance } from "@/utils/AxiosInstance"
-import { log } from "console"
+
 import { GeneratedQuestion, GeneratedQuestionType } from "@/types/PathwayTypes"
 import { generateQuestionByPrompt } from "@/api-handlers/pathway"
-import { usePathwayPromptStore, usePathwayQuestionStore } from "@/store/PathwayQuestionStore"
+import { usePathwayQuestionStore } from "@/store/PathwayQuestionStore"
 import { useChatWindowStore } from "@/store/ChatWindowStore"
-
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_FILE_TYPES = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "text/plain",
-    "application/vnd.ms-powerpoint"
-]
-
-const FormSchema = z.object({
-    prompt: z.string().min(15, {
-        message: "Prompt must be at least 15 characters long",
-    }).max(200, {
-        message: "Prompt must not exceed 200 characters",
-    }),
-    language: z.string().optional().default("English"),
-})
+import { PathwayCreationType } from "@/types/PathwayTypes/PathwayCreationType"
+import { pathwayCreationSchema } from "../create/[tab]/PathwayCreationSchema"
+import { useState } from "react"
+import { usePathwayPromptStore } from "@/store/PathwayPromptStore"
 
 
-export function PathwayInputForm() {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
-        defaultValues: {
-            prompt: "",
-        },
+
+
+
+export function PathwayInputForm({ tab }: { tab: PathwayCreationType }) {
+    const form = useForm<z.infer<typeof pathwayCreationSchema>>({
+        resolver: zodResolver(pathwayCreationSchema),
     })
+
+    form.setValue("creationMethod", tab.toUpperCase() as "PROMPT" | "FILE");
 
     const addQuestions = usePathwayQuestionStore((state) => state.addQuestions);
     const toggleOpen = useChatWindowStore((state) => state.toggleOpen);
-    
+
 
     const GeneratedQuestionTypeSchema = z.enum([
         GeneratedQuestionType.OPEN_ENDED,
@@ -83,10 +68,13 @@ export function PathwayInputForm() {
     const setPrompt = usePathwayPromptStore((state) => state.setPrompt);
     const setLanguage = usePathwayPromptStore((state) => state.setLanguage);
 
+
     const [questionLoading, setQuestionLoading] = useState<boolean>(false);
 
-    const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const onSubmit = async (data: z.infer<typeof pathwayCreationSchema>) => {
         setQuestionLoading(true);
+        console.log("generating questions");
+        
         const questions: GeneratedQuestion[] | undefined = await generateQuestionByPrompt(data);
         setPrompt(data.prompt);
         setLanguage(data.language);
@@ -116,8 +104,6 @@ export function PathwayInputForm() {
     } = useQuery<Languages>({
         queryKey: ['languages'],
         queryFn: fetchLanguages,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
     });
 
 
@@ -126,13 +112,38 @@ export function PathwayInputForm() {
         return a[0].localeCompare(b[0]);
     }
 
+    // const renderSpecificField = () => {
+    //     switch (tab.toString()) {
+    //         case PathwayCreationType.FILE.toLowerCase():
+    //             return (
+    //                 <FormField control={form.control} name={"file"}
+    //                     render={({ field }) => (
+    //                         <FormItem>
+    //                             <FormLabel>Upload Files
+    //                             </FormLabel>
+    //                             <Input
+    //                                 type="file"
+    //                                 placeholder="Upload file"
+    //                                 {...field} 
+    //                             />
+    //                             <FormDescription>
+    //                                 Document should not be larger than 5MB.
+    //                             </FormDescription>
+    //                             <FormMessage />
+    //                         </FormItem>
+    //                     )} />
+    //             )
+    //         default: null
+    //     }
 
+    // }
 
     return (
         <div className="flex flex-col gap-8 w-7/12 justify-center">
             <SectionHeader title="Create a New Roadmap" description={""} />
             <Form  {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+                    {/* {renderSpecificField()} */}
                     <FormField
                         control={form.control}
                         name="prompt"
@@ -147,8 +158,6 @@ export function PathwayInputForm() {
                             </FormItem>
                         )}
                     />
-
-                    {/* File Upload, drag and drop */}
 
                     <FormField control={form.control} name={"language"}
                         render={({ field }) => (
@@ -226,23 +235,27 @@ export function PathwayInputForm() {
                         type="submit"
                         className="w-full"
                         disabled={questionLoading}
+                        // onClick={() => {
+                        //     console.log(tab);
+                            
+                        // }}
                     >
                         {
                             questionLoading ?
-                            <div className={"flex justify-center items-center"}>
-                                <LoaderCircle className={"animate-spin mr-2"}
-                                              strokeWidth={1}/>
-                                Generating Questions
-                            </div> :
-                        <div
-                            className={"flex"}
-                        >
-                            <SparklesIcon
-                                className={"w-5 h-5 mr-2"}
-                                strokeWidth={1}
-                            />
-                            Generate Roadmap
-                        </div>}
+                                <div className={"flex justify-center items-center"}>
+                                    <LoaderCircle className={"animate-spin mr-2"}
+                                        strokeWidth={1} />
+                                    Generating Questions
+                                </div> :
+                                <div
+                                    className={"flex"}
+                                >
+                                    <SparklesIcon
+                                        className={"w-5 h-5 mr-2"}
+                                        strokeWidth={1}
+                                    />
+                                    Generate Roadmap
+                                </div>}
                     </Button>
 
                 </form>

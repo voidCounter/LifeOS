@@ -11,7 +11,7 @@ export const usePathwayQuestionStore = create<PathwayQuestionStore>()(
     persist(
         (set) => ({
             questions: Array<GeneratedQuestion>(),
-            addQuestions: (questions : GeneratedQuestion[]) => set((state) => ({questions: [...state.questions, ...questions]}))
+            addQuestions: (questions : GeneratedQuestion[]) => set((state) => ({questions: [...questions]}))
         }), 
         {
             name: "pathway-questions"
@@ -20,14 +20,3 @@ export const usePathwayQuestionStore = create<PathwayQuestionStore>()(
     
 )
 
-type PathwayPromptTypeStore = PathwayPromptType & {
-    setPrompt: (prompt: string) => void,
-    setLanguage: (language: string) => void
-}
-
-export const usePathwayPromptStore = create<PathwayPromptTypeStore>((set) => ({
-    prompt: "",
-    language: "English", 
-    setPrompt: (prompt : string) => set({prompt}),
-    setLanguage: (language: string) => set({language})
-}))

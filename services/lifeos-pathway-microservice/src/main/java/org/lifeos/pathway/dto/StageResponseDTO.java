@@ -25,8 +25,27 @@ public class StageResponseDTO {
     private UserResponseDTO creator;
     private String parentId;
     private List<StageResponseDTO> subStages;
+    private Long noOfTotalStage;
+    private Long noOfCompletedStage;
 
-
+    public Long countTotalStages() {
+        long count = 1; // Count this stage
+        if (subStages != null) {
+            for (StageResponseDTO subStage : subStages) {
+                count += subStage.countTotalStages(); // Recursively count sub-stages
+            }
+        }
+        return count;
+    }
+    public Long countCompletedStages() {
+        long count = status != null && status ? 1 : 0; // Count this stage if completed
+        if (subStages != null) {
+            for (StageResponseDTO subStage : subStages) {
+                count += subStage.countCompletedStages(); // Recursively count completed sub-stages
+            }
+        }
+        return count;
+    }
 }
 
 

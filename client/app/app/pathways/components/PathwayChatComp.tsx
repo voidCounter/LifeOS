@@ -1,6 +1,6 @@
 "use client";
 
-import { generatePathwaysFromAnswer } from '@/api-handlers/pathway';
+import { generateSubStage } from '@/api-handlers/pathway';
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -8,33 +8,35 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useChatWindowStore } from '@/store/ChatWindowStore';
 import { usePathwayAnswerStore } from '@/store/PathwayAnswerStore';
-import { usePathwayPromptStore, usePathwayQuestionStore } from '@/store/PathwayQuestionStore';
+import { usePathwayPromptStore } from '@/store/PathwayPromptStore';
+import { usePathwayQuestionStore } from '@/store/PathwayQuestionStore';
 import { GeneratedQuestion, GeneratedQuestionType } from '@/types/PathwayTypes';
+import { StageType } from '@/types/PathwayTypes/Pathway';
 import { ChevronLeft, ChevronRight, LoaderCircle, SparklesIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { map, z } from 'zod';
+
 
 const PathwayChatComp = () => {
 
 
 
   const {
-    open, 
+    open,
     toggleOpen
   } = useChatWindowStore();
 
   const renderIcon = () => {
     if (!open)
-      return <ChevronLeft size={36} className='self-end bg-black/10 p-2 rounded-full hover:bg-muted/25' />
-    return <ChevronRight size={36} className='self-end bg-black/10 p-2 rounded-full hover:bg-muted/25' />
+      return <ChevronLeft size={36} className='self-end bg-slate-200 p-2 rounded-full hover:bg-muted/25' />
+    return <ChevronRight size={36} className='self-end bg-slate-200 p-2 rounded-full hover:bg-muted/25' />
   }
 
   return (
     <div className='self-end h-[90%] absolute -right-5 top-12 rounded-xl flex flex-row gap-x-0 items-center'>
       <Button
         variant={"link"}
-        className={`bg-transparent m-0 p-0  rounded-full justify-center items-center pl-10 z-10 ${!open ? "mr-5" : "mr-0"}`}
+        className={`bg-transparent m-0 p-0  rounded-full justify-center items-center pl-10 z-10 ${!open ? "mr-4" : "mr-0"}`}
         onClick={() => {
           toggleOpen(!open);
         }}
@@ -43,11 +45,11 @@ const PathwayChatComp = () => {
       </Button>
       {
         open ?
-            <div className='h-full bg-muted w-[480px] rounded-xl -ml-4 overflow-y-scroll'>
-              <div className='p-4 w-full h-full flex flex-col justify-end '>
-                <QuestionCompContainer />
-              </div>
+          <div className='h-full bg-muted w-[480px] rounded-xl -ml-4 overflow-y-scroll'>
+            <div className='p-4 w-full h-full flex flex-col justify-end '>
+              <QuestionCompContainer />
             </div>
+          </div>
           : null
       }
     </div>
@@ -58,6 +60,7 @@ const QuestionCompContainer = () => {
 
   const questions = usePathwayQuestionStore(state => state.questions);
 
+
   const [generatingPathways, setGeneratingPathways] = useState<boolean>(false);
 
   const answers = usePathwayAnswerStore(state => state.answers);
@@ -67,14 +70,14 @@ const QuestionCompContainer = () => {
     const obj: Record<string, string> = Object.fromEntries(map);
 
     return JSON.stringify(obj);
-}
+  }
   const router = useRouter();
   const setPrompt = usePathwayPromptStore(state => state.setPrompt);
   const language = usePathwayPromptStore(state => state.language);
 
   const defaultAnswers = () => {
     questions.forEach((question, index) => {
-      const key = `question - ${index}`;
+      const key = `question - ${index + 1}: ${question}`;
       if (!answers.has(key)) {
         addAnswer(key, ['no answer']);
       }
@@ -86,32 +89,35 @@ const QuestionCompContainer = () => {
     defaultAnswers();
     const answersJson = mapToJsonString(answers);
     console.log(answersJson);
-    const roadmaptId = await generatePathwaysFromAnswer({
-      prompt: answersJson,
-      language
+    const roadmap = await generateSubStage({
+      type: StageType.ROADMAP,
+      context: answersJson,
+      language, 
+      parentId: null
     });
-    setPrompt(answersJson);    
+    setPrompt(answersJson);
     setGeneratingPathways(false);
-    if (roadmaptId) {
-      router.push(`/app/pathways/explore/${roadmaptId}`);
-    }
+    router.push(`/app/pathways/explore/${roadmap[0].stageId}`);
     
+
   }
 
 
   useEffect(() => {
     console.log(questions);
     console.log(answers);
-    
-    
+
+
   }, [])
 
   return (
-    <div className='flex flex-col w-full gap-y-4 p-2'>
-      {questions.map((question, index) => (
-        <QuestionComp key={index} index={index} {...question} />
-      )
-      )}
+    <div className='flex flex-col w-full gap-y-4 p-2 overflow-y-scroll'>
+      <div className='flex flex-col gap-y-4 overflow-y-scroll w-full'>
+        {questions.map((question, index) => (
+          <QuestionComp key={index} index={index} {...question} />
+        )
+        )}
+      </div>
 
       <Button
         type="submit"
@@ -121,20 +127,20 @@ const QuestionCompContainer = () => {
       >
         {
           generatingPathways ?
-          <div className={"flex justify-center items-center"}>
+            <div className={"flex justify-center items-center"}>
               <LoaderCircle className={"animate-spin mr-2"}
-                            strokeWidth={1}/>
+                strokeWidth={1} />
               Generating PathWay
-          </div> : 
-          <div
-          className={"flex"}
-        >
-          <SparklesIcon
-            className={"w-5 h-5 mr-2"}
-            strokeWidth={1}
-          />
-          Generate Roadmap
-        </div>}
+            </div> :
+            <div
+              className={"flex"}
+            >
+              <SparklesIcon
+                className={"w-5 h-5 mr-2"}
+                strokeWidth={1}
+              />
+              Generate Roadmap
+            </div>}
       </Button>
     </div>
   )
@@ -151,7 +157,7 @@ const QuestionComp = ({
 
   const addAnswer = usePathwayAnswerStore(state => state.addAnswer);
   const onChangeAnswer = (ans: string[]) => {
-    addAnswer(`question - ${index}`, ans);
+    addAnswer(`question - ${index + 1}: ${question}`, ans);
   }
   const renderAnswer = () => {
     if (type === GeneratedQuestionType.OPEN_ENDED || type === GeneratedQuestionType.DATE) {
@@ -209,7 +215,7 @@ const QuestionComp = ({
   }
 
   return (
-    <div className='w-full flex flex-col gap-y-2'>
+    <div className='w-full flex flex-col gap-y-2 rounded-xl  p-4'>
       <h1 className='font-semibold text-lg text-foreground'>{question}</h1>
       {renderAnswer()}
     </div>
