@@ -1,12 +1,10 @@
 package org.lifeos.pathway.model;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.lifeos.pathway.dto.StageDTO;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -44,14 +42,13 @@ public class Stage {
 
 
     @OneToMany(mappedBy ="parent", fetch = FetchType.LAZY)
-    @JsonManagedReference
     private List<Stage> subStages;
 
 
 
     @JoinColumn(name = "parent_id", referencedColumnName = "stage_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Stage parent;
 
     @Column(name = "status")
@@ -62,13 +59,5 @@ public class Stage {
     private String title;
     @Column(name = "description", columnDefinition = "jsonb")
     private String description;
-
-    public Stage(StageDTO stageDTO) {
-        this.type = StageType.fromValue(stageDTO.getType());
-        this.status = stageDTO.getStatus();
-        this.dueDate = stageDTO.getDueDate();
-        this.title = stageDTO.getTitle();
-        this.description = stageDTO.getDescription();
-    }
 
 }

@@ -11,11 +11,28 @@ export enum StageType {
 export type Stage = {
     type : StageType
     status: boolean
-    dueDate: Date
+    dueDate: Date | null
     title: string
     stageId: string
     createdAt: Date
     parentId: string
-    description: JSON
-    subStages: Stage[]
+    description: string
+    subStages: Stage[] | null
+}
+
+export type SimpleStageDTO = {
+    stageId : string;
+    title: string;
+    status: boolean;
+    createdAt: Date;
+    creator: UserResponseDTO;
+    parentId: string;
+    noOfTotalStage: number;
+    noOfCompletedStage: number;
+}
+
+export type UserResponseDTO = {
+    userId : string;
+    username: string;
+    knowledgeXp: number | null
 }

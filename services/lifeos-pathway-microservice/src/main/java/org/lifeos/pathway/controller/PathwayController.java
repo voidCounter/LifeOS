@@ -2,6 +2,7 @@ package org.lifeos.pathway.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lifeos.pathway.dto.*;
+import org.lifeos.pathway.model.Stage;
 import org.lifeos.pathway.model.StageType;
 import org.lifeos.pathway.service.PathwayService;
 import org.slf4j.Logger;
@@ -21,66 +22,6 @@ public class PathwayController {
 
     private final PathwayService pathwayService;
 
-    @GetMapping("/{stageid}")
-    public ResponseEntity<?> getStage(@PathVariable UUID stageid) {
-        try {
-            log.info("Get stage with id {}", stageid);
-            StageResponseDTO stageResponse = pathwayService.getStage(stageid);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(
-                        stageResponse
-                    );
-        } catch (Exception e) {
-            log.error("Error getting questions with id {}", stageid, e);
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(
-                            e.getMessage()
-                    );
-        }
-    }
-
-
-    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> addStage(@RequestBody StageDTO stageDTO) {
-        try {
-            log.info("Adding stage {}", stageDTO);
-            pathwayService.addStage(stageDTO);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(
-                            StageType.fromValue(stageDTO.getType()) + " added successfully"
-                    );
-        } catch (Exception e) {
-            log.error("Error adding stage {}", stageDTO, e);
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(
-                            e.getMessage() + "\n failed adding type" + StageType.fromValue(stageDTO.getType())
-                    );
-        }
-    }
-
-    @DeleteMapping
-    public ResponseEntity<?> deleteStage(@RequestBody StageDeleteDTO stageDeleteDTO) {
-        try {
-            log.info("Deleting stage {}", stageDeleteDTO);
-            pathwayService.deleteStage(stageDeleteDTO);
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(
-                            "Stage with stage id " + stageDeleteDTO.getStageId() + " deleted successfully"
-                    );
-        } catch (Exception e) {
-            log.error("Error deleting stage {}", stageDeleteDTO, e);
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(
-                            e.getMessage() + "\n failed to delete stage with id "+ stageDeleteDTO.getStageId()
-                    );
-        }
-    }
 
     @PostMapping(value = "/generate-questions", produces = "application/json")
     public ResponseEntity<?> generateStageWithPrompt(
@@ -107,54 +48,82 @@ public class PathwayController {
         }
     }
 
-    @PostMapping(value = "/generate-pathways", produces = "application/json")
-    public ResponseEntity<String> generatePathwaysWithPrompt(
-            @RequestBody StageCreationDTO stageCreationDTO,
-            @RequestHeader(value = "user-id") String userId
+
+
+
+    @PostMapping(value = "/generate-substages", produces = "application/json")
+    public ResponseEntity<?> generateSubStagePrompt(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO,
+            @RequestHeader (value = "user-id") String userId
     ) {
         try {
-            String roadmapId =
+            log.info("Request: {}", subStageGenerationDTO);
+            List<Stage> generatedRoadmap =
                     pathwayService
-                            .generatePathwaysByPrompt(
-                                    stageCreationDTO,
-                                    userId
-                            );
+                            .generateSubStageByPrompt(subStageGenerationDTO, userId);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(
-                            roadmapId
+                        generatedRoadmap
                     );
         } catch (Exception e) {
-            log.error("Error generating stage with prompt: {}", stageCreationDTO.getPrompt(), e);
+            log.error("Error generating roadmap: ", e);
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
-                            e.getMessage() + "\n failed to generate stage with prompt: " + stageCreationDTO.getPrompt()
+                        e.getMessage() + "\n failed to generate roadmap"
                     );
         }
     }
 
-    @PostMapping(value = "/get", produces = "application/json")
-    public ResponseEntity<?> getStageById(
-            @RequestBody StageRequestDTO stageRequest,
-            @RequestHeader(value = "UserId") String userId
+    @PostMapping(value = "/generate-task", produces = "application/json")
+    public ResponseEntity<?> generateTask(
+            @RequestBody TaskGenerationDTO taskGenerationDTO,
+            @RequestHeader (value = "user-id") String userId
     ) {
         try {
-            StageResponseDTO stage =
+            log.info("Request: {}", taskGenerationDTO);
+            String generatedTask =
                     pathwayService
-                        .getStagesById(stageRequest.getStageId());
+                            .generateTask(taskGenerationDTO, userId);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(
+                        generatedTask
+                    );
+        } catch (Exception e) {
+            log.error("Error generating task: ", e);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                        e.getMessage() + "\n failed to generate task"
+                    );
+        }
+    }
+
+    @PostMapping(value="/get")
+    public ResponseEntity<?> getStageById(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO,
+            @RequestHeader (value = "user-id", required = false) String userId
+    ) {
+        try {
+            Stage stage = pathwayService.getStageById(
+                    subStageGenerationDTO,
+                    userId
+            );
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(
                         stage
                     );
         } catch (Exception e) {
-            log.error("Error getting stage with id: {}", stageRequest.getStageId(), e);
+            log.error("Error getting stage by id: ", e);
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
-                        e.getMessage() + "\n failed to get stage with id: " + stageRequest.getStageId()
+                        e.getMessage() + "\n failed to get stage by id: "
                     );
         }
     }
+
 }

@@ -1,27 +1,23 @@
 package org.lifeos.pathway.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lifeos.pathway.dto.*;
 import org.lifeos.pathway.model.Roadmap;
 import org.lifeos.pathway.model.Stage;
 import org.lifeos.pathway.model.StageType;
 import org.lifeos.pathway.model.User;
+import org.lifeos.pathway.repository.RoadmapRepository;
 import org.lifeos.pathway.repository.StageRepository;
 import org.lifeos.pathway.repository.UserRepository;
 import org.lifeos.pathway.service_client.AiServiceClient;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class PathwayService {
@@ -32,64 +28,20 @@ public class PathwayService {
     private final UserRepository userRepository;
     private final AiServiceClient aiServiceClient;
     private final ObjectMapper jacksonObjectMapper;
+    private final RoadmapRepository roadmapRepository;
 
     public PathwayService(
             StageRepository stageRepository,
             UserRepository userRepository,
             AiServiceClient aiServiceClient,
             ObjectMapper jacksonObjectMapper,
-            ModelMapper modelMapper
+            RoadmapRepository roadmapRepository
     ) {
         this.stageRepository = stageRepository;
         this.userRepository = userRepository;
         this.aiServiceClient = aiServiceClient;
         this.jacksonObjectMapper = jacksonObjectMapper;
-    }
-
-    private Stage isPresentStageId(UUID stageId) {
-        Optional<Stage> stage = stageRepository.findById(stageId);
-        if (stage.isPresent()) {
-            return stage.get();
-        } else {
-            throw new RuntimeException("Stage with id " + stageId + " not found");
-        }
-    }
-
-
-
-    @Transactional
-    public Stage addStage(StageDTO stageDTO) {
-        Stage stage = new Stage(stageDTO);
-        if (StageType.fromValue(stageDTO.getType().toUpperCase()) != StageType.ROADMAP) {
-            Stage parentStage = isPresentStageId(stageDTO.getParentId());
-            stage.setParent(parentStage);
-        } else {
-            User creator =
-                    userRepository.findById(stageDTO.getCreatorId()).
-                            orElseThrow(() -> new RuntimeException("User not found"));
-            stage = new Roadmap(creator, stageDTO.getPublished());
-
-            stage.setStatus(stageDTO.getStatus());
-            stage.setType(StageType.fromValue(stageDTO.getType()));
-            stage.setDueDate(stageDTO.getDueDate());
-            stage.setDescription(stageDTO.getDescription());
-            stage.setTitle(stageDTO.getTitle());
-            stage.setParent(null);
-        }
-        return stageRepository.save(stage);
-    }
-
-    public StageResponseDTO getStage(UUID stageId) {
-         return convertToStageResponseDTO(isPresentStageId(stageId));
-
-    }
-
-    public void deleteStage(StageDeleteDTO stageDeleteDTO) {
-        stageRepository.delete(
-                isPresentStageId(
-                        stageDeleteDTO.getStageId()
-                )
-        );
+        this.roadmapRepository = roadmapRepository;
     }
 
     public List<Question> generateQuestion(StageCreationDTO stageCreationDTO) {
@@ -104,86 +56,74 @@ public class PathwayService {
         }
     }
 
-    public StageDTO convertToStageDTO(GeneratedStage generatedStage, String userId, UUID parentId) {
-        StageDTO stageDTO = new StageDTO();
-        stageDTO.setType(generatedStage.getStageType());
-        stageDTO.setTitle(generatedStage.getTitle());
-        stageDTO.setCreatorId(UUID.fromString(userId));
-        stageDTO.setParentId(parentId);
 
-        if (generatedStage.getDescription() != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                String descriptionString = objectMapper.writeValueAsString(generatedStage.getDescription());
-                stageDTO.setDescription(descriptionString);
-            } catch (JsonProcessingException e) {
-                log.error("Error converting description to string", e);
-                stageDTO.setDescription(null);
+
+    @Transactional
+    public List<Stage> saveSubStages(List<SubStageGeneratedResponseDTO> subStageGeneratedResponseDTOS, String userId, String parentId) {
+        Stage parentStage;
+        if (parentId != null) {
+            parentStage = stageRepository.findById(UUID.fromString(parentId))
+                    .orElseThrow(() -> new RuntimeException("Parent not found"));
+        } else {
+            parentStage = null;
+        }
+
+        List <Stage> stages =  subStageGeneratedResponseDTOS.stream().map(subStageGeneratedResponseDTO -> {
+            Stage stage = new Stage();
+            stage.setType(StageType.fromValue(subStageGeneratedResponseDTO.getStageType().toUpperCase()));
+            stage.setStatus(false);
+            if (StageType.fromValue(subStageGeneratedResponseDTO.getStageType().toUpperCase()) == StageType.ROADMAP) {
+                User creator = userRepository.findById(UUID.fromString(userId))
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+                log.info("Creator: {}", creator);
+                stage = new Roadmap(creator, true);
             }
-        }
-
-        stageDTO.setStatus(true);
-        stageDTO.setDueDate(null);
-
-        return stageDTO;
-    }
-
-
-    @Transactional
-    public String saveStages(GeneratedStage stages, String userId, UUID parentId) {
-        StageDTO stage = convertToStageDTO(stages, userId, parentId);
-        Stage newStage = addStage(stage);
-
-        if (stages.getSubStages() != null) {
-            stages.getSubStages().forEach(subStage -> {
-                saveStages(subStage, userId, newStage.getStageId());
-            });
-        }
-
-        return newStage.getStageId().toString();
+            stage.setParent(parentStage);
+            stage.setTitle(subStageGeneratedResponseDTO.getTitle());
+            stage.setDescription(subStageGeneratedResponseDTO.getDescription());
+            log.info("stage: {}", stage.getTitle());
+            return stage;
+        }).toList();
+        return stageRepository.saveAll(stages);
     }
 
     @Transactional
-    public String generatePathwaysByPrompt(
-            StageCreationDTO stageCreationDTO,
-            String userId
-    ) {
-        log.info("Generating stage with prompt: {}", stageCreationDTO.getPrompt());
-        String generatedStage = aiServiceClient.generatePathwayByPrompt(stageCreationDTO);
-        log.info("Generated Stage: {}", generatedStage);
+    public List<Stage> generateSubStageByPrompt(SubStageGenerationDTO subStageGenerationDTO, String userId) {
+        log.info("Generating substage with prompt: {}", subStageGenerationDTO.getContext());
+        String generatedRoadmap = aiServiceClient.generateSubStagePrompt(subStageGenerationDTO);
+        log.info("Generated Roadmap: {}", generatedRoadmap);
         try {
-            GeneratedStage stages = jacksonObjectMapper.readValue(generatedStage, GeneratedStage.class);
-            String roamapId = saveStages(stages, userId, null);
-            log.info("Saved stage with id: {}", roamapId);
-            return roamapId;
+            List<SubStageGeneratedResponseDTO> generatedSubStages =
+                    jacksonObjectMapper.readValue(generatedRoadmap, new TypeReference<List<SubStageGeneratedResponseDTO>>() {});
+
+            log.info("Generated SubStages: {}", generatedSubStages);
+
+            return saveSubStages(
+                    generatedSubStages,
+                    userId,
+                    subStageGenerationDTO.getParentId()
+            );
         } catch (Exception e) {
             throw new RuntimeException("Error parsing stage Data", e);
         }
     }
 
-    public StageResponseDTO convertToStageResponseDTO(Stage stage) {
-        if (stage == null) {
-            return null;
-        }
+    public String generateTask(TaskGenerationDTO taskGenerationDTO, String userId) {
+        log.info("Generating task with title: {}", taskGenerationDTO.getTitle());
+        String generatedTask = aiServiceClient.generateTask(taskGenerationDTO);
+        log.info("Generated Task: {}", generatedTask);
+        return generatedTask;
 
-        StageResponseDTO stageDTO = new StageResponseDTO();
-        stageDTO.setType(stage.getType() != null ? stage.getType().name() : null);
-        stageDTO.setStatus(stage.getStatus());
-        stageDTO.setDueDate(stage.getDueDate());
-        stageDTO.setTitle(stage.getTitle());
-        stageDTO.setDescription(stage.getDescription());
-        stageDTO.setStageId(stage.getStageId().toString());
-        stageDTO.setParentId(stage.getParent() != null ? stage.getParent().getStageId().toString() : null);
-        stageDTO.setSubStages(
-                stage.getSubStages().stream().map(this::convertToStageResponseDTO).collect(Collectors.toList())
-        );
-        return stageDTO;
     }
 
     @Transactional
-    public StageResponseDTO getStagesById(String stageId) {
-        Stage stage = stageRepository.findById(UUID.fromString(stageId))
+    public Stage getStageById(SubStageGenerationDTO subStageGenerationDTO, String userId) {
+        Stage stage = stageRepository.findById(UUID.fromString(subStageGenerationDTO.getParentId()))
                 .orElseThrow(() -> new RuntimeException("Stage not found"));
-        return convertToStageResponseDTO(stage);
+
+        if (stage.getSubStages() == null || stage.getSubStages().isEmpty()) {
+            stage.setSubStages(generateSubStageByPrompt(subStageGenerationDTO, userId));
+        }
+        return stage;
     }
 }
