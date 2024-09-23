@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {usePathname, useRouter} from "next/navigation";
 import Loading from "@/app/app/loading";
 import {toast} from "sonner";
-import {useQuizTestStore} from "@/store/QuizTestStore";
+import {useQuizTestResultStore, useQuizTestStore} from "@/store/QuizTestStore";
 
 interface TestQuizProps {
     quizId: string
@@ -19,6 +19,7 @@ interface TestQuizProps {
 export default function LearnQuiz({params}: { params: TestQuizProps }) {
     const router = useRouter();
     const {questionsInQuizTest, clearUserQuizTest} = useQuizTestStore();
+    const {quizTestResult, setQuizTestResult} = useQuizTestResultStore();
     const pathname = usePathname();
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
@@ -40,6 +41,11 @@ export default function LearnQuiz({params}: { params: TestQuizProps }) {
             toast.dismiss();
         },
         onSuccess: (data) => {
+            console.log(data);
+            setQuizTestResult({
+                quizId: params.quizId,
+                questions: data.questions
+            });
             router.push(`${pathname}/${data.quizTest.quizTestId}`);
         }
     })

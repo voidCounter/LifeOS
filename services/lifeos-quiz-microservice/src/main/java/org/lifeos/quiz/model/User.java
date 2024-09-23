@@ -35,4 +35,8 @@ public class User {
     @JsonBackReference
     @ToString.Exclude
     private List<Quiz> createdQuizzes;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<QuizTest> quizTests;
 }

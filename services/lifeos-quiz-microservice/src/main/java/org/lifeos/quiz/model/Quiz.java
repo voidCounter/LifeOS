@@ -58,6 +58,12 @@ public class Quiz {
 
     private String quizDescription;
     private String language;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<QuizTest> quizTests;
+
     @CreationTimestamp
     private Timestamp createdAt;
     @LastModifiedDate

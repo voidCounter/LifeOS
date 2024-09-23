@@ -1,51 +1,43 @@
 "use client"
 import {usePathname, useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
-import {Quiz} from "@/types/QuizTypes/Quiz";
-import {
-    fetchQuizTest,
-    fetchQuizTestResults,
-} from "@/api-handlers/quizzes";
-import {QuizTest} from "@/types/QuizTypes/QuizTest";
+import {fetchQuizTest,} from "@/api-handlers/quizzes";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
 import {useEffect, useState} from "react";
-import * as url from "node:url";
 import {Button} from "@/components/ui/button";
-import {Repeat2, RepeatIcon} from "lucide-react";
-import {useQuizTestStore} from "@/store/QuizTestStore";
+import {Repeat2} from "lucide-react";
+import {useQuizTestResultStore, useQuizTestStore} from "@/store/QuizTestStore";
 import Loading from "@/app/app/loading";
 
 interface TestResultParams {
-    quizId: string
+    quizTestId: string
 }
 
 export default function TestResult({params}: { params: TestResultParams }) {
     const router = useRouter();
     const pathname = usePathname();
     const {questionsInQuizTest, clearUserQuizTest} = useQuizTestStore();
+    const {quizTestResult} = useQuizTestResultStore();
 
     const {
-        data: quizTestResult,
+        data: quizTest,
         isFetching,
         isLoading,
         error,
         isSuccess
     } = useQuery({
-        queryKey: [`quiztest-${params.quizId}`],
-        queryFn: () => fetchQuizTestResults({
-            quizId: params.quizId,
-            questions: questionsInQuizTest,
-        }),
+        queryKey: [`quiztest-${params.quizTestId}`],
+        queryFn: () => fetchQuizTest(params.quizTestId),
         refetchOnWindowFocus: false,
         refetchOnMount: true,
     });
     const [toCongratulate, setToCongratulate] = useState(false);
 
     useEffect(() => {
-        setToCongratulate((quizTestResult?.quizTest?.quizTestScore ?? 0) >= (quizTestResult?.quizTest?.quiz?.numberOfQuestions ?? 0) / 2);
-    }, [quizTestResult])
+        setToCongratulate((quizTest?.quizTestScore ?? 0) >= (quizTest?.quiz?.numberOfQuestions ?? 0) / 2);
+    }, [quizTest])
 
     useEffect(() => {
         clearUserQuizTest();
@@ -54,7 +46,7 @@ export default function TestResult({params}: { params: TestResultParams }) {
     if (isLoading || isFetching) return <Loading text={"Evaluating your" +
         " answers..."}/>
     if (error) return <div>{error.message}</div>
-    if (quizTestResult?.quizTest == undefined) return <div>...Loading</div>
+    if (quizTest == undefined) return <Loading></Loading>
 
 
     return (
@@ -69,7 +61,7 @@ export default function TestResult({params}: { params: TestResultParams }) {
                         " border-foreground/40"}>Quiz
                         Result</Badge>
                     <CardTitle
-                        className={"my-4"}>{quizTestResult?.quizTest.quiz.quizTitle}</CardTitle>
+                        className={"my-4"}>{quizTest.quiz.quizTitle}</CardTitle>
                     <CardContent className={"p-4 flex flex-col gap-4" +
                         " justify-center items-center"}>
                         <Image
@@ -91,21 +83,28 @@ export default function TestResult({params}: { params: TestResultParams }) {
                         <div
                             className={"text-6xl font-black"}>
                         <span
-                            className={`${toCongratulate ? "text-success-foreground" : "text-destructive"}`}>{quizTestResult?.quizTest?.quizTestScore}</span>/<span>{quizTestResult?.quizTest.quiz.numberOfQuestions}</span>
+                            className={`${toCongratulate ? "text-success-foreground" : "text-destructive"}`}>{quizTest?.quizTestScore}</span>/<span>{quizTest.quiz.numberOfQuestions}</span>
                         </div>
                         <Badge
                             variant={"default"}
-                            className={`${toCongratulate ? "bg-success-foreground" : "bg-destructive"}`}>+{quizTestResult?.quizTest?.quizTestScore}xp</Badge>
+                            className={`${toCongratulate ? "bg-success-foreground" : "bg-destructive"}`}>+{quizTest?.quizTestScore}xp</Badge>
                     </CardContent>
                 </Card>
                 <div className={"w-full flex flex-row gap-2"}>
-                    <Button className={"default"}
-                            onClick={() => router.push(`/app/quizzes/quiz/${quizTestResult?.quizTest.quiz.quizId}/test`)}>
+                    {
+                        quizTestResult && quizTestResult.quizTestId == params.quizTestId &&
+                        <Button variant={"default"}
+                                onClick={() => router.push(`${pathname}/review-answer`)}>Review
+                            your answers</Button>
+                    }
+                    <Button variant={"secondary"}
+                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest.quiz.quizId}/quiz-test`)}>
                         <Repeat2 className={"w-4 h-4 mr-2"}/>
                         Try
                         again</Button>
                     <Button variant={"outline"}
-                            onClick={() => router.push(`/app/quizzes/quiz/${quizTestResult?.quizTest?.quiz?.quizId}/learn`)}>Learn</Button>
+                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest?.quiz?.quizId}/learn`)}>Learn</Button>
+
                 </div>
             </div>
         </div>

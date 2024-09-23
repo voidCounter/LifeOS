@@ -27,13 +27,6 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
         queryFn: () => fetchQuizwithQuestions(params.quizId)
     })
 
-    // useErrorNotification({
-    //     isError,
-    //     description: error?.message ?? "",
-    //     title: "Failed to load quiz"
-    // });
-
-
     if (isLoading) return <Loading/>
     if (isError) {
         const axiosError = error as AxiosError;
@@ -65,7 +58,7 @@ export default function QuizDetails({params}: { params: QuizDetailsProps }) {
                         userName={quiz?.creator?.username}/>
             <div className={"flex flex-row gap-3 mt-4"}><Button
                 variant={"default"}
-                onClick={() => router.push(`${pathname}/test`)}>Practice
+                onClick={() => router.push(`${pathname}/quiz-test`)}>Practice
                 test</Button>
                 <Button variant={"secondary"}
                         onClick={() => router.push(`${pathname}/learn`)}>Learn</Button>
