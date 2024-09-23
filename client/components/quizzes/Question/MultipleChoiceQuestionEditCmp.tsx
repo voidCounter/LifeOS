@@ -17,6 +17,12 @@ import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useState} from "react";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
+import {
+    Select,
+    SelectContent, SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 
 interface MultipleChoiceQuestionEditCmpProps extends BaseQuestionProps<MultipleChoiceQuestion> {
 }
@@ -28,11 +34,16 @@ export default function MultipleChoiceQuestionEditCmp({
                                                           index
                                                       }: MultipleChoiceQuestionEditCmpProps) {
 
-    const {modifyQuestion, addedQuestion, removeQuestion} = useQuizCreationStore();
+    const {
+        modifyQuestion,
+        addedQuestion,
+        removeQuestion
+    } = useQuizCreationStore();
 
     const [currEditingQuestion, setCurrEditingQuestion] = useState(question);
     const multipleChoiceQuestionFormSchema = z.object({
         questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
+        questionDifficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("EASY"),
         options: z.array(z.object({
             optionText: z.string().min(2, {
                 message: "Option text must be at" +
@@ -59,6 +70,7 @@ export default function MultipleChoiceQuestionEditCmp({
 
     const onSubmit = (data: z.infer<typeof multipleChoiceQuestionFormSchema>) => {
         currEditingQuestion.questionStatement = data.questionStatement;
+        currEditingQuestion.questionDifficulty = data.questionDifficulty;
         currEditingQuestion.options = data.options.map((option, index) => {
             return {...option, optionId: index.toString()};
         });
@@ -88,6 +100,37 @@ export default function MultipleChoiceQuestionEditCmp({
                                    </FormItem>
                                )}
                     />
+                    <FormField control={form.control}
+                               name={"questionDifficulty"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Questions
+                                           Difficulty</FormLabel>
+                                       <Select
+                                           onValueChange={field.onChange}
+                                           defaultValue={field.value}>
+                                           <FormControl>
+                                               <SelectTrigger
+                                                   className={"data-[placeholder]:text-muted-foreground"}>
+                                                   <SelectValue
+                                                       placeholder={"Select" +
+                                                           " questions" +
+                                                           " difficulty"}/>
+                                               </SelectTrigger>
+                                           </FormControl>
+                                           <SelectContent>
+                                               <SelectItem
+                                                   value="EASY">Easy</SelectItem>
+                                               <SelectItem
+                                                   value="MEDIUM">Medium</SelectItem>
+                                               <SelectItem
+                                                   value="HARD">Hard</SelectItem>
+                                           </SelectContent>
+                                       </Select>
+                                       {/*<FormDescription></FormDescription>*/}
+                                       <FormMessage/>
+                                   </FormItem>
+                               )}/>
                     {
                         optionFields.map((option, index) => (
                             // TODO: Show error message for option number < 2
@@ -171,7 +214,7 @@ export default function MultipleChoiceQuestionEditCmp({
                     <div className={"flex flex-row gap-2"}>
                         <Button type={"submit"} size={"sm"} className={"w-fit" +
                             ""}>Save</Button>
-                          <Button size={"sm"} variant={"ghost"} type={"button"}
+                        <Button size={"sm"} variant={"ghost"} type={"button"}
                                 onClick={() => {
                                     setQuestionMode ? setQuestionMode(mode) : null;
                                     if (addedQuestion == question.questionId) {

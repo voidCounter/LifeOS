@@ -18,6 +18,12 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {Button} from "@/components/ui/button";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
+import {
+    Select,
+    SelectContent, SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 
 interface TrueFalseQuestionEditCmpProps extends BaseQuestionProps<TrueFalseQuestion> {
 }
@@ -39,6 +45,7 @@ export default function TrueFalseQuestionEditCmp({
         questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
         trueOptionExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
         falseOptionExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
+        questionDifficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("EASY"),
         answer: z.boolean()
     });
 
@@ -56,6 +63,7 @@ export default function TrueFalseQuestionEditCmp({
     const onSubmit = (data: z.infer<typeof trueFalseQuestionFormSchema>) => {
         currEditingQuestion.questionStatement = data.questionStatement;
         currEditingQuestion.trueOptionExplanation = data.trueOptionExplanation;
+        currEditingQuestion.questionDifficulty = data.questionDifficulty;
         currEditingQuestion.falseOptionExplanation = data.falseOptionExplanation;
         currEditingQuestion.answer = data.answer;
         setCurrEditingQuestion(currEditingQuestion);
@@ -84,6 +92,37 @@ export default function TrueFalseQuestionEditCmp({
                                    </FormItem>
                                )}
                     />
+                    <FormField control={form.control}
+                               name={"questionDifficulty"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Questions
+                                           Difficulty</FormLabel>
+                                       <Select
+                                           onValueChange={field.onChange}
+                                           defaultValue={field.value}>
+                                           <FormControl>
+                                               <SelectTrigger
+                                                   className={"data-[placeholder]:text-muted-foreground"}>
+                                                   <SelectValue
+                                                       placeholder={"Select" +
+                                                           " questions" +
+                                                           " difficulty"}/>
+                                               </SelectTrigger>
+                                           </FormControl>
+                                           <SelectContent>
+                                               <SelectItem
+                                                   value="EASY">Easy</SelectItem>
+                                               <SelectItem
+                                                   value="MEDIUM">Medium</SelectItem>
+                                               <SelectItem
+                                                   value="HARD">Hard</SelectItem>
+                                           </SelectContent>
+                                       </Select>
+                                       {/*<FormDescription></FormDescription>*/}
+                                       <FormMessage/>
+                                   </FormItem>
+                               )}/>
 
                     <FormField
                         control={form.control}

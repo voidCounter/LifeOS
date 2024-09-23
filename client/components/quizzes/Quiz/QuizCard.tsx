@@ -99,16 +99,12 @@ export default function QuizCard({
                             <Badge variant={"outline"}
                                    key={index}>{category}</Badge>)
                     }
-                    {
-                        showRating &&
-                        <QuizRating rating={"4.5"}/>
-                    }
                 </div>
             </div>
             {
                 variant == "createdByMe" &&
                 <div className="flex items-center space-x-2">
-                    <Switch id="visibility"
+                    <Switch id="visibility" defaultChecked={quiz.published}
                             onClick={(e) => e.stopPropagation()}/>
                     <Label htmlFor={"visibility"}>Public</Label>
                 </div>

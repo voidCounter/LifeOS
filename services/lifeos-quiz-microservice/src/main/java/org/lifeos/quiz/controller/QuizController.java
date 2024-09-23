@@ -67,6 +67,14 @@ public class QuizController {
         return ResponseEntity.ok(quizzes);
     }
 
+    @PostMapping("/evaluate")
+    public ResponseEntity<?> evaluateQuiz(@RequestHeader(name = "user-id",
+            required = false) UUID userId,
+                                          @RequestBody QuizEvaluationDTO quizEvaluationDTO) {
+        return ResponseEntity.ok(quizService.evaluateQuiz(quizEvaluationDTO,
+                userId));
+    }
+
     @GetMapping("/{quizId}")
     public ResponseEntity<Quiz> getQuizWithQuestions(@PathVariable UUID quizId) {
         try {
@@ -103,6 +111,17 @@ public class QuizController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(quizService.createQuizByNotes((QuizByNotesDTO) quizCreationDTO));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid request");
+    }
+
+    @GetMapping("/quizTests")
+    public ResponseEntity<?> getQuizTests(@RequestHeader(name = "user-id",
+            required = false) UUID userId) {
+        return ResponseEntity.ok(quizService.getQuizTests(userId));
+    }
+
+    @GetMapping("/quiz-test/{quizTestId}")
+    public ResponseEntity<?> getQuizTest(@PathVariable String quizTestId) {
+        return ResponseEntity.ok(quizService.getQuizTest(quizTestId));
     }
 
     @PostMapping("/{quizId}/questions/new")

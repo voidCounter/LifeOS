@@ -36,5 +36,7 @@ export default function CreatedQuizzes() {
                 key={quiz.quizId} quiz={quiz}
                 variant={"createdByMe"}/>)
         }
+
+        < div className={"py-16"}></div>
     </div>)
 }

@@ -2,9 +2,15 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {QuizMode} from "@/types/QuizTypes/QuizMode";
 import {useEffect, useState} from "react";
 import {useQuizLearningStore} from "@/store/QuizLearningStore";
+import {useQuizTestStore} from "@/store/QuizTestStore";
+import {QuestionType} from "@/types/QuizTypes/QuestionTypes";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {Label} from "@/components/ui/label";
 
 interface QuestionOptionProps {
-    id: string
+    id: string,
+    questionId: string,
+    questionType: QuestionType,
     option: string | undefined,
     optionExplanation: string | undefined,
     isCorrect: boolean | undefined,
@@ -14,10 +20,13 @@ interface QuestionOptionProps {
 export default function QuestionOption({
                                            id,
                                            option,
+                                           questionType,
+                                           questionId,
                                            optionExplanation,
                                            isCorrect,
                                            mode
                                        }: QuestionOptionProps) {
+    const {handleAnswerChange, questionsInQuizTest} = useQuizTestStore();
     const [checked, setChecked] = useState(false);
     const revealAnswer = useQuizLearningStore(state => state.revealAnswer);
     const setRevealAnswer = useQuizLearningStore(state => state.setRevealAnswer);
@@ -41,6 +50,22 @@ export default function QuestionOption({
                     </label>
 
                 </div>)
+        case "Test":
+            return (
+                <div className="flex items-center space-x-2">
+                    <Checkbox id={id}
+                              className={"cursor-default"}
+                              defaultChecked={questionsInQuizTest.find((item) => item.questionId === questionId)?.userAnswer.includes(option as string)}
+                              onCheckedChange={(checked) => handleAnswerChange(questionId, option as string, questionType)}/>
+                    <label
+                        htmlFor={id}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                        {option}
+                    </label>
+
+                </div>)
+                ;
         case "Learning":
             return (
                 <div className={"flex flex-col gap-2 w-full"}>

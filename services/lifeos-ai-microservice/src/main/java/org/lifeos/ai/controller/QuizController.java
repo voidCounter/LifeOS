@@ -1,10 +1,7 @@
 package org.lifeos.ai.controller;
 
 
-import org.lifeos.ai.dto.quiz.QuizByArticleDTO;
-import org.lifeos.ai.dto.quiz.QuizByNotesDTO;
-import org.lifeos.ai.dto.quiz.QuizByPromptDTO;
-import org.lifeos.ai.dto.quiz.QuizByYoutubeDTO;
+import org.lifeos.ai.dto.quiz.*;
 import org.lifeos.ai.service.QuizService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.List;
 
 @RestController
 public class QuizController {
@@ -31,6 +31,11 @@ public class QuizController {
         String generatedQuiz =
                 quizService.generateQuizByPrompt(quizCreationDTO);
         return ResponseEntity.ok(generatedQuiz);
+    }
+
+    @PostMapping("/evaluate-short-answer-questions")
+    public ResponseEntity<?> evaluateShortAnswerQuestions(@RequestBody List<ShortAnswerQuestionCheckingReqDTO> questions) {
+        return ResponseEntity.ok(quizService.evaluateShortAnswerQuestions(questions));
     }
 
     @PostMapping("/generate-quiz-by-youtube")

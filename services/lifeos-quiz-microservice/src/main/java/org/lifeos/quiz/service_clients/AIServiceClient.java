@@ -2,6 +2,7 @@ package org.lifeos.quiz.service_clients;
 
 import org.lifeos.quiz.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,5 +24,7 @@ public interface AIServiceClient {
     @PostMapping("/generate-quiz-by-notes")
     String generateQuizByNotes(@RequestBody QuizByNotesDTO quizByNotesDTO);
 
-
+    @PostMapping("/evaluate-short-answer-questions")
+    List<ShortAnswerQuestionCheckingResDTO> evaluateShortAnswerQuestions(@RequestBody List<ShortAnswerQuestionCheckingReqDTO> questions);
 }
+
