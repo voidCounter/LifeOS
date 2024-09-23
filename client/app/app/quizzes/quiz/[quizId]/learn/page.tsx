@@ -42,7 +42,7 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
 
     const {data: quiz, isLoading, isError, error} = useQuery<Quiz, Error>({
         queryKey: [`quiz-${params.quizId}`],
-        queryFn: () => fetchQuizwithQuestions(params.quizId + "32"),
+        queryFn: () => fetchQuizwithQuestions(params.quizId),
     })
 
     // useErrorNotification({

@@ -81,8 +81,8 @@ export default function SaveQuizForm() {
         onSuccess: (response) => {
             console.log("Successfully added the quiz: ", response);
             // removing all saved questions after saving the quiz.
-            removeAllQuestions();
             router.push(`/app/quizzes/quiz/${response.quizId}`);
+            removeAllQuestions();
         },
         onError: (error) => {
             console.log("Failed to save quiz: ", error);

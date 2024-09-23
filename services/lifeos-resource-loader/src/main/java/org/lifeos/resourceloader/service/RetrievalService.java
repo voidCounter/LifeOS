@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.filter.Filter;
+import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
+import org.springframework.expression.Expression;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +25,24 @@ public class RetrievalService {
 
     public String retrieveChunks(RetrievalQueryDTO retrievalQueryDTO) {
         log.info("Doing similarity search: {}",
-                retrievalQueryDTO.getQuery() + " ---- into ----" + retrievalQueryDTO.getFileName());
+                retrievalQueryDTO.getQuery() + " ---- into ----" + retrievalQueryDTO.getFileNames());
+
+        // filter expression
+        FilterExpressionBuilder filterExpressionBuilder =
+                new FilterExpressionBuilder();
+        log.info("Filter expression builder: {}",
+                retrievalQueryDTO.getFileNames().toString());
+        Filter.Expression filterByFilenames = filterExpressionBuilder.in(
+                "source", retrievalQueryDTO.getFileNames().toString()).build();
+//        log.info("Filter expression: {}", filterByFilenames.toString());
+        String filterByFilenamesString =
+                "source in [" + retrievalQueryDTO.getFileNames().stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ")) + "]";
+
+        log.info("Filter by filenames string: {}", filterByFilenamesString);
         List<Document> matchedDocs =
-                vectorStore.similaritySearch(SearchRequest.query(retrievalQueryDTO.getQuery()).withTopK(5).withFilterExpression("fileName == '" + retrievalQueryDTO.getFileName() + "'"));
+                vectorStore.similaritySearch(SearchRequest.query(retrievalQueryDTO.getQuery().isEmpty() ? "Retrieve" : retrievalQueryDTO.getQuery()).withTopK(3).withFilterExpression(filterByFilenamesString));
+
+        log.info("Matched docs: {}", matchedDocs);
         return matchedDocs.stream().map(Document::getContent).collect(Collectors.joining("\n"));
     }
 }

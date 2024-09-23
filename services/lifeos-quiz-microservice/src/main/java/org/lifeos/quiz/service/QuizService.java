@@ -10,6 +10,7 @@ import org.lifeos.quiz.model.User;
 import org.lifeos.quiz.repository.QuizRepository;
 import org.lifeos.quiz.repository.UserRepository;
 import org.lifeos.quiz.service_clients.AIServiceClient;
+import org.lifeos.quiz.service_clients.ResourceLoaderClient;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,16 +27,19 @@ public class QuizService {
     private final AIServiceClient aiServiceClient;
     private final ObjectMapper jacksonObjectMapper;
     private final ModelMapper modelMapper;
+    private final ResourceLoaderClient resourceLoaderClient;
 
     public QuizService(QuizRepository quizRepository,
                        UserRepository userRepository,
                        AIServiceClient aiServiceClient,
+                       ResourceLoaderClient resourceLoaderClient,
                        ObjectMapper jacksonObjectMapper,
                        ModelMapper modelMapper
     ) {
         this.quizRepository = quizRepository;
         this.userRepository = userRepository;
         this.aiServiceClient = aiServiceClient;
+        this.resourceLoaderClient = resourceLoaderClient;
         this.jacksonObjectMapper = jacksonObjectMapper;
         this.modelMapper = modelMapper;
     }
@@ -43,24 +47,24 @@ public class QuizService {
     public void addQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User creator = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, creator);
+
         quizRepository.save(quiz);
     }
 
-
     public Quiz getQuiz(UUID quizId) {
-        Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
-        log.info("quiz: {}", quiz);
-        return quiz;
+        //        log.info("quiz: {}", quiz);
+        return quizRepository.findById(quizId).orElseThrow(() -> new RuntimeException("Quiz not found"));
     }
+
 
     public List<Question> getAllQuestionsByQuizId(UUID quizId) {
         return quizRepository.findAllByQuizId(quizId).getQuestions();
     }
 
     @Transactional
-    public GeneratedQuizDTO createQuizByPrompt(QuizCreationDTO quizCreationDTO) {
-        log.info("Creating quiz by prompt: {}", quizCreationDTO.getNumberOfQuestions());
-        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizCreationDTO);
+    public GeneratedQuizDTO createQuizByPrompt(QuizByPromptDTO quizByPromptDTO) {
+        log.info("Creating quiz by prompt: {}", quizByPromptDTO.getNumberOfQuestions());
+        String generatedQuiz = aiServiceClient.generateQuizByPrompt(quizByPromptDTO);
         log.info("Generated Quiz: {}", generatedQuiz);
         try {
             return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
@@ -86,7 +90,11 @@ public class QuizService {
     @Transactional
     public String saveQuiz(QuizWithQuestionsDTO quizWithQuestionsDTO, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
         Quiz quiz = Quiz.fromDTO(quizWithQuestionsDTO, user);
+        float[] embedding =
+                resourceLoaderClient.getEmbedding(quiz.getQuizTitle() + " " + quiz.getQuizDescription());
+        quiz.setEmbedding(embedding);
         return quizRepository.save(quiz).getQuizId().toString();
     }
 
@@ -99,5 +107,37 @@ public class QuizService {
         return quizRepository.findAllByCreator(creator).stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
     }
 
+    public List<QuizDTO> searchByQuery(String query) {
+        float[] queryEmbedding = resourceLoaderClient.getEmbedding(query);
+        // TODO: Write a query that will do similarity search
+        List<Quiz> gotQuizzes =
+                quizRepository.findAllBySearchQuery(queryEmbedding);
+        return gotQuizzes.stream().map(quiz -> modelMapper.map(quiz, QuizDTO.class)).toList();
+    }
 
+
+    public Object createQuizByArticle(QuizByArticleDTO quizByArticleDTO) {
+        log.info("Creating quiz by article: {}",
+                quizByArticleDTO.getNumberOfQuestions());
+        String generatedQuiz = aiServiceClient.generateQuizByArticle(quizByArticleDTO);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
+    }
+
+    public Object createQuizByNotes(QuizByNotesDTO quizCreationDTO) {
+        // wait for 2 min
+        log.info("the files: {}",
+                quizCreationDTO.getFiles());
+        String generatedQuiz =
+                aiServiceClient.generateQuizByNotes(quizCreationDTO);
+        try {
+            return jacksonObjectMapper.readValue(generatedQuiz, GeneratedQuizDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing quiz Data", e);
+        }
+
+    }
 }

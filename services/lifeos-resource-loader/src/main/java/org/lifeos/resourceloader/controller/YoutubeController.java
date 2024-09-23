@@ -22,7 +22,7 @@ public class YoutubeController {
     }
 
     @PostMapping("/loadYoutubeTranscript")
-    public ResponseEntity<String> loadTranscript(@RequestBody String youtubeURL) {
+    public ResponseEntity<String> loadYoutubeTranscript(@RequestBody String youtubeURL) {
         String fileName = youtubeService.loadTranscript(youtubeURL);
         return ResponseEntity.ok(fileName);
     }

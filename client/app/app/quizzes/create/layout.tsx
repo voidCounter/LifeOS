@@ -9,7 +9,7 @@ export default function createLayout({children}: {
         <div className={"w-full grid grid-cols-1 lg:grid-cols-5 gap-8" +
             ""}>
             <QuizCreationLayout
-                className={"lg:col-span-2 mt-12"}>{children}</QuizCreationLayout>
+                className={"lg:col-span-2 mt-12 w-full overflow-hidden"}>{children}</QuizCreationLayout>
             <CreatedQuizView
                 className="lg:col-span-3 h-screen overflow-y-scroll px-1 py-12"></CreatedQuizView>
         </div>
