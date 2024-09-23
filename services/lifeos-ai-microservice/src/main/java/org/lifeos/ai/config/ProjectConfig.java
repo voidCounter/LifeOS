@@ -4,11 +4,6 @@ import org.apache.logging.log4j.simple.SimpleLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.transformer.SummaryMetadataEnricher;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +21,6 @@ public class ProjectConfig {
     @Value("classPath:/prompts/PathwaySystemPrompt.st")
     private Resource pathwaySystemPromptResource;
 
-    @Value("classPath:/prompts/PathwayUserPrompt.st")
-    private Resource pathwayUserPromptResource;
-
     @Value("classPath:/prompts/QuizSystemPrompt.st")
     private Resource quizSystemPromptResource;
 
@@ -42,28 +34,9 @@ public class ProjectConfig {
     }
 
     @Bean
-    ChatMemory chatMemory() {
-        return new InMemoryChatMemory();
+    ChatClient pathwayClient(ChatClient.Builder builder) {
+        return builder.defaultSystem(pathwaySystemPromptResource).build();
     }
 
-    @Bean
-    ChatClient pathwayClient(ChatClient.Builder builder, ChatMemory chatMemory) {
-        return builder
-//                .defaultSystem(pathwaySystemPromptResource)
-//                .defaultUser(pathwayUserPromptResource)
-                .defaultAdvisors(
-                        new PromptChatMemoryAdvisor(chatMemory)
-                )
-                .build();
-    }
-
-    @Bean
-    ChatClient subStageGenerationClient(ChatClient.Builder builder) {
-        return builder
-                .defaultAdvisors(
-                        new SimpleLoggerAdvisor()
-                )
-                .build();
-    }
 
 }

@@ -23,13 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {Button} from "@/components/ui/button";
-import {
-    Check,
-    ChevronsUpDown,
-    Circle,
-    LoaderCircle,
-    SparklesIcon
-} from "lucide-react";
+import {Check, ChevronsUpDown, LoaderCircle, SparklesIcon} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {Input} from "@/components/ui/input";
 import {useQuery} from "@tanstack/react-query";
@@ -51,8 +45,10 @@ import {
 import {cn} from "@/lib/utils";
 import {useQuizCreationMutation} from "@/hooks/useQuizCreationQuery";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
-import {useEffect} from "react";
 import extractVideoID from "@/utils/extractVideoID";
+import FileItem from "@/components/FileItem";
+import {useFileUploadMutation} from "@/hooks/useFileUploadQuery";
+import {List} from "postcss/lib/list";
 
 
 export default function QuizCreationForm({quizCreationMethod}: {
@@ -69,6 +65,7 @@ export default function QuizCreationForm({quizCreationMethod}: {
         refetchOnMount: false,
         refetchOnWindowFocus: false,
     });
+
     const form = useForm<z.infer<typeof quizCreationSchema>>({
         resolver: zodResolver(quizCreationSchema),
         defaultValues: {
@@ -81,14 +78,32 @@ export default function QuizCreationForm({quizCreationMethod}: {
 
     const {
         mutate: generateQuiz,
+        mutateAsync: generateQuizAsync,
         isPending: isGenerating,
         data: quiz,
         error
     } = useQuizCreationMutation(quizCreationMethod);
 
+    const {
+        mutate: uploadFiles,
+        mutateAsync: uploadFilesAsync,
+        isPending: isUploadingFiles,
+    } = useFileUploadMutation();
+
     async function onSubmit(data: z.infer<typeof quizCreationSchema>) {
         console.log(data);
-        generateQuiz(data);
+        if (data && data.hasOwnProperty("files")) {
+            const uploadInfo = await uploadFilesAsync((data as any).files);
+            console.log("Uploaded files: ", uploadInfo);
+            const updatedData = {
+                ...data,
+                files: uploadInfo
+            };
+            console.log("Updated data: ", updatedData);
+            await generateQuizAsync(updatedData);
+        } else {
+            await generateQuizAsync(data);
+        }
     }
 
     const sortLanguages = (a: [string, Language], b: [string, Language]) => {
@@ -98,10 +113,42 @@ export default function QuizCreationForm({quizCreationMethod}: {
     const renderSpecificFields = () => {
         switch (quizCreationMethod) {
             case "note":
-                return (<div>Enter notes</div>);
+                return (
+                    <FormField control={form.control} name={"files"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Files</FormLabel>
+                                       <Input type={"file"} multiple={true}
+                                              onChange={(e) => {
+                                                  field.onChange(Array.from(e.target.files ?? []));
+                                              }}/>
+                                       <FormDescription>Make sure the note
+                                           is
+                                           descriptive.</FormDescription>
+                                       <FormMessage/>
+                                       {
+                                           field.value && field.value.length > 0 && (
+                                               <div className={"flex w-full" +
+                                                   " flex-col gap-2"}>
+                                                   {field.value.map((file: File | string, index) => (
+                                                       <FileItem key={index}
+                                                                 onDeleted={() => {
+                                                                     field.onChange(field.value.filter((f: File | string) => (f as File).name != (file as File).name));
+                                                                 }}
+                                                                 file={file as File}/>
+                                                   ))
+                                                   }
+                                               </div>)
+                                       }
+                                   </FormItem>
+                               )}
+                    >
+                    </FormField>
+                );
             case "youtube":
                 return (
-                    <FormField control={form.control} name={"youtubeUrl"}
+                    <FormField control={form.control}
+                               name={"youtubeUrl"}
                                render={({field}) => (
                                    <FormItem>
                                        <FormLabel>Youtube URL
@@ -109,7 +156,8 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                        <Input
                                            placeholder="Enter youtube URL"
                                            {...field}/>
-                                       <FormDescription>Make sure the video
+                                       <FormDescription>Make
+                                           sure the video
                                            is
                                            public.
                                        </FormDescription>
@@ -117,9 +165,10 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                            field.value && extractVideoID(field.value) &&
                                            <div>
                                                <iframe
-                                                   src={"https://www.youtube.com/embed/" + extractVideoID(field.value)}
+                                                   src={"https://www.youtube-nocookie.com/embed/" + extractVideoID(field.value)}
                                                    className={"w-full h-64" +
                                                        " rounded-lg"}
+                                                   allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                    allowFullScreen
                                                    title={"Youtube video"}/>
                                            </div>
@@ -131,16 +180,20 @@ export default function QuizCreationForm({quizCreationMethod}: {
                 );
             case "article":
                 return (
-                    <FormField control={form.control} name={"articleUrl"}
+                    <FormField control={form.control}
+                               name={"articleUrl"}
                                render={({field}) => (
                                    <FormItem>
-                                       <FormLabel>Article URL</FormLabel>
+                                       <FormLabel>Article
+                                           URL</FormLabel>
                                        <Input
                                            placeholder="Enter article URL"
                                            {...field}/>
-                                       <FormDescription>The URL should be
+                                       <FormDescription>The
+                                           URL should be
                                            public
-                                           and parsable.</FormDescription>
+                                           and
+                                           parsable.</FormDescription>
                                        <FormMessage/>
                                    </FormItem>
                                )}/>
@@ -152,12 +205,14 @@ export default function QuizCreationForm({quizCreationMethod}: {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={"flex" +
-                " static" +
-                " mt-8" +
-                " flex-col gap-6"}>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className={"flex w-full relative " +
+                    " mt-8" +
+                    " flex-col gap-6"}>
                 {renderSpecificFields()}
-                <FormField control={form.control} name={"prompt"}
+                <FormField control={form.control}
+                           name={"prompt"}
                            render={({field}) => (
                                <FormItem>
                                    <FormLabel>Prompt
@@ -169,9 +224,12 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                            {...field}
                                        />
                                    </FormControl>
-                                   <FormDescription>Make your prompt
+                                   <FormDescription>Make
+                                       your
+                                       prompt
                                        descriptive
-                                       to get good
+                                       to get
+                                       good
                                        results!</FormDescription>
                                    <FormMessage/>
                                </FormItem>
@@ -182,8 +240,9 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                <FormItem>
                                    <FormLabel>Questions
                                        Difficulty</FormLabel>
-                                   <Select onValueChange={field.onChange}
-                                           defaultValue={field.value}>
+                                   <Select
+                                       onValueChange={field.onChange}
+                                       defaultValue={field.value}>
                                        <FormControl>
                                            <SelectTrigger
                                                className={"data-[placeholder]:text-muted-foreground"}>
@@ -208,12 +267,15 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                    <FormMessage/>
                                </FormItem>
                            )}/>
-                <FormField control={form.control} name={"questionsType"}
+                <FormField control={form.control}
+                           name={"questionsType"}
                            render={({field}) => (
                                <FormItem>
-                                   <FormLabel>Questions Type</FormLabel>
-                                   <Select onValueChange={field.onChange}
-                                           defaultValue={field.value}>
+                                   <FormLabel>Questions
+                                       Type</FormLabel>
+                                   <Select
+                                       onValueChange={field.onChange}
+                                       defaultValue={field.value}>
                                        <FormControl>
                                            <SelectTrigger
                                                className={"data-[placeholder]:text-muted-foreground"}>
@@ -239,12 +301,15 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                    {/*<FormDescription></FormDescription>*/}
                                    <FormMessage/></FormItem>
                            )}/>
-                <FormField control={form.control} name={"language"}
+                <FormField control={form.control}
+                           name={"language"}
                            render={({field}) => (
-                               <FormItem className={"flex flex-col gap-1"}>
+                               <FormItem
+                                   className={"flex flex-col gap-1"}>
                                    <FormLabel>Language</FormLabel>
                                    <Popover>
-                                       <PopoverTrigger asChild>
+                                       <PopoverTrigger
+                                           asChild>
                                            <FormControl>
                                                <Button
                                                    variant="outline"
@@ -271,7 +336,8 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                                <CommandInput
                                                    placeholder="Search language..."/>
                                                <CommandList>
-                                                   <CommandEmpty>No language
+                                                   <CommandEmpty>No
+                                                       language
                                                        found.</CommandEmpty>
                                                    <CommandGroup>
                                                        {Object.entries(languages ?? {}).sort(sortLanguages).map(([short, language]) => (
@@ -303,47 +369,58 @@ export default function QuizCreationForm({quizCreationMethod}: {
                                    {/*<FormDescription></FormDescription>*/}
                                    <FormMessage/></FormItem>
                            )}/>
-                <FormField control={form.control} name={"numberOfQuestions"}
+                <FormField control={form.control}
+                           name={"numberOfQuestions"}
                            render={({field}) => (
                                <FormItem>
-                                   <FormLabel>Number of
+                                   <FormLabel>Number
+                                       of
                                        questions</FormLabel>
-                                   <Select onValueChange={field.onChange}
-                                           defaultValue={field.value}>
+                                   <Select
+                                       onValueChange={field.onChange}
+                                       defaultValue={field.value}>
                                        <FormControl>
                                            <SelectTrigger
                                                className={"data-[placeholder]:text-muted-foreground"}>
-                                               <SelectValue className={""}
-                                                            placeholder={"Select number of questions"}/>
+                                               <SelectValue
+                                                   className={""}
+                                                   placeholder={"Select number of questions"}/>
                                            </SelectTrigger>
                                        </FormControl>
                                        <SelectContent>
                                            {
                                                [5, 10, 15, 20].map((number) => (
-                                                   <SelectItem key={number}
-                                                               value={number.toString()}>{number}</SelectItem>))
+                                                   <SelectItem
+                                                       key={number}
+                                                       value={number.toString()}>{number}</SelectItem>))
                                            }
                                        </SelectContent>
                                    </Select>
                                    {/*<FormDescription></FormDescription>*/}
                                    <FormMessage/></FormItem>
                            )}/>
-                <Button type="submit" disabled={isGenerating}>
+                <Button type="submit"
+                        disabled={isGenerating}>
                     {
-                        isGenerating ?
-                            <div className={"flex justify-center items-center"}>
-                                <LoaderCircle className={"animate-spin mr-2"}
-                                              strokeWidth={1}/>
+                        (isGenerating || isUploadingFiles) ?
+                            <div
+                                className={"flex justify-center items-center"}>
+                                <LoaderCircle
+                                    className={"animate-spin mr-2"}
+                                    strokeWidth={1}/>
                                 Generating Quiz
                             </div> :
-                            <div className={"flex"}><SparklesIcon
-                                className={"w-5 h-5 mr-2"}
-                                strokeWidth={1}/>
+                            <div
+                                className={"flex"}>
+                                <SparklesIcon
+                                    className={"w-5 h-5 mr-2"}
+                                    strokeWidth={1}/>
                                 Generate Quiz
                             </div>
                     }
                 </Button>
             </form>
         </Form>
-    );
+    )
+        ;
 }

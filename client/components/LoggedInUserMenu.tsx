@@ -16,10 +16,11 @@ import {
     Settings,
     User
 } from "lucide-react";
-import React from "react";
+import React, {useState} from "react";
 import {AxiosInstance} from "@/utils/AxiosInstance";
 import {useAuthStore} from "@/store/AuthStore";
 import {useRouter} from "next/navigation";
+import SettingDialog from "@/app/app/setting/SettingDialog";
 
 export default function LoggedInUserMenu() {
     const {deleteAuthenticatedUser} = useAuthStore();
@@ -35,8 +36,12 @@ export default function LoggedInUserMenu() {
             }
         } catch (error) {
             console.error("Logout failed: ", error);
+            deleteAuthenticatedUser();
+            router.push("/");
         }
     }
+
+    const [isSettingDialogOpen, setIsSettingDialogOpen] = useState(false)
 
     return (
         <div className={"p-2 w-full"}>
@@ -56,7 +61,8 @@ export default function LoggedInUserMenu() {
                             <CreditCard className="mr-2 h-4 w-4"/>
                             <span>Billing</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => setIsSettingDialogOpen(true)}>
                             <Settings className="mr-2 h-4 w-4"/>
                             <span>Settings</span>
                         </DropdownMenuItem>
@@ -81,6 +87,8 @@ export default function LoggedInUserMenu() {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+            <SettingDialog open={isSettingDialogOpen}
+                           onOpenChange={() => setIsSettingDialogOpen(!isSettingDialogOpen)}/>
         </div>
     );
 }
