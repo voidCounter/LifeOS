@@ -1,6 +1,7 @@
 package org.lifeos.quiz.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class QuizTest {
 
     @ManyToOne
     @JoinColumn(name = "quiz_id")
-    @JsonBackReference
+    @JsonManagedReference
     private Quiz quiz;
 
     private int quizTestScore;

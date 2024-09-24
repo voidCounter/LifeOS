@@ -11,6 +11,7 @@ import {usePathname, useRouter} from "next/navigation";
 import Loading from "@/app/app/loading";
 import {toast} from "sonner";
 import {useQuizTestResultStore, useQuizTestStore} from "@/store/QuizTestStore";
+import {useEffect} from "react";
 
 interface TestQuizProps {
     quizId: string
@@ -18,9 +19,22 @@ interface TestQuizProps {
 
 export default function LearnQuiz({params}: { params: TestQuizProps }) {
     const router = useRouter();
-    const {questionsInQuizTest, clearUserQuizTest} = useQuizTestStore();
+    const {
+        quizId,
+        setQuizId,
+        questionsInQuizTest,
+        clearUserQuizTest
+    } = useQuizTestStore();
     const {quizTestResult, setQuizTestResult} = useQuizTestResultStore();
     const pathname = usePathname();
+
+    useEffect(() => {
+        if (quizId !== params.quizId) {
+            setQuizId(params.quizId);
+            clearUserQuizTest();
+        }
+    }, [])
+
 
     const {data: quiz, isLoading, error} = useQuery<Quiz, Error>({
         queryKey: [`quiz-${params.quizId}`],
@@ -44,6 +58,7 @@ export default function LearnQuiz({params}: { params: TestQuizProps }) {
             console.log(data);
             setQuizTestResult({
                 quizId: params.quizId,
+                quizTestId: data.quizTest.quizTestId,
                 questions: data.questions
             });
             router.push(`${pathname}/${data.quizTest.quizTestId}`);

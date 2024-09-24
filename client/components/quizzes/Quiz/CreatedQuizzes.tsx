@@ -30,7 +30,8 @@ export default function CreatedQuizzes() {
     })
 
     if (isLoading) return <Loading className={"mt-12"}/>
-    return (<div className={"w-full h-full flex flex-col gap-2"}>
+    return (<div className={"w-full h-full grid grid-cols-1 sm:grid-cols-2" +
+        " gap-2"}>
         {
             quizzes?.map((quiz: Quiz) => <QuizCard
                 key={quiz.quizId} quiz={quiz}

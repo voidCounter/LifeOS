@@ -3,6 +3,7 @@ import {Quiz} from "@/types/QuizTypes/Quiz";
 import {fetchLocalQuizzes, fetchQuizTests} from "@/api-handlers/quizzes";
 import QuizCard from "./QuizCard";
 import {QuizTest} from "@/types/QuizTypes/QuizTest";
+import Loading from "@/app/app/loading";
 
 export default function TakenQuizTests() {
     const {
@@ -16,9 +17,10 @@ export default function TakenQuizTests() {
     });
 
     if (isSuccess) console.log(quiztests);
-    if (isLoading) return <div>...Loading</div>
+    if (isLoading) return <Loading text={"Grabbing quiz tests."}/>
     if (error) return <div>{error.message}</div>
-    return (<div className={"flex flex-col gap-2"}>
+    return (<div className={"grid grid-cols-1 sm:grid-cols-2 " +
+        " gap-2"}>
         {
             quiztests?.map((quizTest: QuizTest) => <QuizCard
                 key={quizTest.quizTestId} quiz={quizTest.quiz}
