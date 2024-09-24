@@ -1,25 +1,19 @@
-import Image from "next/image";
 import {Quiz} from "@/types/QuizTypes/Quiz";
 import {Badge} from "@/components/ui/badge";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";
 import {Button} from "@/components/ui/button";
-import {
-    CalendarFold,
-    CalendarFoldIcon,
-    MoreHorizontalIcon,
-    MoreVerticalIcon
-} from "lucide-react";
+import {CalendarFoldIcon, MoreVerticalIcon} from "lucide-react";
 import {
     DropdownMenu,
-    DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {QuizTest} from "@/types/QuizTypes/QuizTest";
 import {formatRelativeTime} from "@/lib/formatRelativetime";
-import {usePathname, useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {UserAvatar} from "@/components/UserAvatar";
-import QuizRating from "./QuizRating";
 
 interface QuizProps {
     quiz: Quiz,
@@ -49,15 +43,15 @@ export default function QuizCard({
 
     return (
         <div
-            className="w-full h-fit p-4 bg-background rounded-xl border border-border flex-col justify-start items-start gap-4 inline-flex cursor-pointer hover:bg-accent/50"
+            className="w-full p-4 bg-background rounded-xl border border-border flex-col justify-start items-start gap-4 inline-flex cursor-pointer hover:bg-accent/50"
             onClick={cardClickHandler}>
             <div
-                className="self-stretch h-14 flex-col justify-start items-start gap-3 flex">
+                className="self-stretch flex-col justify-start items-start flex gap-2">
                 {/* Quiz title */}
                 <div
-                    className="self-stretch h-6 flex-row justify-start items-start gap-1 flex">
+                    className="self-stretch flex-row justify-start items-start gap-1 flex">
                     <div
-                        className="w-full text-foreground text-lg font-normal leading-normal">{quiz.quizTitle}</div>
+                        className="w-full text-foreground text-base font-medium leading-normal line-clamp-2">{quiz.quizTitle}</div>
                     <div>{
                         variant == "createdByMe" &&
                         <DropdownMenu>
@@ -90,7 +84,8 @@ export default function QuizCard({
                     </div>
                 </div>
                 {/* info + rating */}
-                <div className="justify-start items-center gap-2 inline-flex">
+                <div
+                    className="justify-start items-center gap-1 flex flex-row flex-wrap">
                     {showQuestionCount && <Badge
                         variant={"outline"}>{quiz.numberOfQuestions} questions </Badge>}
                     {
@@ -99,16 +94,12 @@ export default function QuizCard({
                             <Badge variant={"outline"}
                                    key={index}>{category}</Badge>)
                     }
-                    {
-                        showRating &&
-                        <QuizRating rating={"4.5"}/>
-                    }
                 </div>
             </div>
             {
                 variant == "createdByMe" &&
                 <div className="flex items-center space-x-2">
-                    <Switch id="visibility"
+                    <Switch id="visibility" defaultChecked={quiz.published}
                             onClick={(e) => e.stopPropagation()}/>
                     <Label htmlFor={"visibility"}>Public</Label>
                 </div>

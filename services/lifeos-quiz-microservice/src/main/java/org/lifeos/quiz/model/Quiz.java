@@ -1,5 +1,6 @@
 package org.lifeos.quiz.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
@@ -58,6 +59,12 @@ public class Quiz {
 
     private String quizDescription;
     private String language;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quiz")
+    @JsonBackReference
+    @ToString.Exclude
+    private List<QuizTest> quizTests;
+
     @CreationTimestamp
     private Timestamp createdAt;
     @LastModifiedDate

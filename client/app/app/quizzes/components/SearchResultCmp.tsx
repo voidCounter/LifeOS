@@ -61,6 +61,7 @@ export default function SearchResultCmp<T, >({
                         </div>
                     )
             }
+            < div className={"py-16"}></div>
         </div>
     );
 }

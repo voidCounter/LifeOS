@@ -42,7 +42,8 @@ public class WebArticleService {
         Resource articleResource = new ByteArrayResource(articleInMDN.getBytes());
         String fileName = "article" + url.hashCode() + ".md";
         loaderService.loadText(articleResource,
-                "article-" + url.hashCode() + ".md", "https://serpapi.com/blog/web-scraping-and-parsing-experiment-with-ai-openai/");
+                fileName, "https://serpapi.com/blog/web-scraping-and-parsing" +
+                        "-experiment-with-ai-openai/");
         return fileName;
     }
 }

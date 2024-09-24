@@ -1,38 +1,52 @@
 "use client"
 import {usePathname, useRouter} from "next/navigation";
 import {useQuery} from "@tanstack/react-query";
-import {Quiz} from "@/types/QuizTypes/Quiz";
-import {fetchQuizTest} from "@/api-handlers/quizzes";
-import {QuizTest} from "@/types/QuizTypes/QuizTest";
+import {fetchQuizTest,} from "@/api-handlers/quizzes";
 import {Card, CardContent, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
 import Image from "next/image";
 import {useEffect, useState} from "react";
-import * as url from "node:url";
 import {Button} from "@/components/ui/button";
-import {Repeat2, RepeatIcon} from "lucide-react";
+import {Repeat2} from "lucide-react";
+import {useQuizTestResultStore, useQuizTestStore} from "@/store/QuizTestStore";
+import Loading from "@/app/app/loading";
 
 interface TestResultParams {
-    quizId: string
+    quizTestId: string
 }
 
 export default function TestResult({params}: { params: TestResultParams }) {
     const router = useRouter();
     const pathname = usePathname();
+    const {questionsInQuizTest, clearUserQuizTest} = useQuizTestStore();
+    const {quizTestResult} = useQuizTestResultStore();
 
-
-    const {data: quizTest, isLoading, error} = useQuery<QuizTest, Error>({
-        queryKey: [`quiztest-${params.quizId}`], queryFn: fetchQuizTest
+    const {
+        data: quizTest,
+        isFetching,
+        isLoading,
+        error,
+        isSuccess
+    } = useQuery({
+        queryKey: [`quiztest-${params.quizTestId}`],
+        queryFn: () => fetchQuizTest(params.quizTestId),
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
     });
     const [toCongratulate, setToCongratulate] = useState(false);
 
     useEffect(() => {
-        setToCongratulate((quizTest?.quizTestScore ?? 0) >= (quizTest?.quiz?.questionCount ?? 0) / 2);
+        setToCongratulate((quizTest?.quizTestScore ?? 0) >= (quizTest?.quiz?.numberOfQuestions ?? 0) / 2);
     }, [quizTest])
 
-    if (isLoading) return <div>...Loading</div>
+    useEffect(() => {
+        clearUserQuizTest();
+    }, [isSuccess]);
+
+    if (isLoading || isFetching) return <Loading text={"Evaluating your" +
+        " answers..."}/>
     if (error) return <div>{error.message}</div>
-    if (quizTest == undefined) return <div>...Loading</div>
+    if (quizTest == undefined) return <Loading></Loading>
 
 
     return (
@@ -69,7 +83,7 @@ export default function TestResult({params}: { params: TestResultParams }) {
                         <div
                             className={"text-6xl font-black"}>
                         <span
-                            className={`${toCongratulate ? "text-success-foreground" : "text-destructive"}`}>{quizTest?.quizTestScore}</span>/<span>{quizTest.quiz.questionCount}</span>
+                            className={`${toCongratulate ? "text-success-foreground" : "text-destructive"}`}>{quizTest?.quizTestScore}</span>/<span>{quizTest.quiz.numberOfQuestions}</span>
                         </div>
                         <Badge
                             variant={"default"}
@@ -77,13 +91,14 @@ export default function TestResult({params}: { params: TestResultParams }) {
                     </CardContent>
                 </Card>
                 <div className={"w-full flex flex-row gap-2"}>
-                    <Button className={"default"}
-                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest.quiz.quizId}/test`)}>
+                    <Button variant={"secondary"}
+                            onClick={() => router.push(`/app/quizzes/quiz/${quizTest.quiz.quizId}/quiz-test`)}>
                         <Repeat2 className={"w-4 h-4 mr-2"}/>
                         Try
                         again</Button>
                     <Button variant={"outline"}
                             onClick={() => router.push(`/app/quizzes/quiz/${quizTest?.quiz?.quizId}/learn`)}>Learn</Button>
+
                 </div>
             </div>
         </div>

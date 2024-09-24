@@ -85,7 +85,10 @@ export default function LearnQuiz({params}: { params: LearnQuizProps }) {
             " items-center gap-10"}>
 
             <Carousel setApi={setApi}
-                      className="w-full min-h-fit border-transparent shadow-none">
+                      className="w-full min-h-fit border-transparent shadow-none"
+                      opts={{
+                          watchDrag: false,
+                      }}>
                 <CarouselContent className={"border-0"}>
                     {quiz?.questions?.map((question, index) => (
                         <CarouselItem key={index}

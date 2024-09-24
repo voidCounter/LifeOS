@@ -1,42 +1,23 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {Nav} from "@/components/nav";
 import {PanelLeftClose, PanelRightClose} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {QueryClientProvider} from "@tanstack/react-query";
-import {queryClient} from "@/lib/react-query";
 import PageActions from "@/components/PageActions";
-import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {usePathname, useRouter} from "next/navigation";
 import {usePageStateStore} from "@/store/PageStateStore";
+import {useSettingStore} from "@/store/SettingStore";
 
 export default function SidebarLayout({children}: {
     children: React.ReactNode
 }) {
-    const {setLastRoute, lastRoute} = usePageStateStore();
     const router = useRouter();
     const pathname = usePathname();
 
-    // useEffect(() => {
-    //     if (lastRoute) {
-    //         router.push(lastRoute);
-    //     }
-    // }, []);
-
-    useEffect(() => {
-        setLastRoute(pathname);
-    }, [pathname]);
-
-    const [isSidebarOpen, setSidebarOpen] = useState(() => {
-        const sideBarState = localStorage.getItem("isSidebarOpen");
-        return sideBarState !== null ? JSON.parse(sideBarState) : true;
-    });
+    const {isSidebarOpen, setSidebarOpen, setLastRoute} = useSettingStore();
     const toggleSidebar = () => {
-        localStorage.setItem("isSidebarOpen", JSON.stringify(!isSidebarOpen));
         setSidebarOpen(!isSidebarOpen);
-        console.log("Sidebar open", isSidebarOpen);
     }
-
     return (
         <div className="w-full h-full overflow-hidden">
             <div className="">
