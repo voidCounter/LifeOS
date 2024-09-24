@@ -1,6 +1,6 @@
 "use client";
 import {z} from "zod";
-import React from "react";
+import React, {useEffect} from "react";
 import {useAuthStore} from "@/store/AuthStore";
 import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
@@ -22,6 +22,7 @@ import {Button} from "@/components/ui/button";
 import {FormErrorType} from "@/types/FormErrorType";
 import {useMutation} from "@tanstack/react-query";
 import Loading from "@/app/app/loading";
+import {useSettingStore} from "@/store/SettingStore";
 
 const loginSchema = z.object({
     email: z.string(),
@@ -31,6 +32,7 @@ const loginSchema = z.object({
 
 export default function Login() {
     const {authenticatedUser, setAuthenticatedUser} = useAuthStore();
+    const {lastRoute} = useSettingStore();
     const router = useRouter();
     const loginForm = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -39,6 +41,7 @@ export default function Login() {
             password: "",
         },
     })
+
 
     const {mutate: login, isPending, isError} = useMutation({
         mutationFn: (data: z.infer<typeof loginSchema>) => AxiosInstance.post("/auth/login", data),

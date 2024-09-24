@@ -27,7 +27,7 @@ For Multiple Choice Questions, Can have multiple correct answers.
     questionStatement: The text of the question itself.
     options: An array of possible options.
         optionText: The text of the option itself.
-        OptionExplanation: Provide a brief explanation that provides additional
+        optionExplanation: Provide a brief explanation that provides additional
         detailed context or reasoning for the option. Always provide an
         explanation for each option.
         correct: Specify whether the option is correct(true) or incorrect(false).
