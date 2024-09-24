@@ -7,9 +7,12 @@ import {
     QuestionTestResultType,
     QuizTestResultType
 } from "@/types/QuizTypes/QuizTestResultType";
+import {state} from "sucrase/dist/types/parser/traverser/base";
 
 
 interface QuizTestStore {
+    quizId: string,
+    setQuizId: (quizId: string) => void,
     questionsInQuizTest: QuestionEvaluationType[],
     setUserQuizTest: (userQuizTest: QuestionEvaluationType[]) => void,
     clearUserQuizTest: () => void,
@@ -17,8 +20,13 @@ interface QuizTestStore {
 }
 
 interface QuizTestResultStore {
-    quizTestResult: { quizTestId: string, questions: QuestionTestResultType[] },
+    quizTestResult: {
+        quizId: string,
+        quizTestId: string,
+        questions: QuestionTestResultType[]
+    },
     setQuizTestResult: (quizTestResult: {
+        quizId: string
         quizTestId: string,
         questions: QuestionTestResultType[]
     }) => void,
@@ -27,6 +35,8 @@ interface QuizTestResultStore {
 
 export const useQuizTestStore = create<QuizTestStore>()(
     persist((set) => ({
+            quizId: "",
+            setQuizId: (quizId: string) => set({quizId: quizId}),
             questionsInQuizTest: [],
             setUserQuizTest: (questionsInQuizTest: QuestionEvaluationType[]) => set({questionsInQuizTest}),
             clearUserQuizTest: () => set({questionsInQuizTest: []}),
@@ -61,16 +71,23 @@ export const useQuizTestStore = create<QuizTestStore>()(
     ))
 ;
 
-export const useQuizTestResultStore = create<QuizTestResultStore>()((set) => ({
-    quizTestResult: {questions: [], quizTestId: ""},
-    setQuizTestResult: (quizTestResult: {
-        questions: QuestionTestResultType[]
-        quizTestId: string
-    }) => set({quizTestResult}),
-    clearQuizTestResult: () => set({
-        quizTestResult: {
-            questions: [],
-            quizTestId: ""
-        }
-    }),
-}));
+export const useQuizTestResultStore = create<QuizTestResultStore>()(
+    persist((set) => ({
+        quizTestResult: {quizId: "", questions: [], quizTestId: ""},
+        setQuizTestResult: (quizTestResult: {
+            quizId: string,
+            questions: QuestionTestResultType[]
+            quizTestId: string
+        }) => {
+            return set({quizTestResult});
+        },
+        clearQuizTestResult: () => set({
+            quizTestResult: {
+                quizId: "",
+                questions: [],
+                quizTestId: ""
+            }
+        }),
+    }), {
+        name: "quiz-test-result"
+    }));

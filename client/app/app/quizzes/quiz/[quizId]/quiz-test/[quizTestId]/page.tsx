@@ -91,12 +91,6 @@ export default function TestResult({params}: { params: TestResultParams }) {
                     </CardContent>
                 </Card>
                 <div className={"w-full flex flex-row gap-2"}>
-                    {
-                        quizTestResult && quizTestResult.quizTestId == params.quizTestId &&
-                        <Button variant={"default"}
-                                onClick={() => router.push(`${pathname}/review-answer`)}>Review
-                            your answers</Button>
-                    }
                     <Button variant={"secondary"}
                             onClick={() => router.push(`/app/quizzes/quiz/${quizTest.quiz.quizId}/quiz-test`)}>
                         <Repeat2 className={"w-4 h-4 mr-2"}/>

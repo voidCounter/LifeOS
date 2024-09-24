@@ -6,6 +6,7 @@ export default function Loading({text = "Loading", className}: {
     className?: string
 }) {
     return <div className={cn(className, "flex w-full h-full justify-center" +
+        " py-12" +
         " items-center")}>
         <LoaderCircle className={"animate-spin mr-2"}
                       strokeWidth={2}/>
