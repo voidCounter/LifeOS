@@ -1,9 +1,9 @@
-package org.lifeos.pathway.dto;
+package org.lifeos.ai.dto.pathway;
 
 import lombok.Data;
+
 import java.sql.Timestamp;
 import java.util.UUID;
-import java.util.List;
 
 @Data
 public class StageDTO {
