@@ -35,6 +35,9 @@ public class ProjectConfig {
     @Value("classPath:/prompts/JSONSyntaxPrompt.st")
     private Resource jsonSyntaxPromptResource;
 
+    @Value("classpath:/prompts/ShortAnswerQuestionCheckingPrompt.st")
+    private Resource shortAnswerQuestionCheckingPromptResource;
+
 
     @Bean
     ChatClient quizClient(ChatClient.Builder builder) {
@@ -44,6 +47,11 @@ public class ProjectConfig {
     @Bean
     ChatMemory chatMemory() {
         return new InMemoryChatMemory();
+    }
+
+    @Bean
+    ChatClient helperClient(ChatClient.Builder builder) {
+        return builder.defaultSystem(jsonSyntaxPromptResource).defaultUser(shortAnswerQuestionCheckingPromptResource).build();
     }
 
     @Bean

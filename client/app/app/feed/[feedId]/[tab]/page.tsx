@@ -11,6 +11,7 @@ import {
     fetchFeedItemInsights,
     fetchFeedItemSummary
 } from "@/api-handlers/feeds";
+import ContentViewer from "@/app/app/feed/[feedId]/[tab]/ContentViewer";
 
 interface FeedItemTabProps {
     tab: string;
@@ -49,10 +50,11 @@ export default function FeedItemTab({params}: { params: FeedItemTabProps }) {
     }
     if (isLoading || isPending || isFetching) return <div
         className={"animate-pulse bg-zinc-200"}></div>
+    if (params.tab == 'content') {
+        return <ContentViewer content={data ?? "No content to show"}/>
+    }
     return (
-        <div>
-            {data}
-        </div>
+        <div>hellof</div>
     )
 
 }
