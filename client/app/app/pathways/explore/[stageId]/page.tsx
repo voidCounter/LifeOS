@@ -58,7 +58,7 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
 
 
     const setChildStageType = (): StageType => {
-        if (parentStage === undefined) return StageType.ROADMAP;
+        if (parentStage === undefined) return StageType.MILESTONE;
         const {
             title, description
         } = parentStage;
