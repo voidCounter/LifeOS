@@ -13,4 +13,11 @@ spring:
       connection-timeout: 20000
   jpa:
     show-sql: true
+#  cloud:
+#    openfeign:
+#      client:
+#        config:
+#            default:
+#                connectTimeout: 120000
+#                readTimeout: 120000
 
