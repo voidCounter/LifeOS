@@ -1,19 +1,17 @@
 "use client";
 
-import { fetchStageById, fetchSubStageCount, generateOrFetchTask, generateSubStageByName, togglePublishRoadmap } from '@/api-handlers/pathway'
+import { fetchStageById, fetchSubStageCount, generateOrFetchTask, generateSubStageByName } from '@/api-handlers/pathway'
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup,  CommandItem, CommandList } from '@/components/ui/command';
 import { Dialog, DialogContent,  DialogTrigger } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useErrorNotification } from '@/hooks/useErrorNotification'
 import { cn } from '@/lib/utils';
 import { usePathwayPromptStore } from '@/store/PathwayPromptStore';
 import { useStageStore } from '@/store/StageStore';
-import { PublishDTO, Stage, StageType, SubStageCountDTO } from '@/types/PathwayTypes/Pathway'
+import { Stage, StageType, SubStageCountDTO } from '@/types/PathwayTypes/Pathway'
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query'
 import { 
@@ -21,28 +19,26 @@ import {
     Check,  
     ChevronsUpDown, 
     Component, 
-    Edit, 
-    FolderGit2, 
+    FolderGit2,
     Goal, 
     ListTodo, 
     LoaderCircle, 
     LucideCheckSquare, 
     Milestone, 
-    MoreVerticalIcon, 
-    Pencil, 
+    Pencil,
     PencilRuler, 
     PlusIcon, 
     SparklesIcon, 
-    Trash 
 } from 'lucide-react'
 import { useRouter } from 'next/navigation';
-import React, { use, useEffect, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import GeneralLoading from '@/app/app/pathways/components/StageLoading';
 import GeneralError from '../../components/GeneralError';
 import { MoreActions } from '../../components/MoreActions';
+
 
 
 const StageView = ({ params }: { params: { stageId: string } }) => {
@@ -209,6 +205,7 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
 
     const RenderTaskContent = () => {
 
+
         const addContent = useStageStore(state => state.addContent);
 
         const {
@@ -226,6 +223,7 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
             }),
             refetchOnMount: false,
             refetchOnWindowFocus: false,
+            staleTime: Infinity
         })
 
         useErrorNotification({
@@ -237,7 +235,7 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
         if (stage.content) {
             return (
                 <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
-                    <MDXRemote source={stage.content} />
+                    <MDXRemote  source={stage.content} />
                 </div>
             )
         }
@@ -252,7 +250,8 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
 
         return (
             <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
-                <MDXRemote source={"# Hello"} />
+                <MDXRemote source={content} />
+
             </div>
         )
     }
@@ -263,6 +262,7 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
     return (
 
         <div className='min-h-full flex flex-col items-start gap-y-8 mt-2 w-3/4'>
+
             <div className='flex flex-col w-full bg-muted rounded-xl p-8 items-center gap-y-4'>
                 <div className='flex flex-row w-full items-center gap-4 '>
                     <div className='flex rounded-full bg-white border border-muted p-2'>
@@ -311,7 +311,7 @@ const RenderIcon = ({
     type: StageType
 }) => {
     if (type === StageType.ROADMAP) {
-        <Goal size={24} className='text-black' />
+        return <Goal size={24} className='text-black' />
     }
     if (type === StageType.QUIZ) {
         return <BookOpenCheck size={24} className='text-black' />
