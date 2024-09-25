@@ -4,6 +4,7 @@ export type PathwayPromptType = {
     type: StageType;
     context: string; 
     language: string;
+    parentId: string | null;
 }
 
 export enum GeneratedQuestionType {

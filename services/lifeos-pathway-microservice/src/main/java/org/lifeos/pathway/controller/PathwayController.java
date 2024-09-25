@@ -2,6 +2,7 @@ package org.lifeos.pathway.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.lifeos.pathway.dto.*;
+import org.lifeos.pathway.model.Roadmap;
 import org.lifeos.pathway.model.Stage;
 import org.lifeos.pathway.model.StageType;
 import org.lifeos.pathway.service.PathwayService;
@@ -122,6 +123,27 @@ public class PathwayController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
                         e.getMessage() + "\n failed to get stage by id: "
+                    );
+        }
+    }
+
+    @PostMapping(value= "/generate-substage-by-name", produces = "application/json")
+    public ResponseEntity<?> generateSubStageByName(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO,
+            @RequestHeader (value = "user-id") String userId
+    ) {
+        try {
+            List<Stage> subStages = pathwayService.generateSubStageByName(subStageGenerationDTO, userId);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(
+                            subStages
+                    );
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                            e.getMessage() + "\n failed to generate substage by name"
                     );
         }
     }

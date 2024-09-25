@@ -17,7 +17,9 @@ description field is of type String, which is as following:
 
 Instructions:
     1. Based on the USER_PROMPT, you must generate the roadmap in LANGUAGE(i.e. English, which is default)  structure in JSON format in detail.
-    2. The JSON structure must contain only the stage that is fixed with TYPE.
+    2. The USER_PROMPT contains the parent stage and the subStages already created.
+    3. So in generating the stage of TYPE, you must consider the parent stage and the subStages
+       in such a way that there is no overlap.
 
 Ensure that the JSON data does not contain unescaped special characters
 (such as quotation marks) within the text fields or explanations. Just write
@@ -33,7 +35,9 @@ Based on USER_PROMPT:
     - You must generate the stage structure in JSON format.
 
 Based on TYPE:
-        - for TYPE = ROADMAP return a "ROADMAP" as one element array,
-        - for TYPE = MILESTONE return an array of "MILESTONE"s and "PROJECT"s,
-        - for TYPE = MODULE return an array of "MODULE"s and "QUIZ"s,
+        - for TYPE = ROADMAP return an empty array,
+        - for TYPE = MILESTONE return an array of "MILESTONE"s
+        - for TYPE = MODULE return an array of "MODULE"s
         - for TYPE = TASK return an array of "TASK"s,
+        - for TYPE = PROJECT return an array of "PROJECT"s
+        - for TYPE = QUIZ return an array of "QUIZ"s

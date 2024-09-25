@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @Table(name = "stages")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", include = JsonTypeInfo.As.EXISTING_PROPERTY)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Roadmap.class, name = "ROADMAP"),
         @JsonSubTypes.Type(value = Stage.class, name = "MILESTONE"),
@@ -59,5 +59,7 @@ public class Stage {
     private String title;
     @Column(name = "description", columnDefinition = "jsonb")
     private String description;
+    @Column(name = "content")
+    private String content;
 
 }

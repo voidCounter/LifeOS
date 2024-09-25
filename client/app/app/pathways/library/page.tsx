@@ -1,7 +1,6 @@
 "use client";
 
 import SectionHeader from "@/components/SectionHeader";
-import { PathwayInputForm } from "../components/PathwayInputForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SearchandCreate from "../components/SearchandCreate";
 import { Button } from "@/components/ui/button";
@@ -12,16 +11,20 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Edit, MoreVerticalIcon, Trash } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
-import { Progress } from "@/components/ui/progress";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
+import GeneralLoading from "../components/StageLoading";
+import GeneralError from "../components/GeneralError";
+import { MoreActions } from "../components/MoreActions";
+import { useRoadmapStore } from "@/store/PathwayStore/RoadmapStore";
+import { useRouter } from "next/navigation";
 
 export default function Library() {
     return (
-        <main className="flex w-full justify-center">
-            <div className="flex flex-col gap-8 w-full max-w-[800px]">
+        <main className="flex w-full justify-center self-center">
+            <div className="flex flex-col gap-8 w-full">
                 <div className="flex flex-col gap-4">
                     <SearchandCreate />
-                    <section className="w-full">
+                    <section className="w-full items-center">
                         <SectionHeader title={"Your Library"} description={""} />
                         <Tabs
                             defaultValue="my_roadmaps"
@@ -40,7 +43,7 @@ export default function Library() {
                                     Saved Roadmaps
                                 </TabsTrigger>
                             </TabsList>
-                            <TabsContent value="my_roadmaps">
+                            <TabsContent value="my_roadmaps" className="self-center">
                                 <MyRoadmaps />
                             </TabsContent>
 
@@ -54,9 +57,14 @@ export default function Library() {
 
 const MyRoadmaps = () => {
 
+    const setRoadmaps = useRoadmapStore((state) => state.setRoadmaps);
+    const roadmaps = useRoadmapStore((state) => state.roadmaps);
+
+    const router = useRouter();
+
     const {
         isLoading: roadmapLoading,
-        data: roadmaps,
+        data: fetchedRoadmaps,
         isError: isRoadmapsError,
         error: roadmapsError
     } = useQuery<SimpleStageDTO[], Error>({
@@ -73,20 +81,40 @@ const MyRoadmaps = () => {
     })
 
     if (roadmapLoading) {
-        return <p>Loading...</p>
+        return (
+            <GeneralLoading
+                message="Loading roadmaps..."
+            />
+        )
     }
 
+    if (fetchedRoadmaps === undefined) {
+        return (
+            <GeneralError
+                message="Error loading roadmaps"
+            />
+        )
+    }
+    setRoadmaps(fetchedRoadmaps);
 
     return (
         <div className="flex flex-col gap-y-4 w-full mt-8">
             {
                 roadmaps ? roadmaps.map((roadmap, index) => (
-                    <Button variant={"ghost"} className=" flex items-start justify-start h-auto w-7/12" key={index}>
+                    <Button 
+                        variant={"ghost"} 
+                        className=" flex items-start justify-start w-7/12 h-[110px]" 
+                        key={index}
+                        onClick={() => {
+                            
+                            router.push(`/app/pathways/explore/${roadmap.stageId}`);
+                        }}    
+                    >
                         <div className='flex flex-col gap-y-1 w-full items-start'>
                             <div className='flex flex-row items-center justify-between w-full'>
                                 <div className='p-1 shadow-inner shadow-muted w-fit rounded-lg self-start'>
                                     <p className='text-muted-foreground text-[10px]'>
-                                        {roadmap.status ? "Public" : "Private"}
+                                        {roadmap.isPublished ? "Public" : "Private"}
                                     </p>
                                 </div>
                                 <MoreActions
@@ -95,70 +123,12 @@ const MyRoadmaps = () => {
                                 />
                             </div>
                             <h2 className={`font-semibold text-lg text-black`} >{roadmap.title}</h2>
-                            <ProgressComp
-                                noOfTotalStages={roadmap.noOfTotalStage}
-                                noOfCompletedStages={roadmap.noOfCompletedStage}
-                                stageType={StageType.ROADMAP}
-                            />
+
                         </div>
-                    </Button>
-                )) : <div>No roadmaps loaded</div>
+                    </Button> 
+                )) : null
             }
         </div>
     )
 }
 
-const ProgressComp = ({ noOfTotalStages, noOfCompletedStages, stageType }: { noOfTotalStages: number; noOfCompletedStages: number; stageType: StageType }) => {
-
-    const progress = (noOfCompletedStages / noOfTotalStages) * 100;
-
-    
-
-    return (
-        <div className='w-full flex flex-row gap-1 items-center pl-4'>
-            <Progress value={progress} className="w-[85%] mr-6 h-3 bg-gray-200 " /> {/* todo: */}
-            <p className='text-muted-foreground text-base'>{progress.toFixed(1)}%</p>
-        </div>
-    )
-}
-
-const MoreActions = ({
-    stageId,
-    stageType
-}: {
-    stageId: string;
-    stageType?: StageType
-}) => {
-    const [isPublic, setIsPublic] = useState(false)
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="link" size="sm" className='h-6'>
-                    <div className='flex'>
-                        <MoreVerticalIcon size={18} className='text-black bg-transparent hover:bg-muted rounded-full' />
-                    </div>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-32">
-                <DropdownMenuGroup>
-                    <DropdownMenuItem className='flex flex-row w-full justify-between items-center'>
-                        <span>Delete</span>
-                        <Trash className="mr-2 h-4 w-4" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className='flex flex-row w-full justify-between items-center'>
-                        <span>Update</span>
-                        <Edit className="mr-2 h-4 w-4" />
-                    </DropdownMenuItem>
-                    {
-                        stageType === StageType.ROADMAP ?
-                            <DropdownMenuItem className='flex flex-row w-full justify-between items-center'>
-                                <span>Public</span>
-                                <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-                            </DropdownMenuItem>
-                            : null
-                    }
-                </DropdownMenuGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-}
