@@ -30,7 +30,7 @@ import {useRouter} from "next/navigation";
 import {Language, Languages} from "@/types/Language";
 import {
     quizCreationSchema
-} from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
+} from "@/app/app/quizzes/create/QuizCreationSchema";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {cn} from "@/lib/utils";
 import {

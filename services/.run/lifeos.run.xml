@@ -6,6 +6,7 @@
     <runConfiguration name="UserServiceApplication" type="Spring Boot" />
     <runConfiguration name="LifeosResourceLoaderApplication" type="Spring Boot" />
     <runConfiguration name="LifeosAiMicroserviceApplication" type="Spring Boot" />
+    <runConfiguration name="LifeosFeedServiceApplication" type="Spring Boot" />
     <method v="2" />
   </configuration>
 </component>
