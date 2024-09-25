@@ -10,7 +10,8 @@ export default function Explore() {
 
             </div>
             {/* Search and create */}
-            <SearchandCreate showSearchButton={false}/>
+            <SearchandCreate showSearchButton={false}
+                             onCreateUrl={"/app/quizzes/create/prompt"}/>
         </main>
     );
 }

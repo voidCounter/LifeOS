@@ -61,12 +61,23 @@ public class RoutingConfig {
                 .before(stripPrefix(2))
                 .build();
     }
+
     @Bean
     public RouterFunction<ServerResponse> pathwayService() {
         return GatewayRouterFunctions.route("pathway-service")
                 .route(RequestPredicates.path("/api/pathway/**"),
                         HandlerFunctions.http())
                 .filter(lb("lifeos-pathway-microservice"))
+                .before(stripPrefix(2))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> feedService() {
+        return GatewayRouterFunctions.route("feed-service")
+                .route(RequestPredicates.path("/api/feed/**"),
+                        HandlerFunctions.http())
+                .filter(lb("lifeos-feed-service"))
                 .before(stripPrefix(2))
                 .build();
     }

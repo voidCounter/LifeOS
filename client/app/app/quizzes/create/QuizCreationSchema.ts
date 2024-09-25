@@ -1,5 +1,4 @@
 import {z} from "zod";
-import {QuizCreationOptionType} from "@/config/QuizCreationTabsConfig";
 
 const MAX_UPLOAD_SIZE = 2 * 1024 * 1024;
 const ACCEPTED_FILE_TYPES = ["doc", "docx", "pdf", "ppt", "pptx", "xls", "xlsx", "txt", "epub"];

@@ -14,14 +14,20 @@ import React, {useState} from "react";
 
 interface SearchandCreateProps {
     showCreateButton?: boolean;
+    inputPlaceHolder?: string;
     showSearchButton?: boolean;
     onSearch?: () => void;
     searchValue?: string;
+    onCreateUrl?: string,
+    onCreateHandler?: () => void;
 }
 
 export default function SearchandCreate({
                                             showCreateButton = true,
+                                            inputPlaceHolder = "Search",
                                             showSearchButton = false,
+                                            onCreateHandler,
+                                            onCreateUrl,
                                             onSearch,
                                             searchValue
                                         }: SearchandCreateProps) {
@@ -35,6 +41,8 @@ export default function SearchandCreate({
             router.push("/app/quizzes/search?query=" + searchQuery);
         } else if (pathname.includes("pathways")) {
             router.push("/app/pathways/search?query=" + searchQuery);
+        } else if (pathname.includes("feed")) {
+            router.push("/app/feed/search?query=" + searchQuery);
         }
     }
 
@@ -51,7 +59,7 @@ export default function SearchandCreate({
                 className="relative text-muted-foreground left-8"
                 strokeWidth={1}/>
             <Input
-                placeholder="Quizzes"
+                placeholder={inputPlaceHolder}
                 value={searchQuery}
                 className="pl-10 w-full"
                 aria-keyshortcuts={"Enter"}
@@ -73,7 +81,13 @@ export default function SearchandCreate({
         {
             showCreateButton &&
             <Button size={"icon"} variant={"default"} className={"w-fit px-4"}
-                    onClick={() => router.push("/app/quizzes/create/prompt")}>
+                    onClick={() => {
+                        if (onCreateUrl) {
+                            router.push(onCreateUrl);
+                        } else if (onCreateHandler) {
+                            onCreateHandler();
+                        }
+                    }}>
                 <PlusIcon className={"w-6 h-6"}
                           strokeWidth={1}></PlusIcon>
                 Create
