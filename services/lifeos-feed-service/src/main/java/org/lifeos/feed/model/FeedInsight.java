@@ -1,10 +1,12 @@
 package org.lifeos.feed.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -20,8 +22,10 @@ public class FeedInsight {
 
     @ManyToOne
     @JoinColumn(name = "feed_item_id")
-    @JsonManagedReference
+    @JsonBackReference
+    @ToString.Exclude
     private FeedItem feedItem;
+
 
     private String title;
     private String content;

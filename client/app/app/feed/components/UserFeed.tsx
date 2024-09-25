@@ -15,7 +15,7 @@ export default function UserFeed() {
         queryFn: async (): Promise<FeedItemType[]> => {
             return await AxiosInstance.get(`/feed/getFeed?user=${authenticatedUser?.userId}`).then((response) => response.data)
         },
-        enabled: authenticatedUser?.userId != null
+        enabled: authenticatedUser != null && authenticatedUser.userId != null
     })
     if (isError) {
         toast.error("Error fetching user feed");
@@ -31,6 +31,7 @@ export default function UserFeed() {
                 feedItems?.map((feedItem, index) => <FeedItemCard
                     feedItem={feedItem} key={index}/>)
             }
+            <div className={"py-16"}></div>
         </div>
     );
 }

@@ -9,7 +9,6 @@ import lombok.*;
 @Setter
 public class FeedInsightDTO {
     private String insightId;
-    private FeedItemDTO feedItem;
     private String title;
     private String content;
 }

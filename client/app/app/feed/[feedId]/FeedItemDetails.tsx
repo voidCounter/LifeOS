@@ -11,6 +11,7 @@ import {AxiosInstance} from "@/utils/AxiosInstance";
 import {toast} from "sonner";
 import Loading from "@/app/app/loading";
 
+
 export default function FeedItemDetails() {
     const pathname = usePathname();
     const feedId = pathname.split("/")[pathname.split("/").length - 2];
@@ -21,7 +22,8 @@ export default function FeedItemDetails() {
         isLoading,
         isError,
         isPending,
-        isFetching
+        isFetching,
+        isFetched,
     } = useQuery({
         queryKey: ["userFeedItem", feedId],
         queryFn: async (): Promise<FeedItemType> => {
@@ -29,15 +31,16 @@ export default function FeedItemDetails() {
                 data: FeedItemType
             }) => response.data)
         },
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchOnMount: false,
     })
+    if (isLoading) {
+        return <div className={"w-full h-72 animate-pulse"}></div>
+    }
     if (isError) {
         toast.error("Error fetching user feed");
     }
-    if (isSuccess) {
-        console.log(feedItem)
-    }
-    if (isLoading || isPending || isFetching) return <Loading
-        text={"Grabbing the feed item..."}></Loading>
     const getDisplayURL = (url: string) => {
         if (url.length == 0) return "";
         const subs = url.substring(url.indexOf("//") + 2);
@@ -55,10 +58,10 @@ export default function FeedItemDetails() {
                 <h3 className={"text-sm text-muted-foreground"}>{feedItem?.estimatedDurationMinutes} min
                     read</h3>
                 <div>
-                    <h1 className={"text-lg font-bold line-clamp-2 truncate"}>{feedItem?.title}</h1>
+                    <h1 className={"text-2xl font-bold line-clamp-2 truncate"}>{feedItem?.title}</h1>
                     <h2 className={"text-base"}>{feedItem?.description}</h2>
                 </div>
-                <div className={"flex flex-row gap-1 items-center mt-2" +
+                <div className={"flex flex-row gap-1 items-center mt-4" +
                     " text-muted-foreground"}>
                     <LinkIcon strokeWidth={1} className={"w-4 h-4"}/>
                     <Link href={feedItem?.url ?? ""}

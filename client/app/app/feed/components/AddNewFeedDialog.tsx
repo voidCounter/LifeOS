@@ -64,7 +64,7 @@ export default function AddNewFeedDialog({
                                 key={index}
                                 className={"w-full"}>
                                 <AddNewFeedItemForm
-                                    onAdd={() => onOpenChange}
+                                    onAdd={() => onOpenChange()}
                                     itemType={creationOption.tabName}/>
                             </TabsContent>
                         )

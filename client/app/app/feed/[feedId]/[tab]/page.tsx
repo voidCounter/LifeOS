@@ -12,6 +12,7 @@ import {
     fetchFeedItemSummary
 } from "@/api-handlers/feeds";
 import ContentViewer from "@/app/app/feed/[feedId]/[tab]/ContentViewer";
+import SummaryViewer from "@/app/app/feed/[feedId]/[tab]/SummaryViewer";
 
 interface FeedItemTabProps {
     tab: string;
@@ -24,10 +25,8 @@ export default function FeedItemTab({params}: { params: FeedItemTabProps }) {
     const {
         data,
         isSuccess,
-        isLoading,
         isError,
-        isPending,
-        isFetching
+        isLoading,
     } = useQuery({
         queryKey: ["userFeedItem", feedId, params.tab],
         queryFn: async () => {
@@ -41,6 +40,8 @@ export default function FeedItemTab({params}: { params: FeedItemTabProps }) {
                 return "No content found"
             }
         },
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
     })
     if (isError) {
         toast.error("Error fetching user content");
@@ -48,10 +49,16 @@ export default function FeedItemTab({params}: { params: FeedItemTabProps }) {
     if (isSuccess) {
         console.log(data)
     }
-    if (isLoading || isPending || isFetching) return <div
-        className={"animate-pulse bg-zinc-200"}></div>
+    if (isLoading) {
+        return <Loading text={"Generating the " + params.tab}></Loading>
+    }
+
     if (params.tab == 'content') {
         return <ContentViewer content={data ?? "No content to show"}/>
+    } else if (params.tab == 'summary') {
+        return <SummaryViewer summary={data ?? "No summary to show"}/>
+    } else if (params.tab == 'insights') {
+        return <div>insights</div>
     }
     return (
         <div>hellof</div>

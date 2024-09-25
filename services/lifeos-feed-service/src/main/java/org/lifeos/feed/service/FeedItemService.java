@@ -1,13 +1,11 @@
 package org.lifeos.feed.service;
 
-import org.lifeos.feed.dto.ArticleFeedItemDTO;
-import org.lifeos.feed.dto.FeedItemDTO;
-import org.lifeos.feed.dto.NewFeedItemReqDTO;
-import org.lifeos.feed.dto.UserDTO;
-import org.lifeos.feed.model.ArticleFeedItem;
-import org.lifeos.feed.model.FeedItem;
-import org.lifeos.feed.model.FeedItemType;
-import org.lifeos.feed.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.lifeos.feed.dto.*;
+import org.lifeos.feed.model.*;
+import org.lifeos.feed.repository.FeedInsightRepository;
 import org.lifeos.feed.repository.FeedItemRepository;
 import org.lifeos.feed.repository.UserRepository;
 import org.lifeos.feed.service_clients.ResourceLoaderClient;
@@ -29,14 +27,20 @@ public class FeedItemService {
     private final FeedItemRepository feedItemRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final AIClient aIClient;
+    private final ObjectMapper jacksonObjectMapper;
+    private final FeedInsightRepository feedInsightRepository;
 
     public FeedItemService(ResourceLoaderClient resourceLoaderClient,
                            FeedItemRepository feedItemRepository,
-                           ModelMapper modelMapper, UserRepository userRepository) {
+                           ModelMapper modelMapper, UserRepository userRepository, AIClient aIClient, ObjectMapper jacksonObjectMapper, FeedInsightRepository feedInsightRepository) {
         this.resourceLoaderClient = resourceLoaderClient;
         this.feedItemRepository = feedItemRepository;
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
+        this.aIClient = aIClient;
+        this.jacksonObjectMapper = jacksonObjectMapper;
+        this.feedInsightRepository = feedInsightRepository;
     }
 
     public void addFeedItem(String userId,
@@ -99,6 +103,63 @@ public class FeedItemService {
             return ((ArticleFeedItem) feedItem).getContent();
         } else {
             throw new UnsupportedOperationException("Unsupported FeedItemType");
+        }
+    }
+
+    public String getFeedSummary(String feedItemId) {
+        FeedItem feedItem =
+                feedItemRepository.findById(UUID.fromString(feedItemId)).orElseThrow(() -> new RuntimeException("No feed item found"));
+        if (feedItem.getItemType() == FeedItemType.ARTICLE) {
+            String summary = ((ArticleFeedItem) feedItem).getSummary();
+            if (summary == null || summary.isEmpty()) {
+                // generate summary from content
+                String feedSummary = "";
+                try {
+                    feedSummary =
+                            aIClient.getSummary(((ArticleFeedItem) feedItem).getContent());
+                } catch (Exception e) {
+                    throw new RuntimeException("Error generating summary");
+                }
+                ((ArticleFeedItem) feedItem).setSummary(feedSummary);
+                feedItemRepository.save(feedItem);
+                return feedSummary;
+            } else {
+                return ((ArticleFeedItem) feedItem).getSummary();
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported FeedItemType");
+        }
+    }
+
+    public List<FeedInsightDTO> getFeedInsights(String feedItemId) {
+        FeedItem feedItem =
+                feedItemRepository.findById(UUID.fromString(feedItemId)).orElseThrow(() -> new RuntimeException("No feed item found"));
+        List<FeedInsight> feedInsights = feedItem.getInsights();
+        log.info("FeedInsights: {}", feedInsights);
+        if (feedInsights != null && !feedInsights.isEmpty()) {
+            return feedInsights.stream().map(feedInsight -> modelMapper.map(feedInsight, FeedInsightDTO.class)).collect(toList());
+        } else {
+            String generatedInsights = aIClient.getInsights(getFeedSummary(feedItemId));
+            log.info("Generated Insights: {}", generatedInsights);
+            try {
+                FeedInsightAIDTO generatedAIFeedInsights =
+                        jacksonObjectMapper.readValue(generatedInsights,
+                                FeedInsightAIDTO.class);
+                // Generate FeedItemInsight from FeedInsightAIDTO
+                List<FeedInsight> toBeSavedFeedInsights =
+                        generatedAIFeedInsights.getInsights().stream().map(feedInsightDTO -> {
+                            FeedInsight feedInsight = new FeedInsight();
+                            feedInsight.setTitle(feedInsightDTO.getTitle());
+                            feedInsight.setContent(feedInsightDTO.getContent());
+                            return feedInsight;
+                        }).collect(toList());
+
+                feedItem.setInsights(toBeSavedFeedInsights);
+                feedItemRepository.save(feedItem);
+                return feedItem.getInsights().stream().map(feedInsight -> modelMapper.map(feedInsight, FeedInsightDTO.class)).collect(toList());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error parsing insights Data", e);
+            }
         }
     }
 }

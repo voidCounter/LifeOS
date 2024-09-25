@@ -6,6 +6,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import ImageComponent from "@/components/ImageComponent";
 
 interface FeedItemCardProps {
     feedItem: FeedItemType
@@ -19,21 +20,21 @@ export default function FeedItemCard({feedItem}: FeedItemCardProps) {
     const router = useRouter();
     return (
         <div
-            className={"flex flex-row gap-2 w-full bg-zinc-50 p-4" +
+            className={"relative flex flex-row gap-2 w-full bg-zinc-50 p-4" +
                 " rounded-lg cursor-pointer hover:bg-zinc-100"}
             onClick={() => router.push(`/app/feed/${feedItem.itemId}/content`)}>
-            <div className={"relative w-50 h-50"}>
-                <Image src={feedItem.thumbnail} alt={"Thumbnail"}
-                       className={"rounded-lg"}
-                       quality={80}
-                       style={{width: '100%', height: 'auto'}} width={150}
-                       height={150}
-                />
+            <div className={"relative flex"}
+                 style={{width: "150px", height: "100%"}}>
+                <ImageComponent src={feedItem?.thumbnail ?? ""}
+                                alt={"thumbnail"}
+                                className={"rounded-lg"}/>
             </div>
             <div className={"flex flex-col w-full"}>
                 <h3 className={"text-sm text-muted-foreground"}>{feedItem.estimatedDurationMinutes} min
                     read</h3>
-                <h1 className={"text-lg line-clamp-2 truncate"}>{feedItem.title}</h1>
+                <div className={"w-full"}>
+                    <p className={"text-lg line-clamp-1 truncate text-wrap"}>{feedItem.title}</p>
+                </div>
                 <div className={"flex flex-row gap-1 items-center" +
                     " text-muted-foreground"}>
                     <LinkIcon strokeWidth={1} className={"w-4 h-4"}/>
@@ -50,7 +51,8 @@ export default function FeedItemCard({feedItem}: FeedItemCardProps) {
                 </div>
             </div>
             <Button variant={"ghost"} size={"icon"}
-                    onClick={() => router.push(`/feed/${feedItem.itemId}`)}>
+                    onClick={() => {
+                    }}>
                 <MoreHorizontal strokeWidth={2} className={"w-8"}/>
             </Button>
         </div>

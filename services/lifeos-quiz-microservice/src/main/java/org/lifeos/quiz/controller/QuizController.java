@@ -27,6 +27,11 @@ public class QuizController {
         this.userRepository = userRepository;
     }
 
+    @GetMapping("/getQuizzes")
+    public ResponseEntity<?> exploreQuizzes() {
+        return ResponseEntity.ok(quizService.getQuizzes());
+    }
+
     @GetMapping("/hello")
     public ResponseEntity<String> hello(@RequestHeader(name = "user-id",
             required = false) UUID userId

@@ -21,7 +21,7 @@ bcrypt:
   strength: 12
 
 jwt:
-  expiration: 60000
+  expiration: 97769798
 
 refreshToken:
   expirationInSeconds: 1728000

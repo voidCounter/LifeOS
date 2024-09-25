@@ -15,7 +15,7 @@ export function UserAvatar({avatarURL, name, userName}: UserAvatarProps) {
             <Avatar className={"h-8 w-8"}>
                 <AvatarImage src={avatarURL ?? ""}/>
                 <AvatarFallback
-                    className={"bg-foreground/20"}>{userName?.toUpperCase()[0] ?? name.toUpperCase()[0]}</AvatarFallback>
+                    className={"bg-foreground/20"}>{userName?.toUpperCase()[0] ?? name?.toUpperCase()[0]}</AvatarFallback>
             </Avatar>
 
             {/* User name */}
