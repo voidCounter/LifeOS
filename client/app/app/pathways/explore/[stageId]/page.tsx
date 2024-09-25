@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchStageById, fetchSubStageCount, generateOrFetchTask, generateSubStageByName, getRoadmapPublishStatus, togglePublishRoadmap } from '@/api-handlers/pathway'
+import { fetchStageById, fetchSubStageCount, generateOrFetchTask, generateSubStageByName, togglePublishRoadmap } from '@/api-handlers/pathway'
 import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup,  CommandItem, CommandList } from '@/components/ui/command';
 import { Dialog, DialogContent,  DialogTrigger } from '@/components/ui/dialog';
@@ -211,22 +211,13 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
 
         const addContent = useStageStore(state => state.addContent);
 
-
-        if (stage.content) {
-            return (
-                <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
-                    <MDXRemote source={stage.content} />
-                </div>
-            )
-        }
-
         const {
             data: content,
             isLoading: isContentLoading,
             isError: isContentError,
             error: contentError
         } = useQuery<string, Error>({
-            queryKey: ['content', stage.stageId],
+                queryKey: ['content', stage.stageId],
             queryFn: () => generateOrFetchTask({
                 title: stage.title,
                 description: stage.description,
@@ -242,6 +233,16 @@ const StageView = ({ params }: { params: { stageId: string } }) => {
             title: "Error loading task content",
             description: contentError?.message ?? "",
         })
+
+        if (stage.content) {
+            return (
+                <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
+                    <MDXRemote source={stage.content} />
+                </div>
+            )
+        }
+
+
 
         if (isContentLoading) return <GeneralLoading message='Loading task content...' />;
 
@@ -342,9 +343,30 @@ const Stages = ({
         stageId
     } = stage;
 
+    const {
+        data: noOfSubStages,
+        isLoading: isSubStagesLoading,
+        isError: isSubStagesError,
+        error: subStagesError
+    } = useQuery<SubStageCountDTO, Error>({
+        queryKey: ['subStages', stageId],
+        queryFn: () => fetchSubStageCount(stageId),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+    })
+
+    useErrorNotification({
+        isError: isSubStagesError,
+        title: "Error loading substage count",
+        description: subStagesError?.message ?? "",
+    });
+
+
     if (stageType === StageType.QUIZ) {
         return null;
     }
+
+
 
     if (stageType === StageType.TASK) {
         if (stage.content) {
@@ -368,23 +390,6 @@ const Stages = ({
         }
     }
 
-    const {
-        data: noOfSubStages,
-        isLoading: isSubStagesLoading,
-        isError: isSubStagesError,
-        error: subStagesError
-    } = useQuery<SubStageCountDTO, Error>({
-        queryKey: ['subStages', stageId],
-        queryFn: () => fetchSubStageCount(stageId),
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-    })
-
-    useErrorNotification({
-        isError: isSubStagesError,
-        title: "Error loading substage count",
-        description: subStagesError?.message ?? "",
-    });
 
 
 
@@ -415,10 +420,13 @@ const AddNewStage = ({
     stage: Stage
 }) => {
 
-    if (stage.type === StageType.TASK) return null;
-
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const language = usePathwayPromptStore(state => state.language);
+    const addSubStages = useStageStore(state => state.addSubStages);
+
+
     const {
         type: stageType,
         stageId
@@ -450,8 +458,12 @@ const AddNewStage = ({
         resolver: zodResolver(FormSchema),
     })
 
-    const language = usePathwayPromptStore(state => state.language);
-    const addSubStages = useStageStore(state => state.addSubStages);
+    if (stage.type === StageType.TASK) return null;
+
+
+
+
+
 
     const getContext = (prompt: string): string => {
         const {
