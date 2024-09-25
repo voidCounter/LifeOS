@@ -29,7 +29,7 @@ export default function NavItemCard({
                                     }: NavItemCardProps) {
     const router = useRouter();
     return (
-        <Card className={cn(className, "h-[200px] flex flex-col" +
+        <Card className={cn(className, "flex flex-col" +
             " justify-between")}>
             <CardHeader>
                 <CardTitle>{title}</CardTitle>

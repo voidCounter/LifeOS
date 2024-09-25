@@ -48,7 +48,7 @@ export default function app() {
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 pt-12 gap-4">
             {
                 navItems.map((item, index) => <NavItemCard key={index}
-                                                           className={"bg-zinc-50"}
+                                                           className={"bg-zinc-50 self-stretch"}
                                                            title={item.title}
                                                            subTitle={item.subTitle}
                                                            icon={item.icon}

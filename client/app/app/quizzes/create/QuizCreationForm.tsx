@@ -3,7 +3,7 @@ import {QuizCreationOptionType} from "@/config/QuizCreationTabsConfig";
 import {useForm} from "react-hook-form";
 import {
     quizCreationSchema
-} from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
+} from "@/app/app/quizzes/create/QuizCreationSchema";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
@@ -49,6 +49,7 @@ import extractVideoID from "@/utils/extractVideoID";
 import FileItem from "@/components/FileItem";
 import {useFileUploadMutation} from "@/hooks/useFileUploadQuery";
 import {List} from "postcss/lib/list";
+import {toast} from "sonner";
 
 
 export default function QuizCreationForm({quizCreationMethod}: {
@@ -81,13 +82,16 @@ export default function QuizCreationForm({quizCreationMethod}: {
         mutateAsync: generateQuizAsync,
         isPending: isGenerating,
         data: quiz,
-        error
+        isError: isGenerationError,
+        error: generateError,
     } = useQuizCreationMutation(quizCreationMethod);
 
     const {
         mutate: uploadFiles,
         mutateAsync: uploadFilesAsync,
         isPending: isUploadingFiles,
+        isError: isUploadError,
+        error: uploadError,
     } = useFileUploadMutation();
 
     async function onSubmit(data: z.infer<typeof quizCreationSchema>) {
@@ -104,6 +108,15 @@ export default function QuizCreationForm({quizCreationMethod}: {
         } else {
             await generateQuizAsync(data);
         }
+    }
+
+    if (isUploadError) {
+        toast.error(uploadError?.message ?? "Error uploading files. Try" +
+            " again!");
+    }
+    if (isGenerationError) {
+        toast.error(generateError?.message ?? "Error generating quiz. Try" +
+            " again!");
     }
 
     const sortLanguages = (a: [string, Language], b: [string, Language]) => {

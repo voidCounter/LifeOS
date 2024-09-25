@@ -5,7 +5,7 @@ import {Quiz} from "@/types/QuizTypes/Quiz";
 import {z} from "zod";
 import {
     quizCreationSchema
-} from "@/app/app/quizzes/create/[tab]/QuizCreationSchema";
+} from "@/app/app/quizzes/create/QuizCreationSchema";
 import {useQuizCreationStore} from "@/store/QuizCreationStore";
 import {toast} from "sonner";
 
