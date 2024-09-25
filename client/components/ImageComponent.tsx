@@ -17,16 +17,15 @@ export default function ImageComponent({
     const [isImageLoading, setImageLoading] = useState(true)
 
     return (
-        <div>
-            <Image
-                alt={alt}
-                src={src}
-                fill={true}
-                onLoad={() => setImageLoading(false)}
-                className={cn(className, `${isImageLoading ? 'blur' +
-                    ' transition-filter duration-300 ease-in' : 'blur-none' +
-                    ' transition-filter duration-300 ease-in'} object-cover `)}
-            />
-        </div>
+        <Image
+            alt={alt}
+            src={src}
+            fill={true}
+            sizes={"100%"}
+            onLoad={() => setImageLoading(false)}
+            className={cn(className, `${isImageLoading ? 'blur' +
+                ' transition-filter duration-300 ease-in' : 'blur-none' +
+                ' transition-filter duration-300 ease-in'} object-cover `)}
+        />
     )
 }

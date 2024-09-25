@@ -7,6 +7,7 @@ import net.dankito.readability4j.extended.Readability4JExtended;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.lifeos.resourceloader.dto.ArticleFeedItemDTO;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -31,9 +32,20 @@ public class WebArticleService {
         return "";
     }
 
+    public Document santizeParsedArticle(Document document) {
+        for (int i = 1; i <= 6; i++) {
+            Elements headings = document.select("h" + i + "[id]");
+            for (Element heading : headings) {
+                heading.removeAttr("id"); // Remove the id attribute
+            }
+        }
+        return document;
+    }
+
     private Article extractArticle(String url) {
         try {
             Document document = Jsoup.connect(url).get();
+            document = santizeParsedArticle(document);
             Readability4J readability4J = new Readability4JExtended(url, document);
             return readability4J.parse();
         } catch (IOException e) {
@@ -71,6 +83,7 @@ public class WebArticleService {
         }
         return fileName;
     }
+
 
     public ArticleFeedItemDTO parseArticle(String articleURL) {
         Article parsedArticle = extractArticle(articleURL);

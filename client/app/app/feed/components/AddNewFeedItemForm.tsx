@@ -16,9 +16,10 @@ import {
 } from "@/app/app/feed/explore/FeedItemAdditionSchema";
 import {z} from "zod";
 import {Button} from "@/components/ui/button";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {AxiosInstance} from "@/utils/AxiosInstance";
 import {toast} from "sonner";
+import {queryClient} from "@/lib/react-query";
 
 interface AddNewFeedItemFormProps {
     onAdd: () => void,
@@ -29,6 +30,7 @@ export default function AddNewFeedItemForm({
                                                itemType,
                                                onAdd
                                            }: AddNewFeedItemFormProps) {
+    const queryClient = useQueryClient();
     const form = useForm<z.infer<typeof feedItemAdditionSchema>>({
         resolver: zodResolver(feedItemAdditionSchema),
         defaultValues: {
@@ -57,6 +59,7 @@ export default function AddNewFeedItemForm({
             toast.dismiss();
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({queryKey: ["userFeed"]});
             console.log(data);
             onAdd();
             toast.success("New feed item added successfully");

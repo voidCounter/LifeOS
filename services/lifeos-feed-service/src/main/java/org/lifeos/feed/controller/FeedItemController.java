@@ -27,6 +27,17 @@ public class FeedItemController {
         return ResponseEntity.ok(feedItemService.getFeedContent(feedItemId));
     }
 
+    @GetMapping("/{feedItemId}/summary")
+    public ResponseEntity<?> getFeedSummary(@PathVariable String feedItemId) {
+        return ResponseEntity.ok(feedItemService.getFeedSummary(feedItemId));
+    }
+
+    @GetMapping("/{feedItemId}/insights")
+    public ResponseEntity<?> getFeedInsights(@PathVariable String feedItemId) {
+        return ResponseEntity.ok(feedItemService.getFeedInsights(feedItemId));
+    }
+
+
     @PostMapping("/add")
     public ResponseEntity<?> addFeedItem(@RequestHeader(name = "user-id",
             required = false) String userId,

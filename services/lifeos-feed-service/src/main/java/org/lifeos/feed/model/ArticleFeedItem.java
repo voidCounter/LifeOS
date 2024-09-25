@@ -17,5 +17,6 @@ import java.util.UUID;
 @Table(name = "article_feed_items")
 public class ArticleFeedItem extends FeedItem {
     private String summary;
+    @Column(columnDefinition = "TEXT")
     private String content;
 }

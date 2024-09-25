@@ -13,6 +13,7 @@ import org.lifeos.quiz.service_clients.ResourceLoaderClient;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -233,5 +234,10 @@ public class QuizService {
         QuizTest quizTest =
                 quizTestRepository.findById(UUID.fromString(quizTestId)).orElseThrow(() -> new RuntimeException("Quiz test not found"));
         return modelMapper.map(quizTest, QuizTestDTO.class);
+    }
+
+    public List<QuizDTO> getQuizzes() {
+        return quizRepository.findAll().stream().map(quiz -> modelMapper.map(quiz,
+                QuizDTO.class)).toList();
     }
 }

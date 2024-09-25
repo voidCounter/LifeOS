@@ -25,7 +25,7 @@ public class QuizService {
     private final ChatClient chatClient;
     private final ResourceLoaderClient resourceLoaderClient;
     private final FileService fileService;
-    private final ChatClient helperClient;
+    private final ChatClient shortAnswerEvaluatorClient;
 
 
     @Value("classpath:/prompts/QuizSystemPrompt.st")
@@ -36,12 +36,13 @@ public class QuizService {
 
     public QuizService(@Qualifier("quizClient") ChatClient chatClient,
                        ResourceLoaderClient resourceLoaderClient,
-                       FileService fileService, @Qualifier("helperClient") ChatClient helperClient) {
+                       FileService fileService,
+                       @Qualifier("shortAnswerEvaluatorClient") ChatClient shortAnswerEvaluatorClient) {
         this.chatClient = chatClient;
         this.resourceLoaderClient = resourceLoaderClient;
         this.fileService = fileService;
         log.info("system prompt: {}", chatClient.toString());
-        this.helperClient = helperClient;
+        this.shortAnswerEvaluatorClient = shortAnswerEvaluatorClient;
     }
 
     @PostConstruct
@@ -133,7 +134,7 @@ public class QuizService {
     }
 
     public List<ShortAnswerQuestionCheckingResDTO> evaluateShortAnswerQuestions(List<ShortAnswerQuestionCheckingReqDTO> questions) {
-        return helperClient.
+        return shortAnswerEvaluatorClient.
                 prompt().advisors(new SimpleLoggerAdvisor()).user(u -> u.param("questions", questions.toString())).call().entity(new ParameterizedTypeReference<List<ShortAnswerQuestionCheckingResDTO>>() {
                 });
     }
