@@ -1,11 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="lifeos" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="5.0">
-    <runConfiguration name="LifeosServiceRegistryApplication" type="Spring Boot" />
-    <runConfiguration name="LifeosGatewayApplication" type="Spring Boot" />
-    <runConfiguration name="QuizServiceApplication" type="Spring Boot" />
-    <runConfiguration name="UserServiceApplication" type="Spring Boot" />
-    <runConfiguration name="LifeosResourceLoaderApplication" type="Spring Boot" />
-    <runConfiguration name="LifeosAiMicroserviceApplication" type="Spring Boot" />
     <method v="2" />
   </configuration>
 </component>

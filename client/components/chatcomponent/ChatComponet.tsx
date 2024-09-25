@@ -1,11 +1,8 @@
-"use client";
-
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Send } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface Message {
     text?: string;
@@ -18,23 +15,7 @@ const ChatComponent = () => {
     const [inputMessage, setInputMessage] = useState('');
 
     const handleSendMessage = () => {
-        if (inputMessage.trim()) {
-            const newMessage: Message = {
-              text: inputMessage,
-              sender: 'user',
-            };
-            setMessages([...messages, newMessage]);
-            setInputMessage('');
-            
-            // Simulate bot response
-            setTimeout(() => {
-              const botMessage: Message = {
-                text: "This is a simulated bot response.",
-                sender: 'bot',
-              };
-              setMessages(prevMessages => [...prevMessages, botMessage]);
-            }, 1000);
-          }
+        
     };
 
     return (
@@ -43,17 +24,14 @@ const ChatComponent = () => {
                 {messages.map((message, index) => (
                     <div
                         key={index}
-                        className={`mb-4 flex flex-row gap-1 ${message.sender === 'user' ? 'self-start' : 'self-end'
+                        className={`mb-4 flex flex-row gap-1 ${message.sender === 'user' ? 'text-right' : 'text-left'
                             }`}
                     >
-                        <Avatar>
-                            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
+                        
                         <div
                             className={`inline-block p-2 rounded-lg ${message.sender === 'user'
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-200 text-black'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 text-black'
                                 }`}
                         >
                             {message.text ? message.text : message.children ? <message.children /> : ''}
