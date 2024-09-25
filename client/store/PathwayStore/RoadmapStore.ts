@@ -12,7 +12,7 @@ interface RoadmapStore {
 export const useRoadmapStore = create<RoadmapStore>()(
     persist(
         (set, get) => ({
-            roadmaps: new Array<SimpleStageDTO>(),
+            roadmaps: [],
             setRoadmaps: (roadmaps: SimpleStageDTO[]) => set({ roadmaps: roadmaps }),
             setPublished: (stageId: string, isPublished: boolean) => set((state) => ({
                 roadmaps: state.roadmaps.map((roadmap) => {

@@ -1,84 +1,47 @@
 "use client";
 
-import {
-    fetchStageById,
-    fetchSubStageCount,
-    generateOrFetchTask,
-    generateSubStageByName,
-    getRoadmapPublishStatus,
-    togglePublishRoadmap
-} from '@/api-handlers/pathway'
-import {Button} from '@/components/ui/button';
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandList
-} from '@/components/ui/command';
-import {Dialog, DialogContent, DialogTrigger} from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from '@/components/ui/form';
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
-import {Switch} from '@/components/ui/switch';
-import {Textarea} from '@/components/ui/textarea';
-import {useErrorNotification} from '@/hooks/useErrorNotification'
-import {cn} from '@/lib/utils';
-import {usePathwayPromptStore} from '@/store/PathwayPromptStore';
-import {useStageStore} from '@/store/StageStore';
-import {
-    PublishDTO,
-    Stage,
-    StageType,
-    SubStageCountDTO
-} from '@/types/PathwayTypes/Pathway'
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useQuery} from '@tanstack/react-query'
-import {
-    BookOpenCheck,
-    Check,
-    ChevronsUpDown,
-    Component,
-    Edit,
+import { fetchStageById, fetchSubStageCount, generateOrFetchTask, generateSubStageByName } from '@/api-handlers/pathway'
+import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup,  CommandItem, CommandList } from '@/components/ui/command';
+import { Dialog, DialogContent,  DialogTrigger } from '@/components/ui/dialog';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
+import { useErrorNotification } from '@/hooks/useErrorNotification'
+import { cn } from '@/lib/utils';
+import { usePathwayPromptStore } from '@/store/PathwayPromptStore';
+import { useStageStore } from '@/store/StageStore';
+import { Stage, StageType, SubStageCountDTO } from '@/types/PathwayTypes/Pathway'
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query'
+import { 
+    BookOpenCheck, 
+    Check,  
+    ChevronsUpDown, 
+    Component, 
     FolderGit2,
-    Goal,
-    ListTodo,
-    LoaderCircle,
-    LucideCheckSquare,
-    Milestone,
-    MoreVerticalIcon,
+    Goal, 
+    ListTodo, 
+    LoaderCircle, 
+    LucideCheckSquare, 
+    Milestone, 
     Pencil,
-    PencilRuler,
-    PlusIcon,
-    SparklesIcon,
-    Trash
+    PencilRuler, 
+    PlusIcon, 
+    SparklesIcon, 
 } from 'lucide-react'
-import {useRouter} from 'next/navigation';
-import React, {use, useEffect, useState} from 'react'
-import {useForm} from 'react-hook-form';
-import {z} from 'zod';
-import {MDXRemote} from 'next-mdx-remote/rsc'
+import { useRouter } from 'next/navigation';
+import React, {useEffect, useRef, useState} from 'react'
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import GeneralLoading from '@/app/app/pathways/components/StageLoading';
 import GeneralError from '../../components/GeneralError';
-import {MoreActions} from '../../components/MoreActions';
-import MDXViewer from "@/components/MDXViewer";
+import { MoreActions } from '../../components/MoreActions';
 
 
-const StageView = ({params}: { params: { stageId: string } }) => {
+
+const StageView = ({ params }: { params: { stageId: string } }) => {
 
     const router = useRouter();
 
@@ -91,11 +54,11 @@ const StageView = ({params}: { params: { stageId: string } }) => {
 
 
     const setChildStageType = (): StageType => {
-        if (parentStage === undefined) return StageType.ROADMAP;
+        if (parentStage === undefined) return StageType.MILESTONE;
         const {
             title, description
         } = parentStage;
-        setPrompt(JSON.stringify({title, description}))
+        setPrompt(JSON.stringify({ title, description }))
         if (parentStage.type === StageType.ROADMAP) {
             return StageType.MILESTONE
         }
@@ -107,6 +70,7 @@ const StageView = ({params}: { params: { stageId: string } }) => {
 
 
     }
+
 
 
     const {
@@ -127,6 +91,9 @@ const StageView = ({params}: { params: { stageId: string } }) => {
     })
 
 
+
+
+
     useErrorNotification({
         isError: isStageError,
         title: "Error loading the stage ",
@@ -143,17 +110,18 @@ const StageView = ({params}: { params: { stageId: string } }) => {
 
     if (isStageLoading)
         return (
-            <GeneralLoading
+            <GeneralLoading 
                 message='Loading stage...'
             />
         );
 
-    if (stage === undefined)
+    if (stage === undefined) 
         return (
-            <GeneralError
+            <GeneralError 
                 message='Error getting stage'
             />
         );
+
 
 
     const RenderSubStages = () => {
@@ -166,25 +134,22 @@ const StageView = ({params}: { params: { stageId: string } }) => {
         if (subStages == null) return <div>Error loading substage</div>;
 
 
+
         return (
             <div className='flex flex-row gap-x-2 w-full items-center'>
                 <div className='flex flex-col gap-0'>
                     {
                         subStages.map((subStage, index) => (
-                            <div
-                                className='flex flex-col items-center justify-center'
-                                key={index}>
-                                <div
-                                    className='flex p-2 rounded-full border border-muted shadow-sm shadow-black'>
+                            <div className='flex flex-col items-center justify-center' key={index}>
+                                <div className='flex p-2 rounded-full border border-muted shadow-sm shadow-black'>
                                     <RenderIcon
                                         type={subStage.type}
                                     />
                                 </div>
                                 {
                                     subStages.length - 1 !== index ?
-                                        <div
-                                            className='items-center justify-center'>
-                                            <svg width="50" height="100">
+                                        <div className='items-center justify-center'>
+                                            <svg width="50" height="100" >
                                                 <line
                                                     x1="25"
                                                     y1="0"
@@ -203,17 +168,14 @@ const StageView = ({params}: { params: { stageId: string } }) => {
                 <div className='flex flex-col gap-y-8 w-full items-center'>
                     {
                         subStages.map((subStage, index) => (
-                            <Button key={index} variant='ghost'
-                                    className='text-black flex flex-col items-start p-4 rounded-xl shadow-sm shadow-black w-full h-[110px] overflow-clip'
-                                    onClick={() => {
-                                        setParentStage(subStage);
-                                        router.push(`/app/pathways/explore/${subStage.stageId}`)
-                                    }}
+                            <Button key={index} variant='ghost' className='text-black flex flex-col items-start p-4 rounded-xl shadow-sm shadow-black w-full h-[110px] overflow-clip'
+                                onClick={() => {
+                                    setParentStage(subStage);
+                                    router.push(`/app/pathways/explore/${subStage.stageId}`)
+                                }}
                             >
-                                <div
-                                    className='flex flex-row w-full justify-between items-center'>
-                                    <div
-                                        className='p-1 shadow-inner shadow-muted w-fit rounded-lg self-start'>
+                                <div className='flex flex-row w-full justify-between items-center'>
+                                    <div className='p-1 shadow-inner shadow-muted w-fit rounded-lg self-start'>
                                         <p className='text-muted-foreground text-[10px]'>
                                             {subStage.type}
                                         </p>
@@ -228,8 +190,7 @@ const StageView = ({params}: { params: { stageId: string } }) => {
                                     <h1 className='font-semibold text-base text-black'>{subStage.title}</h1>
                                 </div>
 
-                                <div
-                                    className='flex flex-row w-full justify-between items-center'>
+                                <div className='flex flex-row w-full justify-between items-center'>
                                     <Stages
                                         stage={subStage}
                                     />
@@ -244,14 +205,8 @@ const StageView = ({params}: { params: { stageId: string } }) => {
 
     const RenderTaskContent = () => {
 
+
         const addContent = useStageStore(state => state.addContent);
-
-
-        if (stage.content) {
-            return (
-                <MDXViewer content={stage.content}/>
-            )
-        }
 
         const {
             data: content,
@@ -259,7 +214,7 @@ const StageView = ({params}: { params: { stageId: string } }) => {
             isError: isContentError,
             error: contentError
         } = useQuery<string, Error>({
-            queryKey: ['content', stage.stageId],
+                queryKey: ['content', stage.stageId],
             queryFn: () => generateOrFetchTask({
                 title: stage.title,
                 description: stage.description,
@@ -268,6 +223,7 @@ const StageView = ({params}: { params: { stageId: string } }) => {
             }),
             refetchOnMount: false,
             refetchOnWindowFocus: false,
+            staleTime: Infinity
         })
 
         useErrorNotification({
@@ -276,41 +232,47 @@ const StageView = ({params}: { params: { stageId: string } }) => {
             description: contentError?.message ?? "",
         })
 
-        if (isContentLoading) return <GeneralLoading
-            message='Loading task content...'/>;
+        if (stage.content) {
+            return (
+                <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
+                    <MDXRemote  source={stage.content} />
+                </div>
+            )
+        }
 
-        if (content === undefined) return <GeneralError
-            message='Error loading task content'/>;
+
+
+        if (isContentLoading) return <GeneralLoading message='Loading task content...' />;
+
+        if (content === undefined) return <GeneralError message='Error loading task content' />;
 
         addContent(content);
 
         return (
-            <div
-                className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
-                <MDXRemote source={"# Hello"}/>
+            <div className="prose prose-headings:mt-8 prose-headings:font-semibold prose-headings:text-black prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-h5:text-xl prose-h6:text-lg dark:prose-headings:text-black">
+                <MDXRemote source={content} />
+
             </div>
         )
     }
 
 
+
+
     return (
 
-        <div
-            className='min-h-full flex flex-col items-start gap-y-8 mt-2 w-3/4'>
-            <div
-                className='flex flex-col w-full bg-muted rounded-xl p-8 items-center gap-y-4'>
+        <div className='min-h-full flex flex-col items-start gap-y-8 mt-2 w-3/4'>
+
+            <div className='flex flex-col w-full bg-muted rounded-xl p-8 items-center gap-y-4'>
                 <div className='flex flex-row w-full items-center gap-4 '>
-                    <div
-                        className='flex rounded-full bg-white border border-muted p-2'>
-                        <RenderIcon
+                    <div className='flex rounded-full bg-white border border-muted p-2'>
+                        <RenderIcon 
                             type={stage.type}
                         />
                     </div>
                     <div className='flex flex-col gap-y-1 w-full'>
-                        <div
-                            className='flex flex-row items-center justify-between w-full'>
-                            <div
-                                className='p-1 border border-muted-foreground w-fit rounded-lg'>
+                        <div className='flex flex-row items-center justify-between w-full'>
+                            <div className='p-1 border border-muted-foreground w-fit rounded-lg'>
                                 <p className='text-muted-foreground text-xs'>
                                     {stage.type}
                                 </p>
@@ -320,7 +282,7 @@ const StageView = ({params}: { params: { stageId: string } }) => {
                                 stageType={stage.type}
                             />
                         </div>
-                        <h2 className={`font-semibold text-lg text-black `}>{stage.title}</h2>
+                        <h2 className={`font-semibold text-lg text-black `} >{stage.title}</h2>
                         {stage.type !== StageType.TASK ?
                             <p className={`font-normal text-base text-muted-foreground`}>{stage.description}</p> : null
                         }
@@ -330,48 +292,49 @@ const StageView = ({params}: { params: { stageId: string } }) => {
             </div>
 
             {stage.type !== StageType.TASK ?
-                <RenderSubStages/> :
-                <RenderTaskContent/>
+                <RenderSubStages /> :
+                <RenderTaskContent />
             }
 
             <AddNewStage
                 stage={stage}
             />
-            <div className='mt-96'/>
+            <div className='mt-96' />
         </div>
     )
 }
 
 
 const RenderIcon = ({
-                        type
-                    }: {
+    type
+}: {
     type: StageType
 }) => {
     if (type === StageType.ROADMAP) {
-        <Goal size={24} className='text-black'/>
+        return <Goal size={24} className='text-black' />
     }
     if (type === StageType.QUIZ) {
-        return <BookOpenCheck size={24} className='text-black'/>
+        return <BookOpenCheck size={24} className='text-black' />
     }
     if (type === StageType.MILESTONE) {
-        return <Milestone size={24} className='text-black'/>
+        return <Milestone size={24} className='text-black' />
     }
     if (type === StageType.MODULE) {
-        return <PencilRuler size={24} className='text-black'/>
+        return <PencilRuler size={24} className='text-black' />
     }
     if (type === StageType.PROJECT) {
-        return <FolderGit2 size={24} className='text-black'/>
+        return <FolderGit2 size={24} className='text-black' />
     }
     return (
-        <Component size={24} className='text-black'/>
+        <Component size={24} className='text-black' />
     )
 }
 
 
+
 const Stages = ({
-                    stage
-                }: {
+    stage
+}: {
     stage: Stage
 }) => {
 
@@ -379,33 +342,6 @@ const Stages = ({
         type: stageType,
         stageId
     } = stage;
-
-    if (stageType === StageType.QUIZ) {
-        return null;
-    }
-
-    if (stageType === StageType.TASK) {
-        if (stage.content) {
-            return (
-                <div className='flex flex-row gap-2 items-center mt-1'>
-                    <LucideCheckSquare size={18}
-                                       className='text-muted-foreground'/>
-                    <p className='text-sm line-clamp-1 text-muted-foreground'>
-                        Generated
-                    </p>
-                </div>
-            )
-        } else {
-            return (
-                <div className='flex flex-row gap-2 items-center mt-1'>
-                    <Pencil size={16} className='text-muted-foreground'/>
-                    <p className='text-sm line-clamp-1 text-muted-foreground'>
-                        Not generated
-                    </p>
-                </div>
-            )
-        }
-    }
 
     const {
         data: noOfSubStages,
@@ -426,16 +362,46 @@ const Stages = ({
     });
 
 
+    if (stageType === StageType.QUIZ) {
+        return null;
+    }
+
+
+
+    if (stageType === StageType.TASK) {
+        if (stage.content) {
+            return (
+                <div className='flex flex-row gap-2 items-center mt-1'>
+                    <LucideCheckSquare size={18} className='text-muted-foreground' />
+                    <p className='text-sm line-clamp-1 text-muted-foreground'>
+                        Generated
+                    </p>
+                </div>
+            )
+        } else {
+            return (
+                <div className='flex flex-row gap-2 items-center mt-1'>
+                    <Pencil size={16} className='text-muted-foreground' />
+                    <p className='text-sm line-clamp-1 text-muted-foreground'>
+                        Not generated
+                    </p>
+                </div>
+            )
+        }
+    }
+
+
+
+
     return (
         <div className='flex flex-row gap-2 items-center'>
-            {isSubStagesLoading ?
-                <div className={"flex justify-center items-center"}>
-                    <LoaderCircle className={"animate-spin mr-2"}
-                                  strokeWidth={1}/>
-                    Counting Stages...
-                </div> : noOfSubStages?.noOfSubStages ?
-                    <ListTodo size={18} className='text-muted-foreground'/>
-                    : <Pencil size={16} className='text-muted-foreground'/>
+            {isSubStagesLoading ? <div className={"flex justify-center items-center"}>
+                <LoaderCircle className={"animate-spin mr-2"}
+                    strokeWidth={1} />
+                Counting Stages...
+            </div> : noOfSubStages?.noOfSubStages ?
+                <ListTodo size={18} className='text-muted-foreground' />
+                : <Pencil size={16} className='text-muted-foreground' />
             }
             <p className='text-sm line-clamp-1 text-muted-foreground'>
                 {
@@ -447,16 +413,20 @@ const Stages = ({
 }
 
 
+
 const AddNewStage = ({
-                         stage
-                     }: {
+    stage
+}: {
     stage: Stage
 }) => {
 
-    if (stage.type === StageType.TASK) return null;
-
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const language = usePathwayPromptStore(state => state.language);
+    const addSubStages = useStageStore(state => state.addSubStages);
+
+
     const {
         type: stageType,
         stageId
@@ -469,15 +439,15 @@ const AddNewStage = ({
     }[] = []
     if (stageType === StageType.ROADMAP) {
         subStageSchema = z.enum([StageType.MILESTONE, StageType.PROJECT]);
-        stages.push({label: "Milestone", value: StageType.MILESTONE});
-        stages.push({label: "Project", value: StageType.PROJECT});
+        stages.push({ label: "Milestone", value: StageType.MILESTONE });
+        stages.push({ label: "Project", value: StageType.PROJECT });
     } else if (stageType === StageType.MILESTONE) {
         subStageSchema = z.enum([StageType.MODULE, StageType.QUIZ])
-        stages.push({label: "Module", value: StageType.MODULE});
-        stages.push({label: "Quiz", value: StageType.QUIZ});
+        stages.push({ label: "Module", value: StageType.MODULE });
+        stages.push({ label: "Quiz", value: StageType.QUIZ });
     } else {
         subStageSchema = z.enum([StageType.TASK])
-        stages.push({label: "Task", value: StageType.TASK});
+        stages.push({ label: "Task", value: StageType.TASK });
     }
     const FormSchema = z.object({
         subStage: subStageSchema,
@@ -488,8 +458,12 @@ const AddNewStage = ({
         resolver: zodResolver(FormSchema),
     })
 
-    const language = usePathwayPromptStore(state => state.language);
-    const addSubStages = useStageStore(state => state.addSubStages);
+    if (stage.type === StageType.TASK) return null;
+
+
+
+
+
 
     const getContext = (prompt: string): string => {
         const {
@@ -519,7 +493,7 @@ const AddNewStage = ({
                 }
             })
         }
-        return JSON.stringify({contextObj, prompt: prompt});
+        return JSON.stringify({ contextObj, prompt: prompt });
     }
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
@@ -550,23 +524,20 @@ const AddNewStage = ({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant={"outline"}
-                        className='self-center w-2/3 items-center justify-center'>
+                <Button variant={"outline"} className='self-center w-2/3 items-center justify-center'>
                     <div className='flex flex-row gap-2 items-center'>
-                        <PlusIcon size={18} className='text-black'/>
-                        <p className='font-medium text-black text-base'>Add new
-                            child stage</p>
+                        <PlusIcon size={18} className='text-black' />
+                        <p className='font-medium text-black text-base'>Add new child stage</p>
                     </div>
                 </Button>
             </DialogTrigger>
             <DialogContent className=''>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}
-                          className="space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                             control={form.control}
                             name="subStage"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem className="flex flex-col">
                                     <FormLabel>Select Substage</FormLabel>
                                     <Popover>
@@ -585,18 +556,14 @@ const AddNewStage = ({
                                                             (stage) => stage.value === field.value
                                                         )?.label
                                                         : "Select substage"}
-                                                    <ChevronsUpDown
-                                                        className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                                 </Button>
                                             </FormControl>
                                         </PopoverTrigger>
-                                        <PopoverContent
-                                            className="w-[200px] p-0">
+                                        <PopoverContent className="w-[200px] p-0">
                                             <Command>
                                                 <CommandList>
-                                                    <CommandEmpty>No stage(s)
-                                                        name
-                                                        found.</CommandEmpty>
+                                                    <CommandEmpty>No stage(s) name found.</CommandEmpty>
                                                     <CommandGroup>
                                                         {stages.map((stage) => (
                                                             <CommandItem
@@ -622,14 +589,14 @@ const AddNewStage = ({
                                             </Command>
                                         </PopoverContent>
                                     </Popover>
-                                    <FormMessage/>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
                         <FormField
                             control={form.control}
                             name="prompt"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Prompt</FormLabel>
                                     <FormControl>
@@ -642,23 +609,18 @@ const AddNewStage = ({
                                     <FormDescription>
                                         You can add additional prompt here
                                     </FormDescription>
-                                    <FormMessage/>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={loading}
-                                className='w-fit'>
+                        <Button type="submit" disabled={loading} className='w-fit' >
                             {!loading ?
-                                <div
-                                    className='flex flex-row gap-1 items-center px-4'>
-                                    <SparklesIcon size={18}
-                                                  className='text-white'/>
+                                <div className='flex flex-row gap-1 items-center px-4'>
+                                    <SparklesIcon size={18} className='text-white' />
                                     <p className='font-medium text-white text-base'>Generate</p>
-                                </div> : <div
-                                    className={"flex justify-center items-center"}>
-                                    <LoaderCircle
-                                        className={"animate-spin mr-2"}
-                                        strokeWidth={1}/>
+                                </div> : <div className={"flex justify-center items-center"}>
+                                    <LoaderCircle className={"animate-spin mr-2"}
+                                        strokeWidth={1} />
                                     Generating stage...
                                 </div>
                             }
@@ -670,6 +632,7 @@ const AddNewStage = ({
         </Dialog>
     )
 }
+
 
 
 export default StageView

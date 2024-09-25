@@ -21,19 +21,19 @@ import { useRouter } from "next/navigation";
 export default function Library() {
     return (
         <main className="flex w-full justify-center self-center">
-            <div className="flex flex-col gap-8 w-full">
-                <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-8 w-full items-center">
+                <div className="flex flex-col gap-4 w-full ">
                     <SearchandCreate />
-                    <section className="w-full items-center">
+                    <section className="w-full flex flex-col items-center justify-center ">
                         <SectionHeader title={"Your Library"} description={""} />
                         <Tabs
                             defaultValue="my_roadmaps"
-                            className="w-full mt-4"
+                            className="w-full mt-4 flex flex-col items-center justify-center"
                         >
                             <TabsList
                                 className={"lg:w-full"
                                     + "grid sticky top-0" +
-                                    "z-50 grid-cols-3"
+                                    "z-50 grid-cols-3 items-center justify-center gap-x-4  shadow-md"
                                 }
                             >
                                 <TabsTrigger value="my_roadmaps" className="px-8">
@@ -43,7 +43,7 @@ export default function Library() {
                                     Saved Roadmaps
                                 </TabsTrigger>
                             </TabsList>
-                            <TabsContent value="my_roadmaps" className="self-center">
+                            <TabsContent value="my_roadmaps" className="w-full items-center">
                                 <MyRoadmaps />
                             </TabsContent>
 
@@ -98,12 +98,12 @@ const MyRoadmaps = () => {
     setRoadmaps(fetchedRoadmaps);
 
     return (
-        <div className="flex flex-col gap-y-4 w-full mt-8">
+        <div className="flex flex-col gap-y-4 justify-center w-full items-center">
             {
                 roadmaps ? roadmaps.map((roadmap, index) => (
                     <Button 
                         variant={"ghost"} 
-                        className=" flex items-start justify-start w-7/12 h-[110px]" 
+                        className=" flex justify-start w-7/12 h-[110px] items-center "
                         key={index}
                         onClick={() => {
                             
