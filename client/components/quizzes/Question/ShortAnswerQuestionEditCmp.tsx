@@ -11,10 +11,16 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel
+    FormLabel, FormMessage
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
+import {
+    Select,
+    SelectContent, SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 
 interface ShortAnswerQuestionEditCmpProps extends BaseQuestionProps<ShortAnswerQuestion> {
 }
@@ -34,6 +40,7 @@ export default function ShortAnswerQuestionEditCmp({
     const shortAnswerQuestionFormSchema = z.object({
         questionStatement: z.string().min(5, {message: "Question statement must be at least 5 characters long"}),
         answer: z.string().min(2, {message: "Answer must be at least 2 characters long"}),
+        questionDifficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("EASY"),
         answerExplanation: z.string().min(5, {message: "Explanation must be at least 5 characters long"}),
     });
 
@@ -50,6 +57,7 @@ export default function ShortAnswerQuestionEditCmp({
     const onSubmit = (data: z.infer<typeof shortAnswerQuestionFormSchema>) => {
         currEditingQuestion.questionStatement = data.questionStatement;
         currEditingQuestion.answer = data.answer;
+        currEditingQuestion.questionDifficulty = data.questionDifficulty;
         currEditingQuestion.answerExplanation = data.answerExplanation
         setCurrEditingQuestion(currEditingQuestion);
         modifyQuestion(currEditingQuestion);
@@ -75,6 +83,37 @@ export default function ShortAnswerQuestionEditCmp({
                                    </FormItem>
                                )}
                     />
+                    <FormField control={form.control}
+                               name={"questionDifficulty"}
+                               render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Questions
+                                           Difficulty</FormLabel>
+                                       <Select
+                                           onValueChange={field.onChange}
+                                           defaultValue={field.value}>
+                                           <FormControl>
+                                               <SelectTrigger
+                                                   className={"data-[placeholder]:text-muted-foreground"}>
+                                                   <SelectValue
+                                                       placeholder={"Select" +
+                                                           " questions" +
+                                                           " difficulty"}/>
+                                               </SelectTrigger>
+                                           </FormControl>
+                                           <SelectContent>
+                                               <SelectItem
+                                                   value="EASY">Easy</SelectItem>
+                                               <SelectItem
+                                                   value="MEDIUM">Medium</SelectItem>
+                                               <SelectItem
+                                                   value="HARD">Hard</SelectItem>
+                                           </SelectContent>
+                                       </Select>
+                                       {/*<FormDescription></FormDescription>*/}
+                                       <FormMessage/>
+                                   </FormItem>
+                               )}/>
 
                     <FormField
                         control={form.control}
@@ -84,7 +123,7 @@ export default function ShortAnswerQuestionEditCmp({
                                 <FormLabel>Answer</FormLabel>
                                 <FormControl>
                                     <Textarea
-                                        placeholder={"Question statement.."}
+                                        placeholder={"Answer.."}
                                         className="resize-y"
                                         {...field}
                                     />

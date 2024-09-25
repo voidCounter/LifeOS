@@ -16,9 +16,8 @@ public class ResourceReader {
                                    String sourceURL) {
         TextReader textReader = new TextReader(resource);
         textReader.getCustomMetadata().put("fileName", fileName);
-        textReader.getCustomMetadata().put("source", sourceURL);
         List<Document> documents = textReader.read();
-        documents.forEach(doc -> doc.getMetadata().put("source", sourceURL));
+        documents.forEach(doc -> doc.getMetadata().put("source", fileName));
         return documents;
     }
 
