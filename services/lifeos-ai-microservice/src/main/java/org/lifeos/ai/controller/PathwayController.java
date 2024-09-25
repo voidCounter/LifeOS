@@ -49,11 +49,23 @@ public class PathwayController {
     }
 
     @PostMapping(value = "/generate-task", produces = "application/json")
-    public String generateTask(
+    public ResponseEntity<String> generateTask(
             @RequestBody TaskGenerationDTO taskGenerationDTO
             ) {
         log.info("Request: {}", taskGenerationDTO);
-        return pathwayService.generateTask(taskGenerationDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(pathwayService.generateTask(taskGenerationDTO));
+    }
+
+    @PostMapping(value = "/generate-stage-by-name", produces = "application/json")
+    public ResponseEntity<String> generateStageByName(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO
+            ) {
+        log.info("Request: {}", subStageGenerationDTO);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(pathwayService.generateSubStageByName(subStageGenerationDTO));
     }
 
 }

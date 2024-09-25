@@ -21,7 +21,7 @@ export default function SearchandCreate() {
                 size={"icon"}
                 variant={"default"}
                 onClick={() => {
-                    router.push("/app/pathways/create")
+                    router.push("/app/pathways/create/prompt")
                 }}
             >
                 <PlusSquare

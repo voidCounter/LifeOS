@@ -16,13 +16,18 @@ public interface AiServiceClient {
     @PostMapping("/generate-pathway")
     String generatePathwayByPrompt(StageCreationDTO stageCreationDTO);
 
-    @PostMapping("generate-substages")
+    @PostMapping("/generate-substages")
     String generateSubStagePrompt(
             @RequestBody SubStageGenerationDTO subStageGenerationDTO
     );
 
-    @PostMapping("generate-task")
+    @PostMapping("/generate-task")
     String generateTask(
             @RequestBody TaskGenerationDTO taskGenerationDTO
+    );
+
+    @PostMapping("/generate-stage-by-name")
+    String generateStageByName(
+            @RequestBody SubStageGenerationDTO subStageGenerationDTO
     );
 }

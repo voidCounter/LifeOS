@@ -1,6 +1,7 @@
 "use client";
 
 import { generateSubStage } from '@/api-handlers/pathway';
+import ChatComponent from '@/components/chatcomponent/ChatComponet';
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,7 @@ import { useChatWindowStore } from '@/store/ChatWindowStore';
 import { usePathwayAnswerStore } from '@/store/PathwayAnswerStore';
 import { usePathwayPromptStore } from '@/store/PathwayPromptStore';
 import { usePathwayQuestionStore } from '@/store/PathwayQuestionStore';
+import { useStageStore } from '@/store/StageStore';
 import { GeneratedQuestion, GeneratedQuestionType } from '@/types/PathwayTypes';
 import { StageType } from '@/types/PathwayTypes/Pathway';
 import { ChevronLeft, ChevronRight, LoaderCircle, SparklesIcon } from 'lucide-react'
@@ -45,11 +47,12 @@ const PathwayChatComp = () => {
       </Button>
       {
         open ?
-          <div className='h-full bg-muted w-[480px] rounded-xl -ml-4 overflow-y-scroll'>
-            <div className='p-4 w-full h-full flex flex-col justify-end '>
-              <QuestionCompContainer />
-            </div>
-          </div>
+          // <div className='h-full bg-muted w-[480px] rounded-xl -ml-4 overflow-y-scroll'>
+          //   <div className='p-4 w-full h-full flex flex-col justify-end '>
+          //     <QuestionCompContainer />
+          //   </div>
+          // </div>
+          <ChatComponent />
           : null
       }
     </div>
@@ -72,8 +75,11 @@ const QuestionCompContainer = () => {
     return JSON.stringify(obj);
   }
   const router = useRouter();
+
   const setPrompt = usePathwayPromptStore(state => state.setPrompt);
   const language = usePathwayPromptStore(state => state.language);
+
+  const setStage = useStageStore(state => state.setStage);
 
   const defaultAnswers = () => {
     questions.forEach((question, index) => {
@@ -96,19 +102,16 @@ const QuestionCompContainer = () => {
       parentId: null
     });
     setPrompt(answersJson);
+    
     setGeneratingPathways(false);
+    setStage(roadmap[0]);
+
     router.push(`/app/pathways/explore/${roadmap[0].stageId}`);
     
 
   }
 
 
-  useEffect(() => {
-    console.log(questions);
-    console.log(answers);
-
-
-  }, [])
 
   return (
     <div className='flex flex-col w-full gap-y-4 p-2 overflow-y-scroll'>

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type PathwayPromptTypeStore ={
     prompt: string,
@@ -7,9 +8,16 @@ type PathwayPromptTypeStore ={
     setLanguage: (language: string) => void
 }
 
-export const usePathwayPromptStore = create<PathwayPromptTypeStore>((set) => ({
-    prompt: "",
-    language: "English", 
-    setPrompt: (prompt : string) => set({prompt}),
-    setLanguage: (language: string) => set({language})
-}))
+export const usePathwayPromptStore = create<PathwayPromptTypeStore>()(
+    persist(
+        (set) => ({
+            prompt: "",
+            language: "English", 
+            setPrompt: (prompt : string) => set({prompt : prompt}),
+            setLanguage: (language: string) => set({language : language})
+        }), 
+        {
+            name: "pathway-prompt-store"
+        }
+    )
+)

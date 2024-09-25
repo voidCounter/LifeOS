@@ -76,8 +76,10 @@ export function PathwayInputForm({ tab }: { tab: PathwayCreationType }) {
         console.log("generating questions");
         
         const questions: GeneratedQuestion[] | undefined = await generateQuestionByPrompt(data);
+        
         setPrompt(data.prompt);
         setLanguage(data.language);
+        
         if (questions) {
             try {
                 questions.forEach((question) => {

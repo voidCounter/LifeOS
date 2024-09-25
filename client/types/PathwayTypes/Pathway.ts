@@ -18,21 +18,33 @@ export type Stage = {
     parentId: string
     description: string
     subStages: Stage[] | null
+    content: string | null
 }
 
 export type SimpleStageDTO = {
     stageId : string;
     title: string;
-    status: boolean;
+    isPublished: boolean;
     createdAt: Date;
-    creator: UserResponseDTO;
-    parentId: string;
-    noOfTotalStage: number;
-    noOfCompletedStage: number;
 }
 
 export type UserResponseDTO = {
     userId : string;
     username: string;
     knowledgeXp: number | null
+}
+
+export type SubStageCountDTO = {
+    noOfSubStages: number;
+}
+
+export type PublishDTO = {
+    isPublished: boolean;
+}
+
+export type TaskGenerationDTO = {
+    title: string;
+    description: string;
+    context: string;
+    stageId: string;
 }

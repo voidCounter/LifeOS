@@ -26,8 +26,6 @@ public class Roadmap extends Stage {
     @Column(name = "published")
     private Boolean published;
 
-
-
     public Roadmap(
             User creator,
             Boolean published
@@ -35,6 +33,4 @@ public class Roadmap extends Stage {
         this.creator = creator;
         this.published = published;
     }
-
-
 }

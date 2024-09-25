@@ -70,14 +70,15 @@ public class PathwayService {
 
         List <Stage> stages =  subStageGeneratedResponseDTOS.stream().map(subStageGeneratedResponseDTO -> {
             Stage stage = new Stage();
-            stage.setType(StageType.fromValue(subStageGeneratedResponseDTO.getStageType().toUpperCase()));
-            stage.setStatus(false);
+
             if (StageType.fromValue(subStageGeneratedResponseDTO.getStageType().toUpperCase()) == StageType.ROADMAP) {
                 User creator = userRepository.findById(UUID.fromString(userId))
                         .orElseThrow(() -> new RuntimeException("User not found"));
                 log.info("Creator: {}", creator);
                 stage = new Roadmap(creator, true);
             }
+            stage.setType(StageType.fromValue(subStageGeneratedResponseDTO.getStageType().toUpperCase()));
+            stage.setStatus(false);
             stage.setParent(parentStage);
             stage.setTitle(subStageGeneratedResponseDTO.getTitle());
             stage.setDescription(subStageGeneratedResponseDTO.getDescription());
@@ -110,8 +111,18 @@ public class PathwayService {
 
     public String generateTask(TaskGenerationDTO taskGenerationDTO, String userId) {
         log.info("Generating task with title: {}", taskGenerationDTO.getTitle());
+        Stage stage = stageRepository.findById(UUID.fromString(taskGenerationDTO.getStageId()))
+                .orElseThrow(() -> new RuntimeException("Stage not found"));
+        if (stage.getContent() != null) {
+            return stage.getContent();
+        }
+        Stage parentStage = stageRepository.findById(stage.getParent().getStageId())
+                .orElseThrow(() -> new RuntimeException("Parent not found"));
+        taskGenerationDTO.setContext("parent stage : " + parentStage.getTitle() + parentStage.getDescription());
         String generatedTask = aiServiceClient.generateTask(taskGenerationDTO);
         log.info("Generated Task: {}", generatedTask);
+        stage.setContent(generatedTask);
+        stageRepository.save(stage);
         return generatedTask;
 
     }
@@ -124,6 +135,29 @@ public class PathwayService {
         if (stage.getSubStages() == null || stage.getSubStages().isEmpty()) {
             stage.setSubStages(generateSubStageByPrompt(subStageGenerationDTO, userId));
         }
+
         return stage;
+    }
+
+    @Transactional
+    public List<Stage> generateSubStageByName(SubStageGenerationDTO subStageGenerationDTO, String userId) {
+        log.info("Generating subStage by name with prompt: {}", subStageGenerationDTO.getContext());
+        String generatedStages = aiServiceClient.generateStageByName(subStageGenerationDTO);
+        log.info("Generated sub stages: {}", generatedStages);
+        try {
+            List<SubStageGeneratedResponseDTO> generatedSubStages =
+                    jacksonObjectMapper.readValue(generatedStages, new TypeReference<List<SubStageGeneratedResponseDTO>>() {});
+
+            log.info("Generated Sub Stages: {}", generatedSubStages);
+
+
+            return saveSubStages(
+                    generatedSubStages,
+                    userId,
+                    subStageGenerationDTO.getParentId()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing stage Data", e);
+        }
     }
 }

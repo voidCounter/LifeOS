@@ -31,6 +31,9 @@ public class PathwayService {
     @Value("classpath:/prompts/TaskGenerationPrompt.st")
     private Resource taskGenerationPromptResource;
 
+    @Value("classpath:/prompts/PathwayStageGenerateByName.st")
+    private Resource stageGenerateByNameResource;
+
     public PathwayService(
             @Qualifier("pathwayClient") ChatClient chatClient,
             @Qualifier("subStageGenerationClient") ChatClient subStageGenerationClient
@@ -56,12 +59,22 @@ public class PathwayService {
             log.info("System prompt: {}", systemPromptResource);
         }
     }
+
     @PostConstruct
     public void validateTaskGenerationPrompt() {
         if (!taskGenerationPromptResource.exists()) {
             log.error("Task generation prompt resource not found: {}", taskGenerationPromptResource.getFilename());
         } else {
             log.info("Task generation prompt: {}", taskGenerationPromptResource);
+        }
+    }
+
+    @PostConstruct
+    public void validateStageGenerationByPrompt() {
+        if (!stageGenerateByNameResource.exists()) {
+            log.error("Stage generation  by name resource not found: {}", taskGenerationPromptResource.getFilename());
+        } else {
+            log.info("Stage generation by name resource: {}", taskGenerationPromptResource);
         }
     }
 
@@ -119,6 +132,25 @@ public class PathwayService {
         } catch (Exception e) {
             log.error("Error generating task: ", e);
             return "Error generating task";
+        }
+    }
+
+    public String generateSubStageByName(SubStageGenerationDTO subStageGenerationDTO) {
+        log.info("Generating: {}", subStageGenerationDTO.getType());
+        try {
+            String stageType = StageType.fromValue(subStageGenerationDTO.getType()).getValue();
+            return this.subStageGenerationClient
+                    .prompt()
+                    .system(stageGenerateByNameResource)
+                    .system(sp -> sp.param("type", stageType))
+                    .system(sp -> sp.param ("context", subStageGenerationDTO.getContext()))
+                    .system(sp -> sp.param ("language", subStageGenerationDTO.getLanguage()))
+                    .user(" ")
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            log.error("Error generating roadmap: ", e);
+            return "Error generating roadmap";
         }
     }
 }

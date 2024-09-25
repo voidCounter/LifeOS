@@ -7,5 +7,6 @@ public class TaskGenerationDTO {
     private String title;
     private String description;
     private String context;
+    private String stageId;
 
 }
