@@ -22,6 +22,7 @@ export default function CreatedQuizView({className}: { className?: string }) {
         removeAllQuestions,
     } = useQuizCreationStore();
     const newMultipleChoiceQuestion: MultipleChoiceQuestion = {
+        questionId: "",
         questionType: "MULTIPLE_CHOICE",
         questionStatement: "",
         options: [
@@ -31,6 +32,7 @@ export default function CreatedQuizView({className}: { className?: string }) {
     };
 
     const newTrueFalseQuestion: TrueFalseQuestion = {
+        questionId: "",
         questionType: "TRUE_FALSE",
         questionStatement: "",
         trueOptionExplanation: "",
@@ -39,6 +41,7 @@ export default function CreatedQuizView({className}: { className?: string }) {
     }
 
     const newShortAnswerQuestion: ShortAnswerQuestion = {
+        questionId: "",
         questionType: "SHORT_ANSWER",
         questionStatement: "",
         answer: "",

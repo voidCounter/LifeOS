@@ -8,6 +8,7 @@ import QuestionOption from "./QuestionOption";
 import {useRef, useState} from "react";
 import MultipleChoiceQuestionEditCmp
     from "@/components/quizzes/Question/MultipleChoiceQuestionEditCmp";
+import {QuestionType} from "@/types/QuizTypes/QuestionTypes";
 
 interface MultipleChoiceQuestionCmpProps extends BaseQuestionProps<MultipleChoiceQuestion> {
 }
@@ -36,6 +37,8 @@ export default function MultipleChoicequestionCmp({
                     <div key={question.questionId + option.optionId}
                          className={"w-full"}>
                         <QuestionOption
+                            questionType={QuestionType.MULTIPLE_CHOICE}
+                            questionId={question.questionId}
                             id={question.questionId + option.optionId}
                             option={option.optionText}
                             optionExplanation={option.optionExplanation}

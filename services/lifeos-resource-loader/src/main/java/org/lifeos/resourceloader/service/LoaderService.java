@@ -29,7 +29,7 @@ public class LoaderService {
     public void loadText(Resource resource, String fileName, String source) {
         // TODO: resource from same source should be loaded only once
         List<Document> loaded =
-                vectorStore.similaritySearch(SearchRequest.query("source").withTopK(1).withFilterExpression("fileName == '" + fileName + "'"));
+                vectorStore.similaritySearch(SearchRequest.query("source").withTopK(1).withFilterExpression("source == '" + fileName + "'"));
         if (!loaded.isEmpty()) {
             log.info("File already loaded: {}", fileName);
             return;
@@ -40,6 +40,7 @@ public class LoaderService {
         // split into chunks
         List<Document> splitTexts =
                 resourceTokenSplitter.splitDocuments(loadedText);
+        log.info("going to save... {}", splitTexts);
         // adding to vector store
         vectorStore.accept(splitTexts);
     }

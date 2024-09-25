@@ -10,6 +10,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class QuizService {
     private final ChatClient chatClient;
     private final ResourceLoaderClient resourceLoaderClient;
     private final FileService fileService;
+    private final ChatClient helperClient;
 
 
     @Value("classpath:/prompts/QuizSystemPrompt.st")
@@ -34,11 +36,12 @@ public class QuizService {
 
     public QuizService(@Qualifier("quizClient") ChatClient chatClient,
                        ResourceLoaderClient resourceLoaderClient,
-                       FileService fileService) {
+                       FileService fileService, @Qualifier("helperClient") ChatClient helperClient) {
         this.chatClient = chatClient;
         this.resourceLoaderClient = resourceLoaderClient;
         this.fileService = fileService;
         log.info("system prompt: {}", chatClient.toString());
+        this.helperClient = helperClient;
     }
 
     @PostConstruct
@@ -127,5 +130,11 @@ public class QuizService {
         // provide the chunks to the chat client and generate quiz
         return generateQuiz(quizByNotesDTO,
                 quizByNotesDTO.getPrompt() + "\n " + fileService.convertResourceToString(resourceExtraPrompt) + "\n " + "Resource: \n" + similarChunks);
+    }
+
+    public List<ShortAnswerQuestionCheckingResDTO> evaluateShortAnswerQuestions(List<ShortAnswerQuestionCheckingReqDTO> questions) {
+        return helperClient.
+                prompt().advisors(new SimpleLoggerAdvisor()).user(u -> u.param("questions", questions.toString())).call().entity(new ParameterizedTypeReference<List<ShortAnswerQuestionCheckingResDTO>>() {
+                });
     }
 }
