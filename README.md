@@ -1,6 +1,6 @@
 # LifeOS: Your Learning Companion for Quizzes, Insights, and Roadmaps
 
-**LifeOS** is a comprehensive learning platform designed to make the learning process interactive, personalized, and efficient. Whether you're preparing for an exam, building new skills, or simply exploring new knowledge, LifeOS empowers you with advanced tools to generate quizzes, organize resources, and map out your learning journey.
+**LifeOS** is a comprehensive learning platform, powered by AI, designed to make the learning process interactive, personalized, and efficient. Whether you're preparing for an exam, building new skills, or simply exploring new knowledge, LifeOS empowers you with advanced tools to generate quizzes, organize resources, and map out your learning journey.
 
 # Key Features:
 
