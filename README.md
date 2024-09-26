@@ -191,7 +191,7 @@ LifeOS leverages **RAG-based (Retrieval-Augmented Generation)** methods combined
    ```bash
    export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-file.json"
    ```
-After setting up vertex AI, change the `secrets.yaml` file of `lifeos-ai-microservice`, `lifeos-resource-loader`: 
+After setting up vertex AI, change the `secrets.yaml` file of `lifeos-ai-microservice`, `lifeos-resource-loader` with respective values: 
 
 ```yaml
 secrets:
