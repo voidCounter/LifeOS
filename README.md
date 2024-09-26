@@ -108,7 +108,7 @@ LifeOS leverages **RAG-based (Retrieval-Augmented Generation)** methods combined
 - **Scalable Microservices**: Each service in the architecture is independently scalable, allowing better performance and resource management.
 - **Efficient Search and Retrieval**: Using a vector store ensures quick retrieval of the most relevant content chunks, optimizing the generation process.
 
-# Technologies and Dependecies
+# Technologies and Dependencies
 | **Component**        | **Technology/Dependency**                                                                                             | **Description**                                                                                  |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | **Frontend**          | [Next.js](https://nextjs.org/)                                                                                        | React framework for building server-rendered or statically generated web applications.           |
