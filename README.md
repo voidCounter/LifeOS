@@ -131,4 +131,97 @@ LifeOS leverages **RAG-based (Retrieval-Augmented Generation)** methods combined
 | **CSS Framework**     | [Tailwind CSS](https://tailwindcss.com/)                                                                               | Utility-first CSS framework for rapid UI development.                                            |
 | **Design Tool**       | [Figma](https://www.figma.com/)                                                                                        | Collaborative design tool for interface design and prototyping.                                  |
 
+# Setup and run the project
+## Clone the Project
 
+1. Clone the project from the GitHub Repository:
+   ```bash
+   git clone <repository-url>
+   ```
+
+## Configure Environment Variables
+
+1. Navigate to the project's root directory:
+   ```bash
+   cd <project-root-directory>
+   ```
+
+2. In the **client** folder, update the `.env` variables with your API keys and required variables:
+   ```bash
+   cd client
+   nvim .env  # or use your preferred text editor
+   ```
+
+## Microservice Configuration
+
+1. Go to the **microservice** folder:
+   ```bash
+   cd ../{microservice}
+   ```
+
+2. Update the secrets in the `secrets.yaml` file located in `{ServiceModule}/src/main/resources` with your own set values:
+   ```yaml
+   secrets:
+     datasource:
+       url: {database url}
+       username: {database username}
+       password: {database password}
+   ```
+   **Note:** Replace the values for `url`, `username`, and `password` with your actual database credentials.
+
+## Vertex AI API Setup
+
+1. To use the Vertex AI API, ensure you have a Google Cloud project set up with the Vertex AI API enabled. Follow these steps:
+
+   - Go to the [Google Cloud Console](https://console.cloud.google.com/).
+   - Create a new project or select an existing project.
+   - Navigate to **APIs & Services > Library**.
+   - Search for **Vertex AI API** and click on it.
+   - Click **Enable** to activate the API for your project.
+
+2. Set up authentication:
+   - Go to **APIs & Services > Credentials**.
+   - Click on **Create Credentials** and choose **Service Account**.
+   - Fill in the required details and click **Create**.
+   - After the service account is created, grant it the necessary roles, such as **Vertex AI User**.
+   - Click **Done**, then click on your service account to manage keys.
+   - Under the **Keys** tab, click **Add Key > Create New Key** and choose **JSON**. Download the key file.
+
+3. Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to your JSON key file:
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/service-account-file.json"
+   ```
+After setting up vertex AI, change the `secrets.yaml` file of `lifeos-ai-microservice`, `lifeos-resource-loader`: 
+
+```yaml
+secrets:
+  vertex-ai-project-id: lifeos-4911
+  vertex-ai-location: us-central1
+```
+
+## Frontend Setup
+
+1. Open a terminal in the **client** folder:
+   ```bash
+   cd client
+   ```
+
+2. Install project dependencies with:
+   ```bash
+   npm install
+   ```
+
+3. Start the frontend development server with:
+   ```bash
+   npm run dev
+   ```
+
+## Backend Setup
+
+1. Install dependencies for the backend from the `pom.xml` file. You can use Maven:
+   ```bash
+   cd ./microservice
+   mvn install
+   ```
+
+2. Run the main files of all modules. Consider using tools like IntelliJ for building and running the system.
