@@ -151,6 +151,7 @@ public class FeedItemService {
                             FeedInsight feedInsight = new FeedInsight();
                             feedInsight.setTitle(feedInsightDTO.getTitle());
                             feedInsight.setContent(feedInsightDTO.getContent());
+                            feedInsight.setFeedItem(feedItem);
                             return feedInsight;
                         }).collect(toList());
 
