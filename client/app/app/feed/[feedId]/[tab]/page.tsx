@@ -13,6 +13,7 @@ import {
 } from "@/api-handlers/feeds";
 import ContentViewer from "@/app/app/feed/[feedId]/[tab]/ContentViewer";
 import SummaryViewer from "@/app/app/feed/[feedId]/[tab]/SummaryViewer";
+import InsightViewer from "@/app/app/feed/[feedId]/[tab]/InsightViewer";
 
 interface FeedItemTabProps {
     tab: string;
@@ -58,7 +59,7 @@ export default function FeedItemTab({params}: { params: FeedItemTabProps }) {
     } else if (params.tab == 'summary') {
         return <SummaryViewer summary={data ?? "No summary to show"}/>
     } else if (params.tab == 'insights') {
-        return <div>insights</div>
+        return <InsightViewer insights={data ?? "No insights to show"}/>
     }
     return (
         <div>hellof</div>
