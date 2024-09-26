@@ -199,6 +199,19 @@ secrets:
   vertex-ai-location: us-central1
 ```
 
+
+## Docker Setup
+
+- Ensure you have Docker installed on your machine. You need to **turn on the Docker engine** before running the resource-loader. 
+- If you haven't installed Docker yet, download and install it from [Docker's official website](https://www.docker.com/get-started).
+- Once installed, start the Docker engine by running Docker Desktop or using the terminal command:
+   ```bash
+   open /Applications/Docker.app  # For macOS
+   # or
+   sudo systemctl start docker     # For Linux
+   ```
+
+
 ## Frontend Setup
 
 1. Open a terminal in the **client** folder:
